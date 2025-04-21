@@ -1,7 +1,7 @@
 #include"DxLib.h"
 #include"SceneManager.h"
 #include"FPS.h"
-#include"Title.h"
+//#include"Title.h"
 #include"PadInput.h"
 #include"GameMain.h"
 

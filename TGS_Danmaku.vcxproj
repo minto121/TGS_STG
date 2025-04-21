@@ -151,15 +151,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="demo_Player.cpp" />
+    <ClCompile Include="FpsControl.cpp" />
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PadInput.cpp" />
+    <ClCompile Include="Player_Shot.cpp" />
     <ClCompile Include="SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractScene.h" />
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="demo_Player.h" />
+    <ClInclude Include="FpsControl.h" />
     <ClInclude Include="GameMain.h" />
     <ClInclude Include="PadInput.h" />
+    <ClInclude Include="Player_Shot.h" />
     <ClInclude Include="SceneManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
