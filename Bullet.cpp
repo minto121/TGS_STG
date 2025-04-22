@@ -10,7 +10,6 @@
 Bullet::Bullet() 
 {
     Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
-
 }
 
 Bullet::~Bullet()
@@ -24,6 +23,11 @@ void Bullet::Update(int nowtime)
     for (auto& pattern : patterns) {
         if (!pattern.used && nowtime >= pattern.time) {
             float angleStep = (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1);
+
+            if (pattern.cnt > 1) {
+                angleStep = (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1);
+            }
+
             for (int i = 0; i < pattern.cnt; i++) {
                 float angleDeg = pattern.S_angle + angleStep * i;
                 float angleRad = angleDeg * (M_PI / 180.0f);
@@ -32,6 +36,7 @@ void Bullet::Update(int nowtime)
                 b.y = pattern.y;
                 b.vx = cos(angleRad) * pattern.spd;
                 b.vy = sin(angleRad) * pattern.spd;
+                b.active = true;
                 bullets.push_back(b);
             }
             pattern.used = true;
@@ -46,7 +51,7 @@ void Bullet::Update(int nowtime)
             b.y += b.vy * dt;
 
             // 範囲外で非アクティブ
-            if (b.x < 0 || b.x > 1280 || b.y < 0 || b.y > 720) {
+            if (b.x < 0 || b.x > 700 || b.y < 0 || b.y > 720) {
                 b.active = false;
             }
         }
@@ -111,7 +116,6 @@ void Bullet::Draw()
         }
     }
 
-
-    DrawFormatString(0, 0, GetColor(255, 255, 255), "nowtime: %d", nowtime);
+    //DrawFormatString(0, 0, GetColor(255, 255, 255), "nowtime: %d", );
 
 }

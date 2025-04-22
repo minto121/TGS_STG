@@ -43,7 +43,7 @@ bool FpsControl_Update() {
         mStartTime = t;
     }
     mCount++;
-    mFrameCount++;  // Å© èÌÇ…â¡éZ
+    //mFrameCount++;  // Å© èÌÇ…â¡éZ
     return true;
 }
 //FPSï\é¶
@@ -59,9 +59,9 @@ void FpsControl_Wait() {
     }
 }
 
-int FpsControl_GetNowFrame() {
-    return mFrameCount;
-}
+//int FpsControl_GetNowFrame() {
+//    return mFrameCount;
+//}
 
 
 
