@@ -5,6 +5,8 @@
 #include"PadInput.h"
 #include"GameMain.h"
 
+#include"FpsControl.h"
+
 
 #define FRAMERATE 60.0 //?t???[?????[?g
 
@@ -52,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		return 0;
 	}
-	//FpsController FPSC(FRAMERATE, 800);
+	FpsController* FPSC = new FpsController(FRAMERATE, 800);
 
 	// ?Q?[?????[?v
 	while ((ProcessMessage() == 0) && (sceneMng->Update() != nullptr)) {
@@ -60,6 +62,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		ClearDrawScreen();		// ?????????
 		PAD_INPUT::UpdateKey();
 		sceneMng->Draw();
+		FPSC->All();
+		FPSC->Disp();
 
 	
 		//?????I??

@@ -44,7 +44,7 @@ void Bullet::Update(int nowtime)
     }
 
     // ’e‚ÌˆÚ“®
-    float dt = FpsControl_GetDeltaTime();
+    float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
     for (auto& b : bullets) {
         if (b.active) {
             b.x += b.vx * dt;
