@@ -15,6 +15,7 @@ class PAD_INPUT
 private:
 	static char NowKey[BUTTONS]; //����̓��̓L�[
 	static char OldKey[BUTTONS]; //�O��̓��̓L�[
+	static char HoldKey[BUTTONS];	//ホールド
 	static XINPUT_STATE Input; //�p�b�h
 	static Stick Rstick; //�E�X�e�B�b�N
 	static Stick Lstick; //���X�e�B�b�N
@@ -31,6 +32,7 @@ public:
 		{
 			OldKey[i] = NowKey[i];
 			NowKey[i] = Input.Buttons[i];
+			HoldKey[i] = Input.Buttons[i];
 		}
 
 		//�E�X�e�B�b�N
@@ -53,6 +55,12 @@ public:
 	static bool OnRelease(int button)
 	{
 		bool ret = (NowKey[button] == 0 && OldKey[button] == 1);
+		return ret;
+	}
+
+	static bool OnHold(int button)
+	{
+		bool ret = (HoldKey[button] == 1);
 		return ret;
 	}
 

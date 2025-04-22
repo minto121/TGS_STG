@@ -1,5 +1,8 @@
 #pragma once
 #define PSHOT_MAX 200
+
+#include "PadInput.h"
+
 class Player_Shot
 {
 public:
