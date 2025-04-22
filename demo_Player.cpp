@@ -13,10 +13,10 @@ demo_Player::demo_Player()
 
 void demo_Player::move()
 {
-    if (CheckHitKey(KEY_INPUT_W)) y -= 0.2f;  // è„
-    if (CheckHitKey(KEY_INPUT_S)) y += 0.2f;  // â∫
-    if (CheckHitKey(KEY_INPUT_A)) x -= 0.2f;  // ç∂
-    if (CheckHitKey(KEY_INPUT_D)) x += 0.2f;  // âE
+    if (CheckHitKey(KEY_INPUT_W)) y -= 1.0f;  // è„
+    if (CheckHitKey(KEY_INPUT_S)) y += 1.0f;  // â∫
+    if (CheckHitKey(KEY_INPUT_A)) x -= 1.0f;  // ç∂
+    if (CheckHitKey(KEY_INPUT_D)) x += 1.0f;  // âE
 }
 
 //void demo_Player::fire(Player_Shot*P_SHOT)

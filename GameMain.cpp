@@ -39,7 +39,7 @@ void GameMain::Draw() const
 	P_SHOT->Draw();
 	D_PLAYER->Draw();
 	BULLET_DATE->Draw();
-	FpsControl_Draw();
+	//FpsControl_Draw();
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
 

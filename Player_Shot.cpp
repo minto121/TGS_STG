@@ -37,7 +37,7 @@ void Player_Shot::Update(float playerX, float playerY)
     for (int i = 0; i < PSHOT_MAX; i++) {
         if (bullets[i].active) {
             // ラジアンに変換して移動
-            float dt = FpsControl_GetDeltaTime();  // 1フレームの時間（秒）
+            float dt = 1.0f / 60.0f;;//FpsControl_GetDeltaTime();  // 1フレームの時間（秒）
 
             double rad = bullets[i].angle * (M_PI / 180.0);
             bullets[i].x += cos(rad) * bullets[i].spd * dt;
