@@ -21,7 +21,7 @@ public:
 	};
 
 	int Bullet_img;
-	int nowtime;
+	int nowtime = 0;
 
 	Bullet();
 	~Bullet();

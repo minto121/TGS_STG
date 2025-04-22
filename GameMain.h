@@ -7,6 +7,7 @@
 class GameMain	:public AbstractScene
 {
 public:
+    int nowtime;
 
 private:
 

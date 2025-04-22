@@ -37,7 +37,7 @@ void Player_Shot::Update(float playerX, float playerY)
     for (int i = 0; i < PSHOT_MAX; i++) {
         if (bullets[i].active) {
             // ラジアンに変換して移動
-            float dt = FpsControl_GetDeltaTime();  // 1フレームの時間（秒）
+            float dt = 1.0f / 60.0f;;//FpsControl_GetDeltaTime();  // 1フレームの時間（秒）
 
             double rad = bullets[i].angle * (M_PI / 180.0);
             bullets[i].x += cos(rad) * bullets[i].spd * dt;
@@ -45,7 +45,7 @@ void Player_Shot::Update(float playerX, float playerY)
             bullets[i].cnt++;
 
             // 画面外に出たら非アクティブ化（仮に800x600の画面として）
-            if (bullets[i].x < 0 || bullets[i].x > 640 || bullets[i].y < 0 || bullets[i].y > 720) {
+            if (bullets[i].x < 0 || bullets[i].x > 700 || bullets[i].y < 0 || bullets[i].y > 720) {
                 bullets[i].active = false;
             }
         }

@@ -10,7 +10,7 @@ GameMain::GameMain()
 	D_PLAYER = new demo_Player;
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv"); // © CSV“Ç‚Ýž‚Ý
-
+	nowtime = 0;
 }
 
 GameMain::~GameMain()
@@ -22,7 +22,9 @@ GameMain::~GameMain()
 
 AbstractScene* GameMain::Update()
 {
-	int nowtime = GetNowCount(); // Œ»Ý‚ÌŒo‰ßŽžŠÔ‚ðŽæ“¾
+
+	nowtime++;
+
 	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	D_PLAYER->move();
 	BULLET_DATE->Update(nowtime);
@@ -37,7 +39,9 @@ void GameMain::Draw() const
 	P_SHOT->Draw();
 	D_PLAYER->Draw();
 	BULLET_DATE->Draw();
-	FpsControl_Draw();
+	//FpsControl_Draw();
+
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
 
 
 }
