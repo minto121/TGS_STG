@@ -13,7 +13,7 @@ demo_Player::demo_Player()
 
 void demo_Player::move()
 {
-    bool slow = PAD_INPUT::OnHold(XINPUT_BUTTON_A);
+    bool slow = PAD_INPUT::OnHold(XINPUT_BUTTON_A)|| CheckHitKey(KEY_INPUT_SPACE);
 
     // è„  0.2f
     if (CheckHitKey(KEY_INPUT_W) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_UP) == 1) { 
