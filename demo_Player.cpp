@@ -18,40 +18,40 @@ void demo_Player::move()
     // è„  0.2f
     if (CheckHitKey(KEY_INPUT_W) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_UP) == 1) { 
         if (slow == true) {
-            y -= 0.1f;
+            y -= 2.0f;
         }
         else {
-            y -= 0.3f;
+            y -= 4.0f;
         }
     }
 
     // â∫
     if (CheckHitKey(KEY_INPUT_S) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_DOWN) == 1) {
         if (slow == true) {
-            y += 0.1f;
+            y += 2.0f;
         }
         else {
-            y += 0.3f;
+            y += 4.0f;
         }
     }  
 
     // ç∂
     if (CheckHitKey(KEY_INPUT_A) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_LEFT) == 1) {
         if (slow == true) {
-            x -= 0.1f;
+            x -= 2.0f;
         }
         else {
-            x -= 0.3f;
+            x -= 4.0f;
         }
     }
 
     // âE
     if (CheckHitKey(KEY_INPUT_D) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_RIGHT) == 1) {
         if (slow == true) {
-            x += 0.1f;
+            x += 2.0f;
         }
         else {
-            x += 0.3f;
+            x += 4.0f;
         }
     }  
 }
