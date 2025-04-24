@@ -19,7 +19,7 @@ Bullet::~Bullet()
 void Bullet::Update(int nowtime)
 {
 
-    printf("nowtime: %d\n", nowtime); // ← これを追加！
+    printf("nowtime: %d\n", nowtime); 
     for (auto& pattern : patterns) {
         if (!pattern.used && nowtime >= pattern.time) {
             float angleStep = (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1);
@@ -51,14 +51,12 @@ void Bullet::Update(int nowtime)
             b.y += b.vy * dt;
 
             // 範囲外で非アクティブ
-            if (b.x < 0 || b.x > 700 || b.y < 0 || b.y > 720) {
+            if (b.x < 0 || b.x > 800 || b.y < 0 || b.y > 720) {
                 b.active = false;
             }
         }
     }
 }
-
-
 
 void Bullet::LoadCSV(const char* filePath)
 {
@@ -67,6 +65,7 @@ void Bullet::LoadCSV(const char* filePath)
         printf("ファイルのオープンに失敗しました: %s\n", filePath);
         return;
     }
+
     std::vector<B_State> basePatterns;
     std::string line;
     while (std::getline(file, line)) {
@@ -108,14 +107,20 @@ void Bullet::LoadCSV(const char* filePath)
 
 void Bullet::Draw()
 {
+    int bulletW, bulletH;
+    GetGraphSize(Bullet_img, &bulletW, &bulletH);
+
     for (auto& b : bullets) {
         if (b.active) {
-            //DrawCircle((int)b.x, (int)b.y, 4, GetColor(255, 0, 0));
-            DrawGraph((int)b.x, (int)b.y, Bullet_img, TRUE);
-
+            DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
+            DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img, TRUE);
         }
     }
 
     //DrawFormatString(0, 0, GetColor(255, 255, 255), "nowtime: %d", );
 
+}
+
+const std::vector<Bullet::BulletInstance>& Bullet::GetBullets() const {
+    return bullets;
 }

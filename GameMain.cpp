@@ -27,6 +27,7 @@ AbstractScene* GameMain::Update()
 
 	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	D_PLAYER->move();
+	D_PLAYER->Update(BULLET_DATE->GetBullets());
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // ƒvƒŒƒCƒ„[‚ª’e‚ğ”­Ë
 	return this;
