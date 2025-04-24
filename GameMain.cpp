@@ -50,7 +50,7 @@ void GameMain::Draw() const
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
 
-	FpsControl_Draw();
+	//FpsControl_Draw();
 	enemy->Draw();
 
 }
