@@ -3,6 +3,7 @@
 #include"Player_Shot.h"
 #include"demo_Player.h"
 #include"Bullet.h"
+#include "Enemy.h"
 
 class GameMain	:public AbstractScene
 {
@@ -27,6 +28,8 @@ public:
     Player_Shot* P_SHOT;
     demo_Player* D_PLAYER;
     Bullet* BULLET_DATE;
+
+    Enemy* enemy;
 
 };
 

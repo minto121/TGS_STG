@@ -3,6 +3,8 @@
 #include"Player_Shot.h"
 #include"FpsControl.h"
 #include"Bullet.h"
+#include "Enemy.h"
+
 
 GameMain::GameMain()
 {
@@ -10,6 +12,8 @@ GameMain::GameMain()
 	D_PLAYER = new demo_Player;
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv"); // © CSV“Ç‚Ýž‚Ý
+
+	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
 }
 
@@ -30,6 +34,8 @@ AbstractScene* GameMain::Update()
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // ƒvƒŒƒCƒ„[‚ª’e‚ð”­ŽË
+
+	enemy->Update();
 	return this;
 }
 
@@ -44,5 +50,7 @@ void GameMain::Draw() const
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
 
+	FpsControl_Draw();
+	enemy->Draw();
 
 }
