@@ -44,33 +44,15 @@ void demo_Player::Update(const std::vector<Bullet::BulletInstance>& bullets)
 
 void demo_Player::move()
 {
-    if (CheckHitKey(KEY_INPUT_W)) y -= 5.0f;  // è„
-    if (CheckHitKey(KEY_INPUT_S)) y += 5.0f;  // â∫
-    if (CheckHitKey(KEY_INPUT_A)) x -= 5.0f;  // ç∂
-    if (CheckHitKey(KEY_INPUT_D)) x += 5.0f;  // âE
-}
+    //if (CheckHitKey(KEY_INPUT_W)) y -= 5.0f;  // è„
+    //if (CheckHitKey(KEY_INPUT_S)) y += 5.0f;  // â∫
+    //if (CheckHitKey(KEY_INPUT_A)) x -= 5.0f;  // ç∂
+    //if (CheckHitKey(KEY_INPUT_D)) x += 5.0f;  // âE
 
-void demo_Player::Hit()
-{
-    Alive = false;
-    Respawn = true;
-    RespawnTimer = 120;
-    x = 800 / 2.0f;
-    y = SCREEN_HEIGHT + 30;
-}
-
-bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, float r2)
-{
-    float dx = x1 - x2;
-    float dy = y1 - y2;
-    float distanceSq = dx * dx + dy * dy;
-    float radiusSum = r1 + r2;
-
-    return distanceSq <= radiusSum * radiusSum;
-    bool slow = PAD_INPUT::OnHold(XINPUT_BUTTON_A)|| CheckHitKey(KEY_INPUT_SPACE);
+    bool slow = PAD_INPUT::OnHold(XINPUT_BUTTON_A) || CheckHitKey(KEY_INPUT_SPACE);
 
     // è„  0.2f
-    if (CheckHitKey(KEY_INPUT_W) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_UP) == 1) { 
+    if (CheckHitKey(KEY_INPUT_W) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_UP) == 1) {
         if (slow == true) {
             y -= 2.0f;
         }
@@ -87,7 +69,7 @@ bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, flo
         else {
             y += 4.0f;
         }
-    }  
+    }
 
     // ç∂
     if (CheckHitKey(KEY_INPUT_A) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_LEFT) == 1) {
@@ -107,7 +89,27 @@ bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, flo
         else {
             x += 4.0f;
         }
-    }  
+    }
+}
+
+void demo_Player::Hit()
+{
+    Alive = false;
+    Respawn = true;
+    RespawnTimer = 120;
+    x = 800 / 2.0f;
+    y = SCREEN_HEIGHT + 30;
+}
+
+bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, float r2)
+{
+    float dx = x1 - x2;
+    float dy = y1 - y2;
+    float distanceSq = dx * dx + dy * dy;
+    float radiusSum = r1 + r2;
+
+    return distanceSq <= radiusSum * radiusSum;
+    
 }
 
 //void demo_Player::fire(Player_Shot*P_SHOT)
