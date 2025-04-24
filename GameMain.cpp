@@ -15,6 +15,8 @@ GameMain::GameMain()
 
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
+
+	MOB_ENEMY = new Mob_Enemy;
 }
 
 GameMain::~GameMain()
@@ -22,6 +24,8 @@ GameMain::~GameMain()
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
+
+	delete MOB_ENEMY;
 }
 
 AbstractScene* GameMain::Update()
@@ -36,6 +40,9 @@ AbstractScene* GameMain::Update()
 	//D_PLAYER->fire(P_SHOT);  // ƒvƒŒƒCƒ„[‚ª’e‚ð”­ŽË
 
 	enemy->Update();
+
+	MOB_ENEMY->Update();
+
 	return this;
 }
 
@@ -53,4 +60,5 @@ void GameMain::Draw() const
 	//FpsControl_Draw();
 	enemy->Draw();
 
+	MOB_ENEMY->Draw();
 }
