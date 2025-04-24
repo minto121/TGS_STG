@@ -14,9 +14,9 @@ void Player_Shot::FireBullet(float playerX, float playerY)
 {
     for (int i = 0; i < PSHOT_MAX; i++) {
         if (!bullets[i].active) {
-            bullets[i].x = playerX;
+            bullets[i].x = playerX - 20;
             bullets[i].y = playerY;
-            bullets[i].spd = 60.0f;
+            bullets[i].spd = 600.0f;
             bullets[i].angle = -90.0f; // ^ã•ûŒü
             bullets[i].active = true;
             break;

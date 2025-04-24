@@ -22,6 +22,7 @@ public:
 
 	int Bullet_img;
 	int nowtime = 0;
+	const std::vector<BulletInstance>& GetBullets() const;
 
 	Bullet();
 	~Bullet();
@@ -29,9 +30,11 @@ public:
 	void Draw();
 	void LoadCSV(const char* filePath);
 
-private:
 	std::vector<B_State>patterns;
 	std::vector<BulletInstance> bullets;
+
+private:
+
 	
 
 };
