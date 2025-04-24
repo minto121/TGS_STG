@@ -6,6 +6,10 @@
 
 Title::Title()
 {
+
+	TitleBGM = 0;
+	TitleSE = 0;
+
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
 	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
 	UI_Img[2] = LoadGraph("Resource/image/plyerlife.png");
