@@ -1,7 +1,10 @@
 #pragma once
 #include"DxLib.h"
+#include"math.h"
 
 #define ENEMY_MAX 30
+
+#define ENEMY_ORDER_MAX 500
 
 //敵に関する構造体
 typedef struct {
@@ -14,11 +17,24 @@ typedef struct {
 }enemy_t;
 
 
+typedef struct {
+	//カウンタ、移動パターン、敵の種類
+	int cnt, pattern, knd;
+	//初期座標と移動スピード
+	double x, y, sp;
+	//弾幕開始時間、弾幕の種類、色、体力、弾の種類、停滞時間、アイテム(6種類)
+	int bltime, blknd, col, hp, blknd2, wait, item_n[6];
+}enemy_order_t;
+
+
+
 class Mob_Enemy
 {
 private:
 
 	enemy_t enemy[ENEMY_MAX];
+
+	enemy_order_t enemy_order[ENEMY_ORDER_MAX];
 
 	int stage_count;
 
@@ -40,10 +56,16 @@ public:
 	 //敵の移動パターン0での移動制御
 	 void enemy_pattern0(int i);
 
+	 //空いている敵番号を検索
+	 int enemy_num_search();
+
 	 //敵データの登録
 	 void enemy_enter();
 
 	 //敵の行動制御
 	 void enemy_act();
+
+	 //敵の出現情報をエクセルから読み込んで格納する関数
+	 void load_story();
 };
 

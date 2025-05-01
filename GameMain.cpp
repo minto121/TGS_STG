@@ -17,6 +17,8 @@ GameMain::GameMain()
 	nowtime = 0;
 
 	MOB_ENEMY = new Mob_Enemy;
+
+	MOB_ENEMY->load_story();
 }
 
 GameMain::~GameMain()
