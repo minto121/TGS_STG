@@ -4,7 +4,7 @@
 
 Mob_Enemy::Mob_Enemy()
 {
-    memset(enemy, 0, sizeof(enemy_t) * ENEMY_MAX);//“Gƒf[ƒ^‚Ì‰Šú‰»
+    memset(enemy, 0, sizeof(enemy_t) * ENEMY_MAX);//ï¿½Gï¿½fï¿½[ï¿½^ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
 
     memset(enemy_order, 0, sizeof(enemy_order_t) * ENEMY_ORDER_MAX);
 
@@ -36,13 +36,139 @@ void Mob_Enemy::Draw() const
 
 void Mob_Enemy::enemy_pattern0(int i)
 {
+
     int t = enemy[i].cnt;
-    if (t == 0)
-        enemy[i].vy = 2;//‰º‚ª‚Á‚Ä‚­‚é
-    if (t == 60)
-        enemy[i].vy = 0;//~‚Ü‚é
-    if (t == 60 + enemy[i].wait)//“o˜^‚³‚ê‚½ŠÔ‚¾‚¯’â‘Ø‚µ‚Ä
-        enemy[i].vy = -2;//ã‚ª‚Á‚Ä‚¢‚­
+
+    switch (enemy[i].pattern)
+    {
+    case 0: //ä¸‹ãŒã£ã¦ãã¦åœæ»ã—ã¦ä¸ŠãŒã£ã¦ã„ã
+        if (t == 0)
+            enemy[i].vy = 3;//ä¸‹ãŒã£ã¦ãã‚‹
+        if (t == 40)
+            enemy[i].vy = 0;//æ­¢ã¾ã‚‹
+        if (t == 40 + enemy[i].wait)//ç™»éŒ²ã•ã‚ŒãŸæ™‚é–“ã ã‘åœæ»ã—ã¦
+            enemy[i].vy = -3;//ä¸ŠãŒã£ã¦ã„ã
+        break;
+
+    case 1: //ä¸‹ãŒã£ã¦ãã¦åœæ»ã—ã¦å·¦ä¸‹ã«è¡Œã
+        if (t == 0)
+            enemy[i].vy = 3;//ä¸‹ãŒã£ã¦ãã‚‹
+        if (t == 40)
+            enemy[i].vy = 0;//æ­¢ã¾ã‚‹
+        if (t == 40 + enemy[i].wait) {//ç™»éŒ²ã•ã‚ŒãŸæ™‚é–“ã ã‘åœæ»ã—ã¦
+            enemy[i].vx = -1;//å·¦ã¸
+            enemy[i].vy = 2;//ä¸‹ãŒã£ã¦ã„ã
+            enemy[i].muki = 0;//å·¦å‘ãã‚»ãƒƒãƒˆ
+        }
+            break;
+
+    case 2: //ä¸‹ãŒã£ã¦ãã¦åœæ»ã—ã¦å³ä¸‹ã«è¡Œã
+        if (t == 0)
+            enemy[i].vy = 3;//ä¸‹ãŒã£ã¦ãã‚‹
+        if (t == 40)
+            enemy[i].vy = 0;//æ­¢ã¾ã‚‹
+        if (t == 40 + enemy[i].wait) {//ç™»éŒ²ã•ã‚ŒãŸæ™‚é–“ã ã‘åœæ»ã—ã¦
+            enemy[i].vx = 1;//å³ã¸
+            enemy[i].vy = 2;//ä¸‹ãŒã£ã¦ã„ã
+            enemy[i].muki = 2;//å³å‘ãã‚»ãƒƒãƒˆ
+        }
+        break;
+
+    case 3: //ã™ã°ã‚„ãé™ã‚Šã¦ãã¦å·¦ã¸
+        if (t == 0)
+            enemy[i].vy = 5;//ä¸‹ãŒã£ã¦ãã‚‹
+        if (t == 30) {//é€”ä¸­ã§å·¦å‘ãã«
+            enemy[i].muki = 0;
+        }
+        if (t < 100) {
+            enemy[i].vx -= 5 / 100.0;//å·¦å‘ãåŠ é€Ÿ
+            enemy[i].vy -= 5 / 100.0;//æ¸›é€Ÿ
+        }
+        break;
+
+    case 4: //ã™ã°ã‚„ãé™ã‚Šã¦ãã¦å³ã¸
+        if (t == 0)
+            enemy[i].vy = 5;//ä¸‹ãŒã£ã¦ãã‚‹
+        if (t == 30) {//é€”ä¸­ã§å³å‘ãã«
+            enemy[i].muki = 2;
+        }
+        if (t < 100) {
+            enemy[i].vx += 5 / 100.0;//å³å‘ãåŠ é€Ÿ
+            enemy[i].vy -= 5 / 100.0;//æ¸›é€Ÿ
+        }
+        break;
+
+    case 5: //æ–œã‚å·¦ä¸‹ã¸
+        if (t == 0) {
+            enemy[i].vx -= 1;
+            enemy[i].vy = 2;
+            enemy[i].muki = 0;
+        }
+        break;
+
+    case 6: //æ–œã‚å³ä¸‹ã¸
+        if (t == 0) {
+            enemy[i].vx += 1;
+            enemy[i].vy = 2;
+            enemy[i].muki = 2;
+        }
+        break;
+
+    case 7: //åœæ»ã—ã¦ãã®ã¾ã¾å·¦ä¸Šã«
+        if (t == enemy[i].wait) {//ç™»éŒ²ã•ã‚ŒãŸæ™‚é–“ã ã‘åœæ»ã—ã¦
+            enemy[i].vx = -0.7;//å·¦ã¸
+            enemy[i].vy = -0.3;//ä¸ŠãŒã£ã¦ã„ã
+            enemy[i].muki = 0;//å·¦å‘ã
+        }
+        break;
+
+    case 8: //åœæ»ã—ã¦ãã®ã¾ã¾å³ä¸Šã«
+        if (t == enemy[i].wait) {//ç™»éŒ²ã•ã‚ŒãŸæ™‚é–“ã ã‘åœæ»ã—ã¦
+            enemy[i].vx = +0.7;//å³ã¸
+            enemy[i].vy = -0.3;//ä¸ŠãŒã£ã¦ã„ã
+            enemy[i].muki = 2;//å³å‘ã
+        }
+        break;
+
+    case 9: //åœæ»ã—ã¦ãã®ã¾ã¾ä¸Šã«
+        if (t == enemy[i].wait)//ç™»éŒ²ã•ã‚ŒãŸæ™‚é–“ã ã‘åœæ»ã—ã¦
+            enemy[i].vy = -1;//ä¸ŠãŒã£ã¦ã„ã
+        break;
+
+    case 10:    //ä¸‹ãŒã£ã¦ãã¦ã‚¦ãƒ­ã‚¦ãƒ­ã—ã¦ä¸ŠãŒã£ã¦ã„ã
+        if (t == 0) enemy[i].vy = 4;//ä¸‹ãŒã£ã¦ãã‚‹
+        if (t == 40)enemy[i].vy = 0;//æ­¢ã¾ã‚‹
+        if (t >= 40) {
+            if (t % 60 == 0) {
+                int r = cos(enemy[i].ang) < 0 ? 0 : 1;
+                enemy[i].sp = 6 + rang(2);
+                enemy[i].ang = rang(PI / 4) + PI * r;
+                enemy[i].muki = 2 - 2 * r;
+            }
+            enemy[i].sp *= 0.95;
+        }
+        if (t >= 40 + enemy[i].wait) {
+            enemy[i].vy -= 0.05;
+        }
+        break;
+
+
+    default:
+        if (t == 0)
+            enemy[i].vy = 2;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+        if (t == 60)
+            enemy[i].vy = 0;//ï¿½~ï¿½Ü‚ï¿½
+        if (t == 60 + enemy[i].wait)//ï¿½oï¿½^ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½Ø‚ï¿½ï¿½ï¿½
+            enemy[i].vy = -2;//ï¿½ã‚ªï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+        break;
+        
+    }
+   
+}
+
+double Mob_Enemy::rang(double ang)
+{
+    return (-ang + ang * 2 * GetRand(10000) / 10000.0);
 }
 
 void Mob_Enemy::enemy_enter()
@@ -50,28 +176,28 @@ void Mob_Enemy::enemy_enter()
 
     int i, j, t;
     for (t = 0; t < ENEMY_ORDER_MAX; t++) {
-        if (enemy_order[t].cnt == stage_count) {//Œ»İ‚ÌuŠÔ‚ªƒI[ƒ_[‚ÌuŠÔ‚È‚ç
+        if (enemy_order[t].cnt == stage_count) {//ï¿½ï¿½ï¿½İ‚Ìuï¿½Ô‚ï¿½ï¿½Iï¿½[ï¿½_ï¿½[ï¿½Ìuï¿½Ô‚È‚ï¿½
             if ((i = enemy_num_search()) != -1) {
-                enemy[i].flag = 1;//ƒtƒ‰ƒO
-                enemy[i].cnt = 0;//ƒJƒEƒ“ƒ^
-                enemy[i].pattern = enemy_order[t].pattern;//ˆÚ“®ƒpƒ^[ƒ“
-                enemy[i].muki = 1;//Œü‚«
-                enemy[i].knd = enemy_order[t].knd;//“G‚Ìí—Ş
-                enemy[i].x = enemy_order[t].x;//À•W
+                enemy[i].flag = 1;//ï¿½tï¿½ï¿½ï¿½O
+                enemy[i].cnt = 0;//ï¿½Jï¿½Eï¿½ï¿½ï¿½^
+                enemy[i].pattern = enemy_order[t].pattern;//ï¿½Ú“ï¿½ï¿½pï¿½^ï¿½[ï¿½ï¿½
+                enemy[i].muki = 1;//ï¿½ï¿½ï¿½ï¿½
+                enemy[i].knd = enemy_order[t].knd;//ï¿½Gï¿½Ìï¿½ï¿½
+                enemy[i].x = enemy_order[t].x;//ï¿½ï¿½ï¿½W
                 enemy[i].y = enemy_order[t].y;
-                enemy[i].sp = enemy_order[t].sp;//ƒXƒs[ƒh
-                enemy[i].bltime = enemy_order[t].bltime;//’e‚Ì”­ËŠÔ
-                enemy[i].blknd = enemy_order[t].blknd;//’e–‹‚Ìí—Ş
-                enemy[i].blknd2 = enemy_order[t].blknd2;//’e‚Ìí—Ş
-                enemy[i].col = enemy_order[t].col;//F
-                enemy[i].wait = enemy_order[t].wait;//’â‘ØŠÔ
-                enemy[i].hp = enemy_order[t].hp;//‘Ì—Í
-                enemy[i].hp_max = enemy[i].hp;//‘Ì—ÍÅ‘å’l
-                enemy[i].vx = 0;//…•½¬•ª‚Ì‘¬“x
-                enemy[i].vy = 0;//‰”’¼¬•ª‚Ì‘¬“x
-                enemy[i].ang = 0;//Šp“x
+                enemy[i].sp = enemy_order[t].sp;//ï¿½Xï¿½sï¿½[ï¿½h
+                enemy[i].bltime = enemy_order[t].bltime;//ï¿½eï¿½Ì”ï¿½ï¿½Ëï¿½ï¿½ï¿½
+                enemy[i].blknd = enemy_order[t].blknd;//ï¿½eï¿½ï¿½ï¿½Ìï¿½ï¿½
+                enemy[i].blknd2 = enemy_order[t].blknd2;//ï¿½eï¿½Ìï¿½ï¿½
+                enemy[i].col = enemy_order[t].col;//ï¿½F
+                enemy[i].wait = enemy_order[t].wait;//ï¿½ï¿½Øï¿½ï¿½ï¿½
+                enemy[i].hp = enemy_order[t].hp;//ï¿½Ì—ï¿½
+                enemy[i].hp_max = enemy[i].hp;//ï¿½Ì—ÍÅ‘ï¿½l
+                enemy[i].vx = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‘ï¿½ï¿½x
+                enemy[i].vy = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‘ï¿½ï¿½x
+                enemy[i].ang = 0;//ï¿½pï¿½x
                 for (j = 0; j < 6; j++)
-                    enemy[i].item_n[j] = enemy_order[t].item_n[j];//—‚Æ‚·ƒAƒCƒeƒ€
+                    enemy[i].item_n[j] = enemy_order[t].item_n[j];//ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½
             }
         }
     }
@@ -79,19 +205,19 @@ void Mob_Enemy::enemy_enter()
 
 int Mob_Enemy::enemy_num_search()
 {
-    for (int i = 0; i < ENEMY_MAX; i++) {//ƒtƒ‰ƒO‚Ì‚½‚Á‚Ä–³‚¢enemy‚ğ’T‚·
+    for (int i = 0; i < ENEMY_MAX; i++) {//ï¿½tï¿½ï¿½ï¿½Oï¿½Ì‚ï¿½ï¿½ï¿½ï¿½Ä–ï¿½ï¿½ï¿½enemyï¿½ï¿½Tï¿½ï¿½
         if (enemy[i].flag == 0) {
-            return i;//g—p‰Â”\”Ô†‚ğ•Ô‚·
+            return i;//ï¿½gï¿½pï¿½Â”\ï¿½Ôï¿½ï¿½ï¿½Ô‚ï¿½
         }
     }
-    return -1;//‘S•”–„‚Ü‚Á‚Ä‚¢‚½‚çƒGƒ‰[‚ğ•Ô‚·
+    return -1;//ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½Ô‚ï¿½
 }
 
 void Mob_Enemy::enemy_act()
 {
     int i;
     for (i = 0; i < ENEMY_MAX; i++) {
-        if (enemy[i].flag == 1) {//‚»‚Ì“G‚Ìƒtƒ‰ƒO‚ªƒIƒ“‚É‚È‚Á‚Ä‚½‚ç
+        if (enemy[i].flag == 1) {//ï¿½ï¿½ï¿½Ì“Gï¿½Ìƒtï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½É‚È‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
             enemy_pattern0(i);
             enemy[i].x += cos(enemy[i].ang) * enemy[i].sp;
             enemy[i].y += sin(enemy[i].ang) * enemy[i].sp;
@@ -99,7 +225,7 @@ void Mob_Enemy::enemy_act()
             enemy[i].y += enemy[i].vy;
             enemy[i].cnt++;
             enemy[i].img = enemy[i].muki * 3 + (enemy[i].cnt % 18) / 6;
-            //“G‚ª‰æ–Ê‚©‚çŠO‚ê‚½‚çÁ‚·
+            //ï¿½Gï¿½ï¿½ï¿½ï¿½Ê‚ï¿½ï¿½ï¿½Oï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (enemy[i].x < -20 || 400 + 20 < enemy[i].x || enemy[i].y < -20 || 400 + 20 < enemy[i].y)
                 enemy[i].flag = 0;
         }
@@ -113,29 +239,29 @@ void Mob_Enemy::load_story()
     char fname[32] = { "Resource/date/mobenemy_date.csv" };
     int input[64];
     char inputc[64];
-    fp = FileRead_open(fname);//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+    fp = FileRead_open(fname);//ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
     if (fp == NULL) {
         printfDx("read error\n");
         return;
     }
-    for (i = 0; i < 2; i++)//Å‰‚Ì2s“Ç‚İ”ò‚Î‚·
+    for (i = 0; i < 2; i++)//ï¿½Åï¿½ï¿½ï¿½2ï¿½sï¿½Ç‚İ”ï¿½Î‚ï¿½
         while (FileRead_getc(fp) != '\n');
 
     n = 0, num = 0;
     while (1) {
         for (i = 0; i < 64; i++) {
-            inputc[i] = input[i] = FileRead_getc(fp);//1•¶šæ“¾‚·‚é
-            if (inputc[i] == '/') {//ƒXƒ‰ƒbƒVƒ…‚ª‚ ‚ê‚Î
-                while (FileRead_getc(fp) != '\n');//‰üs‚Ü‚Åƒ‹[ƒv
-                i = -1;//ƒJƒEƒ“ƒ^‚ğÅ‰‚É–ß‚µ‚Ä
+            inputc[i] = input[i] = FileRead_getc(fp);//1ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½
+            if (inputc[i] == '/') {//ï¿½Xï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                while (FileRead_getc(fp) != '\n');//ï¿½ï¿½ï¿½sï¿½Ü‚Åƒï¿½ï¿½[ï¿½v
+                i = -1;//ï¿½Jï¿½Eï¿½ï¿½ï¿½^ï¿½ï¿½Åï¿½ï¿½É–ß‚ï¿½ï¿½ï¿½
                 continue;
             }
-            if (input[i] == ',' || input[i] == '\n') {//ƒJƒ“ƒ}‚©‰üs‚È‚ç
-                inputc[i] = '\0';//‚»‚±‚Ü‚Å‚ğ•¶š—ñ‚Æ‚µ
+            if (input[i] == ',' || input[i] == '\n') {//ï¿½Jï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½È‚ï¿½
+                inputc[i] = '\0';//ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Å‚ğ•¶ï¿½ï¿½ï¿½Æ‚ï¿½
                 break;
             }
-            if (input[i] == EOF) {//ƒtƒ@ƒCƒ‹‚ÌI‚í‚è‚È‚ç
-                goto EXFILE;//I—¹
+            if (input[i] == EOF) {//ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌIï¿½ï¿½ï¿½È‚ï¿½
+                goto EXFILE;//ï¿½Iï¿½ï¿½
             }
         }
         switch (num) {
