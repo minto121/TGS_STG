@@ -12,7 +12,7 @@ Help::~Help()
 
 AbstractScene* Help::Update()
 {
-	return nullptr;
+	return this;
 }
 
 void Help::Draw() const

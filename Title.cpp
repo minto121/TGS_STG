@@ -3,6 +3,7 @@
 #include "Title.h"
 #include "GameMain.h"
 #include "End.h"
+#include "Help.h"
 
 Title::Title()
 {
@@ -38,6 +39,13 @@ AbstractScene* Title::Update()
 	{
 		return new End();
 	}
+	
+	/*if (CheckHitKey(KEY_INPUT_H))
+	{
+		return new Help();
+	}*/
+
+	return this;
 }
 
 void Title::Draw() const
