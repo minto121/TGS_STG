@@ -1,6 +1,6 @@
 #include "demo_Player.h"
 #include"Player_Shot.h"
-#include"Bullet.h"
+//#include"Bullet.h"
 #include"DxLib.h"
 
 const int SCREEN_WIDTH = 1280;
@@ -19,7 +19,7 @@ demo_Player::demo_Player()
 
 }
 
-void demo_Player::Update(const std::vector<Bullet::BulletInstance>& bullets)
+void demo_Player::Update(const std::vector<BulletInstance>& bullets)
 {
     if (Alive) {
         for (const auto& b : bullets) {

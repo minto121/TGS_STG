@@ -1,6 +1,7 @@
 #pragma once
-#include "Player_Shot.h"
 #include"Bullet.h"
+#include"BulletInstance.h"
+#include "Player_Shot.h"
 #include <vector>
 class demo_Player
 {
@@ -10,12 +11,14 @@ public:
 	bool Respawn;		//リスポーン
 	int RespawnTimer;	//リスポーン中の無敵時間
 
+	float GetX()const { return x; }
+	float GetY()const { return y; }
 	
 	//Player_Shot* P_SHOT;
 	float x, y;
 	float radius;
 	demo_Player();
-	void Update(const std::vector <Bullet::BulletInstance> & bullets);
+	void Update(const std::vector <BulletInstance> & bullets);
 	void Draw();
 	void move();
 

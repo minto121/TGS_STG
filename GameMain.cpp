@@ -11,10 +11,13 @@ GameMain::GameMain()
 	P_SHOT = new Player_Shot;
 	D_PLAYER = new demo_Player;
 	BULLET_DATE = new Bullet;
-	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv"); // © CSV“Ç‚Ýž‚Ý
+	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // © CSV“Ç‚Ýž‚Ý
 
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
+	currentPattern = 0;
+	bool isCKeyPressed = false;//Šm”F—p
+
 }
 
 GameMain::~GameMain()
@@ -22,12 +25,38 @@ GameMain::~GameMain()
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
+	delete enemy;
 }
 
 AbstractScene* GameMain::Update()
 {
 
 	nowtime++;
+
+	if (CheckHitKey(KEY_INPUT_C)) {
+		if (!isCKeyPressed) {
+			isCKeyPressed = true;
+
+			currentPattern = (currentPattern + 1) % 3;
+
+			if (currentPattern == 0) {
+				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
+				BULLET_DATE->SetReflectEnable(false); // ’Êí’e‚Í”½ŽË‚µ‚È‚¢
+			}
+			else if (currentPattern == 1) {
+				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
+				BULLET_DATE->SetReflectEnable(true); // ’Êí’e‚Í”½ŽË‚µ‚È‚¢
+			}
+			else if (currentPattern == 2) {
+				BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
+				BULLET_DATE->SetReflectEnable(false); // ’Ç”ö’e‚Í”½ŽË‚³‚¹‚È‚¢•û‚ª—Ç‚¢
+			}
+		}
+		nowtime = 0;
+	}
+	else {
+		isCKeyPressed = false;
+	}
 
 	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	D_PLAYER->move();

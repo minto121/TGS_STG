@@ -1,5 +1,10 @@
 #pragma once
 #include <vector>
+#include"demo_Player.h"
+#include"BulletInstance.h"
+
+class demo_Player;
+
 class Bullet
 {
 public:
@@ -11,29 +16,38 @@ public:
 		float E_angle;    // 終了角度（deg）
 		int cnt;
 		float spd;    // 弾速
+		//bool active = false;
 		bool used = true;
+		bool Homing = false; // 追尾かどうかのフラグ
+		//float vx, vy;
 	};
 
-	struct BulletInstance {
-		float x, y;
-		float vx, vy;
-		bool active = true;
-	};
+	BulletInstance bi;
 
+	float px, py;
 	int Bullet_img;
 	int nowtime = 0;
 	const std::vector<BulletInstance>& GetBullets() const;
 
 	Bullet();
 	~Bullet();
+	void SetReflectEnable(bool enable);
 	void Update(int nowtime);
 	void Draw();
-	void LoadCSV(const char* filePath);
+	void LoadCSV(const char* filePath, int repeatCnt, int Interval);
+	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
+	//void SetPlayer(demo_Player* player);
+
+	demo_Player* D_PLAYER;
 
 	std::vector<B_State>patterns;
 	std::vector<BulletInstance> bullets;
 
+
+
 private:
+
+	bool globalReflectEnable = false;
 
 	
 
