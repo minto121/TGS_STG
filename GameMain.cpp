@@ -4,6 +4,7 @@
 #include"FpsControl.h"
 #include"Bullet.h"
 #include "Enemy.h"
+#include "Title.h"
 
 
 GameMain::GameMain()
@@ -64,6 +65,9 @@ AbstractScene* GameMain::Update()
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // ƒvƒŒƒCƒ„[‚ª’e‚ğ”­Ë
 
+	if (D_PLAYER->GameOver()) {
+		return new Title();
+	}
 	enemy->Update();
 	return this;
 }

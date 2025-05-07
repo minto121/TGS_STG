@@ -2,6 +2,7 @@
 #include"Player_Shot.h"
 //#include"Bullet.h"
 #include"DxLib.h"
+#include"Title.h"
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -16,7 +17,7 @@ demo_Player::demo_Player()
     Alive = true;
     Respawn = false;
     RespawnTimer = 0;
-
+    Zanki = 3;
 }
 
 void demo_Player::Update(const std::vector<BulletInstance>& bullets)
@@ -94,11 +95,20 @@ void demo_Player::move()
 
 void demo_Player::Hit()
 {
+    Zanki--;
+
+    if (Zanki <= 0) {
+        Alive = false;
+        Respawn = false;
+        return;
+    }
+
     Alive = false;
     Respawn = true;
     RespawnTimer = 120;
     x = 800 / 2.0f;
     y = SCREEN_HEIGHT + 30;
+ 
 }
 
 bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, float r2)
@@ -112,6 +122,16 @@ bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, flo
     
 }
 
+bool demo_Player::GameOver() const
+{
+    return (Zanki <= 0);
+}
+
+AbstractScene* demo_Player::Update()
+{
+    return nullptr;
+}
+
 //void demo_Player::fire(Player_Shot*P_SHOT)
 //{
 //    int now = GetNowCount();
@@ -122,7 +142,7 @@ bool demo_Player::CheckHit(float x1, float y1, float r1, float x2, float y2, flo
 //}
 
 
-void demo_Player::Draw()
+void demo_Player::Draw()const 
 {
     // ƒvƒŒƒCƒ„[‚ð”’‚¢ŽlŠp‚Å•`‰æ
     //DrawBox((int)(x - 10), (int)(y - 10), (int)(x + 10), (int)(y + 10), GetColor(255, 255, 255), TRUE);
@@ -132,5 +152,6 @@ void demo_Player::Draw()
 
     DrawFormatString(0, 20, 0xffffff, "Alive:%d", Alive);
     DrawFormatString(0, 40, 0xffffff, "ReSpawnTimer:%d", RespawnTimer);
+    DrawFormatString(0, 80, 0xffffff, "Zanki:%d", Zanki);
 }
 
