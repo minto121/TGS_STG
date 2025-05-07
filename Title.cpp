@@ -38,8 +38,6 @@ AbstractScene* Title::Update()
 	{
 		return new End();
 	}
-
-	return this;
 }
 
 void Title::Draw() const

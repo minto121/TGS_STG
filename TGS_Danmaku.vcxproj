@@ -157,6 +157,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FpsControl.cpp" />
     <ClCompile Include="GameMain.cpp" />
+    <ClCompile Include="Help.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PadInput.cpp" />
     <ClCompile Include="Player_Shot.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FpsControl.h" />
     <ClInclude Include="GameMain.h" />
+    <ClInclude Include="Help.h" />
     <ClInclude Include="PadInput.h" />
     <ClInclude Include="Player_Shot.h" />
     <ClInclude Include="SceneManager.h" />
