@@ -35,7 +35,29 @@ AbstractScene* GameMain::Update()
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // プレイヤーが弾を発射
 
-	enemy->Update();
+	if (enemy != nullptr) {
+		enemy->Update();
+	}
+
+	// 弾と敵の当たり判定
+	for (auto& b : P_SHOT->bullets) {  // P_SHOTの弾をチェック
+		if (b.active && enemy != nullptr) {
+			// プレイヤーの弾であることを確認して衝突判定
+			if (enemy->CheckCollision(b.x, b.y, true)) {  // trueでプレイヤーの弾と判定
+				enemy->OnHit();  // HPを減らす
+				b.active = false;  // 弾を消す
+
+				if (enemy->IsDead()) {
+					delete enemy;
+					enemy = nullptr;
+					printfDx("WIN");
+
+					break;
+				}
+			}
+		}
+	}
+
 	return this;
 }
 
@@ -50,7 +72,8 @@ void GameMain::Draw() const
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
 
-	FpsControl_Draw();
-	enemy->Draw();
-
+	// ↓ null チェックを追加
+	if (enemy != nullptr) {
+		enemy->Draw();
+	}
 }
