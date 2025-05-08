@@ -2,10 +2,12 @@
 
 End::End()
 {
+
 }
 
 End::~End()
 {
+
 }
 
 AbstractScene* End::Update()
@@ -15,4 +17,5 @@ AbstractScene* End::Update()
 
 void End::Draw() const
 {
+
 }
