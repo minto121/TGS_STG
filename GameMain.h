@@ -12,6 +12,8 @@ public:
     int currentPattern;
     bool isCKeyPressed;
 
+    int UI_Img[6];
+    int LifeImg;
 
 private:
 
