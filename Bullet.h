@@ -27,7 +27,8 @@ public:
 	float px, py;
 	int Bullet_img;
 	int nowtime = 0;
-	const std::vector<BulletInstance>& GetBullets() const;
+	std::vector<BulletInstance>& GetBullets();
+
 
 	Bullet();
 	~Bullet();

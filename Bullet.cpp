@@ -247,6 +247,6 @@ void Bullet::Draw()
 
 }
 
-const std::vector<BulletInstance>& Bullet::GetBullets() const {
+ std::vector<Bullet::BulletInstance>& Bullet::GetBullets() {
     return bullets;
-}
+ }

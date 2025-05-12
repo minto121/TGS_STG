@@ -14,14 +14,6 @@ GameMain::GameMain()
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // ← CSV読み込み
 
-	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
-	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
-	UI_Img[2] = LoadGraph("Resource/image/life2.png");
-	UI_Img[3] = LoadGraph("Resource/image/time_img.png");
-	UI_Img[4] = LoadGraph("Resource/image/bomb_img.png");
-
-	LifeImg = LoadGraph("Resource/image/life_img.png");
-
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
 	currentPattern = 0;
@@ -73,6 +65,29 @@ AbstractScene* GameMain::Update()
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // プレイヤーが弾を発射
 
+	if (enemy != nullptr) {
+		enemy->Update();
+	}
+
+	// 弾と敵の当たり判定
+	for (auto& b : P_SHOT->bullets) {  // P_SHOTの弾をチェック
+		if (b.active && enemy != nullptr) {
+			// プレイヤーの弾であることを確認して衝突判定
+			if (enemy->CheckCollision(b.x, b.y, true)) {  // trueでプレイヤーの弾と判定
+				enemy->OnHit();  // HPを減らす
+				b.active = false;  // 弾を消す
+
+				if (enemy->IsDead()) {
+					delete enemy;
+					enemy = nullptr;
+					printfDx("WIN");
+
+					break;
+				}
+			}
+		}
+	}
+
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
@@ -91,15 +106,8 @@ void GameMain::Draw() const
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
 
-	//FpsControl_Draw();
-	enemy->Draw();
-
-	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);
-
-	DrawGraph(850, 30, UI_Img[0], TRUE);	//スコア
-	DrawGraph(850, 130, UI_Img[1], TRUE);	//ハイスコア
-	DrawGraph(850, 230, UI_Img[2], TRUE);	//プレイヤー残機
-	DrawGraph(850, 330, UI_Img[3], TRUE);	//タイム
-	DrawGraph(850, 430, UI_Img[4], TRUE);	//ボム数
-
+	// ↓ null チェックを追加
+	if (enemy != nullptr) {
+		enemy->Draw();
+	}
 }
