@@ -91,7 +91,7 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
-	enemy->Update();
+
 	return this;
 }
 
