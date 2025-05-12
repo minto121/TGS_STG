@@ -107,6 +107,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +142,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,8 +159,8 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FpsControl.cpp" />
     <ClCompile Include="GameMain.cpp" />
+    <ClCompile Include="Help.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mob_Enemy.cpp" />
     <ClCompile Include="PadInput.cpp" />
     <ClCompile Include="Player_Shot.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -167,19 +169,17 @@
   <ItemGroup>
     <ClInclude Include="AbstractScene.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="BulletInstance.h" />
     <ClInclude Include="demo_Player.h" />
     <ClInclude Include="End.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FpsControl.h" />
     <ClInclude Include="GameMain.h" />
-    <ClInclude Include="Mob_Enemy.h" />
+    <ClInclude Include="Help.h" />
     <ClInclude Include="PadInput.h" />
     <ClInclude Include="Player_Shot.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Title.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

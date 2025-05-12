@@ -11,6 +11,9 @@ class GameMain	:public AbstractScene
 {
 public:
     int nowtime;
+    int currentPattern;
+    bool isCKeyPressed;
+
 
 private:
 
