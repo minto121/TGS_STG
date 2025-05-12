@@ -40,10 +40,10 @@ AbstractScene* Title::Update()
 		return new End();
 	}
 	
-	/*if (CheckHitKey(KEY_INPUT_H))
+	if (CheckHitKey(KEY_INPUT_H))
 	{
 		return new Help();
-	}*/
+	}
 
 	return this;
 }
@@ -52,15 +52,15 @@ void Title::Draw() const
 {
 	//SetBackgroundColor(255, 255, 255);
 
-	/*SetFontSize(100);
+	SetFontSize(100);
 	DrawFormatString(350, 100, 0xffffff, "タイトル画面");
 
 	SetFontSize(50);
 	DrawFormatString(550, 300, 0xffffff, "スタート");
 	DrawFormatString(550, 400, 0xffffff, "ヘルプ");
-	DrawFormatString(550, 500, 0xffffff, "エンド");*/
+	DrawFormatString(550, 500, 0xffffff, "エンド");
 
-	DrawBox(800, 0, 1280, 700, 0xffffff, TRUE);
+	/*DrawBox(800, 0, 1280, 700, 0xffffff, TRUE);
 
 	DrawGraph(850, 50, UI_Img[0], TRUE);
 	DrawGraph(850, 100, UI_Img[1], TRUE);
@@ -74,5 +74,5 @@ void Title::Draw() const
 
 	DrawGraph(100, 150, FireImg, TRUE);
 	DrawGraph(200, 150, WaterImg, TRUE);
-	DrawGraph(300, 150, LeafImg, TRUE);
+	DrawGraph(300, 150, LeafImg, TRUE);*/
 }
