@@ -5,6 +5,8 @@
 #include"Bullet.h"
 #include "Enemy.h"
 
+#include"Mob_Enemy.h"
+
 class GameMain	:public AbstractScene
 {
 public:
@@ -36,5 +38,6 @@ public:
 
     Enemy* enemy;
 
+    Mob_Enemy* MOB_ENEMY;
 };
 

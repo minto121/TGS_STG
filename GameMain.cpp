@@ -100,6 +100,7 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
+
 	return this;
 }
 
