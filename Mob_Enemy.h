@@ -6,9 +6,7 @@
 
 #define ENEMY_ORDER_MAX 500
 
-//円周率
-#define PI 3.1415926535898
-#define PI2 (PI*2)
+
 
 //�G�Ɋւ���\����
 typedef struct {

@@ -10,15 +10,15 @@ class Bullet
 public:
 
 	struct B_State {
-		int time;       // ”­Ëƒ^ƒCƒ~ƒ“ƒOimsj
-		float x, y;     // ”­ËˆÊ’u
-		float S_angle;    // ŠJnŠp“xidegj
-		float E_angle;    // I—¹Šp“xidegj
+		int time;       // ï¿½ï¿½ï¿½Ëƒ^ï¿½Cï¿½~ï¿½ï¿½ï¿½Oï¿½imsï¿½j
+		float x, y;     // ï¿½ï¿½ï¿½ËˆÊ’u
+		float S_angle;    // ï¿½Jï¿½nï¿½pï¿½xï¿½idegï¿½j
+		float E_angle;    // ï¿½Iï¿½ï¿½ï¿½pï¿½xï¿½idegï¿½j
 		int cnt;
-		float spd;    // ’e‘¬
+		float spd;    // ï¿½eï¿½ï¿½
 		//bool active = false;
 		bool used = true;
-		bool Homing = false; // ’Ç”ö‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+		bool Homing = false; // ï¿½Ç”ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½Ìƒtï¿½ï¿½ï¿½O
 		//float vx, vy;
 	};
 

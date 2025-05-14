@@ -84,20 +84,20 @@ void Bullet::Update(int nowtime)
                     bi.homing = false;
                 }
 
-                bi.active = true; // ‚±‚ê‚à•K—vI
-                bi.reflect = globalReflectEnable; // ”½Ëİ’è‚à‚±‚±‚Å‘ã“ü
+                bi.active = true; // ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½I
+                bi.reflect = globalReflectEnable; // ï¿½ï¿½ï¿½Ëİ’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‘ï¿½ï¿½
 
-                bullets.push_back(bi);  // š‚±‚ê‚ğ–Y‚ê‚¸‚ÉI
+                bullets.push_back(bi);  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Yï¿½ê‚¸ï¿½ÉI
             }
             pattern.used = true;
         }
     }
 
-    // ’e‚ÌˆÚ“®
+    // ï¿½eï¿½ÌˆÚ“ï¿½
     float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
-    const float maxTurn = 0.087f;  // Å‘å‰ñ“]‘¬“xiƒ‰ƒWƒAƒ“‚Å–ñ5“xj
+    const float maxTurn = 0.087f;  // ï¿½Å‘ï¿½ï¿½]ï¿½ï¿½ï¿½xï¿½iï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½Å–ï¿½5ï¿½xï¿½j
 
-    const int MAX_REFLECT_LIFETIME = 60 * 5; // ”½ËŒãÅ‘å5•b‚Åíœ
+    const int MAX_REFLECT_LIFETIME = 60 * 5; // ï¿½ï¿½ï¿½ËŒï¿½Å‘ï¿½5ï¿½bï¿½Åíœ
     for (auto& bi : bullets) {
         if (bi.active) {
             bi.x += bi.vx * dt;
@@ -106,31 +106,31 @@ void Bullet::Update(int nowtime)
             if (bi.reflect) {
                 bool reflected = false;
 
-                // ¶‰E‚Ì•Ç‚É”½Ë
+                // ï¿½ï¿½ï¿½Eï¿½Ì•Ç‚É”ï¿½ï¿½ï¿½
                 if (bi.x <= PLAY_AREA_LEFT || bi.x >= PLAY_AREA_RIGHT) {
                     bi.vx *= -1;
-                    bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // ‚Í‚İo‚³‚È‚¢‚æ‚¤‚ÉC³
+                    bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // ï¿½Í‚İoï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ÉCï¿½ï¿½
                     reflected = true;
                 }
 
-                // ã‰º‚Ì•Ç‚É”½Ë
+                // ï¿½ã‰ºï¿½Ì•Ç‚É”ï¿½ï¿½ï¿½
                 if (bi.y <= PLAY_AREA_TOP || bi.y >= PLAY_AREA_BOTTOM) {
                     bi.vy *= -1;
-                    bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // ‚Í‚İo‚³‚È‚¢‚æ‚¤‚ÉC³
+                    bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // ï¿½Í‚İoï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ÉCï¿½ï¿½
                     reflected = true;
                 }
 
-                // ”½Ë‚µ‚½‚çƒtƒ‰ƒO‚ğ—§‚Ä‚é
+                // ï¿½ï¿½ï¿½Ë‚ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½ğ—§‚Ä‚ï¿½
                 if (reflected) {
                     bi.reflectCnt++;
                     bi.CheckReflect = true;
                     if (bi.reflectCnt >= 2) {
-                        bi.active = false;  // 2‰ñ–Ú‚Ì”½Ë‚Åíœ
+                        bi.active = false;  // 2ï¿½ï¿½Ú‚Ì”ï¿½ï¿½Ë‚Åíœ
                         continue;
                     }
                 }
 
-                // ”½ËÏ‚İ‚ÅA”ÍˆÍŠO‚Éo‚½‚çíœ
+                // ï¿½ï¿½ï¿½ËÏ‚İ‚ÅAï¿½ÍˆÍŠOï¿½Éoï¿½ï¿½ï¿½ï¿½íœ
                 if (bi.CheckReflect) {
                     bi.reflectFrameCnt++;
                     if((bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
@@ -141,7 +141,7 @@ void Bullet::Update(int nowtime)
                 }
             }
             else {
-                // ’Êí‚Ì’eF1‰ñ‚à”½Ë‚µ‚È‚¢ƒ^ƒCƒv
+                // ï¿½Êï¿½Ì’eï¿½F1ï¿½ï¿½ï¿½ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½ï¿½^ï¿½Cï¿½v
                 if (bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
                     bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) {
                     bi.active = false;
@@ -155,14 +155,14 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
 {
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        printf("ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: %s\n", filePath);
+        printf("ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌƒIï¿½[ï¿½vï¿½ï¿½ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: %s\n", filePath);
         return;
     }
 
     std::vector<B_State> basePatterns;
     std::string line;
     while (std::getline(file, line)) {
-        if (line.empty()) continue;  // ‹ós‚ÍƒXƒLƒbƒv
+        if (line.empty()) continue;  // ï¿½ï¿½sï¿½ÍƒXï¿½Lï¿½bï¿½v
 
         std::stringstream ss(line);
         std::string value;
@@ -176,24 +176,24 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             std::getline(ss, value, ','); b.E_angle = std::stof(value);
             std::getline(ss, value, ','); b.cnt = std::stoi(value);
             std::getline(ss, value, ','); b.spd = std::stof(value);
-            b.used = false; // ‰Šúó‘Ô‚Å–¢g—p‚Æ‚·‚é
+            b.used = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚Å–ï¿½ï¿½gï¿½pï¿½Æ‚ï¿½ï¿½ï¿½
 
             if (std::getline(ss, value, ',')) {
                 b.Homing = (value == "true" || value == "1");
             }
             else {
-                b.Homing = false; // ŒÃ‚¢CSV—p‚ÉƒfƒtƒHƒ‹ƒg
+                b.Homing = false; // ï¿½Ã‚ï¿½CSVï¿½pï¿½Éƒfï¿½tï¿½Hï¿½ï¿½ï¿½g
             }
 
             basePatterns.push_back(b);
         }
         catch (...) {
-            printf("CSV“Ç‚İ‚İƒGƒ‰[: %s\n", line.c_str());
+            printf("CSVï¿½Ç‚İï¿½ï¿½İƒGï¿½ï¿½ï¿½[: %s\n", line.c_str());
         }
     }
 
-    // ŒJ‚è•Ô‚µ’Ç‰Ái5‰ñj
-    const int interval = 120; // ŒJ‚è•Ô‚µŠÔŠuiƒtƒŒ[ƒ€’PˆÊA—á: 2•bj
+    // ï¿½Jï¿½ï¿½Ô‚ï¿½ï¿½Ç‰ï¿½ï¿½i5ï¿½ï¿½j
+    const int interval = 120; // ï¿½Jï¿½ï¿½Ô‚ï¿½ï¿½ÔŠuï¿½iï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Pï¿½ÊAï¿½ï¿½: 2ï¿½bï¿½j
     for (int i = 0; i < 5; i++) {
         for (auto& p : basePatterns) {
             B_State newP = p;
