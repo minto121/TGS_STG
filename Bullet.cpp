@@ -23,9 +23,10 @@ T Clamp(T val, T minVal, T maxVal) {
 Bullet::Bullet() 
 {
     Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
-    D_PLAYER = new demo_Player;
+    //D_PLAYER = new demo_Player;
     px = 0.0f;
     py = 0.0f;
+
 
 }
 
@@ -87,7 +88,9 @@ void Bullet::Update(int nowtime)
                 bi.active = true; // これも必要！
                 bi.reflect = globalReflectEnable; // 反射設定もここで代入
 
-                bullets.push_back(bi);  // ★これを忘れずに！
+                bi.homingStrength = 0.1f;  
+
+                bullets.push_back(bi);  
             }
             pattern.used = true;
         }
@@ -146,6 +149,40 @@ void Bullet::Update(int nowtime)
                     bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) {
                     bi.active = false;
                 }
+            }
+
+            if (bi.homing) {
+
+                // ホーミング弾として追尾する処理
+                if (bi.homing && D_PLAYER) {
+                    float targetX = D_PLAYER->GetX();
+                    float targetY = D_PLAYER->GetY();
+
+                    float dx = targetX - bi.x;
+                    float dy = targetY - bi.y;
+                    float targetAngle = atan2f(dy, dx);
+
+                    // 現在の角度
+                    float currentAngle = atan2f(bi.vy, bi.vx);
+
+                    // 角度差を求めて、短い方向に補間する
+                    float angleDiff = targetAngle - currentAngle;
+
+                    // -π ～ π の範囲に収める
+                    while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
+                    while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
+
+                    // ホーミング強度をかけて補間
+                    float newAngle = currentAngle + angleDiff * bi.homingStrength;
+
+                    // 新しい速度を設定
+                    bi.vx = cosf(newAngle) * bi.speed;
+                    bi.vy = sinf(newAngle) * bi.speed;
+                }
+
+                // 通常の移動処理
+                bi.x += bi.vx * dt;
+                bi.y += bi.vy * dt;
             }
         }
     }
