@@ -1,3 +1,3 @@
-time	x	y	S_angle	E_angle	cnt	spd	homing
-0	400	360	0	0	8	100	FALSE
-60	400	360	0	0	1	100	TRUE
+time,x,y,S_angle,E_angle,cnt,spd,homing
+0,700,360,0,0,8,100,TRUE
+60,400,360,0,0,1,100,TRUE

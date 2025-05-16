@@ -6,6 +6,8 @@
 #include "Enemy.h"
 #include "Title.h"
 
+//#define PI 3.1415926f
+
 
 GameMain::GameMain()
 {

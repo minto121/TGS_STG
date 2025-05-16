@@ -129,7 +129,7 @@ bool demo_Player::GameOver() const
 
 AbstractScene* demo_Player::Update()
 {
-    return nullptr;
+    return this;
 }
 
 //void demo_Player::fire(Player_Shot*P_SHOT)

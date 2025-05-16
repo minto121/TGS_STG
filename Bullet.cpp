@@ -23,7 +23,7 @@ T Clamp(T val, T minVal, T maxVal) {
 Bullet::Bullet() 
 {
     Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
-    //D_PLAYER = new demo_Player;
+    D_PLAYER = new demo_Player;
     px = 0.0f;
     py = 0.0f;
 
@@ -36,7 +36,7 @@ Bullet::~Bullet()
 
 }
 
-void Bullet::Update(int nowtime)
+void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 {
     if (D_PLAYER) {
         px = D_PLAYER->GetX();
@@ -62,7 +62,7 @@ void Bullet::Update(int nowtime)
                 bi.x = pattern.x;
                 bi.y = pattern.y;
 
-                if (pattern.Homing) {
+                if (pattern.homing) {
                     float dx = px - bi.x;
                     float dy = py - bi.y;
                     float len = sqrt(dx * dx + dy * dy);
@@ -72,7 +72,10 @@ void Bullet::Update(int nowtime)
                     }
 
                     float angleRad = atan2f(dy, dx);
-
+                    /// <summary>
+                    /// 
+                    /// </summary>
+                    /// <param name="nowtime"></param>
                     bi.angle = angleRad;
                     bi.speed = pattern.spd;
                     bi.vx = cosf(angleRad) * pattern.spd;
@@ -85,10 +88,10 @@ void Bullet::Update(int nowtime)
                     bi.homing = false;
                 }
 
-                bi.active = true; // これも必要！
+                bi.active = true; 
                 bi.reflect = globalReflectEnable; // 反射設定もここで代入
 
-                bi.homingStrength = 0.1f;  
+                bi.homingStrength = 0.5f;  
 
                 bullets.push_back(bi);  
             }
@@ -175,14 +178,14 @@ void Bullet::Update(int nowtime)
                     // ホーミング強度をかけて補間
                     float newAngle = currentAngle + angleDiff * bi.homingStrength;
 
-                    // 新しい速度を設定
+                    //// 新しい速度を設定
                     bi.vx = cosf(newAngle) * bi.speed;
                     bi.vy = sinf(newAngle) * bi.speed;
                 }
 
-                // 通常の移動処理
-                bi.x += bi.vx * dt;
-                bi.y += bi.vy * dt;
+                //// 通常の移動処理
+                //bi.x += bi.vx * dt;
+                //bi.y += bi.vy * dt;
             }
         }
     }
@@ -213,13 +216,15 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             std::getline(ss, value, ','); b.E_angle = std::stof(value);
             std::getline(ss, value, ','); b.cnt = std::stoi(value);
             std::getline(ss, value, ','); b.spd = std::stof(value);
+            //std::getline(ss, value, ','); b.homing = std::stof(value);
             b.used = false; // 初期状態で未使用とする
 
             if (std::getline(ss, value, ',')) {
-                b.Homing = (value == "true" || value == "1");
+                value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+                b.homing = (value == "true" || value == "1");
             }
             else {
-                b.Homing = false; // 古いCSV用にデフォルト
+                b.homing = false; // 古いCSV用にデフォルト
             }
 
             basePatterns.push_back(b);
@@ -240,6 +245,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
         }
     }
 
+    // パターン登録
     for (int i = 0; i < repeatCnt; i++) {
         for (auto& p : basePatterns) {
             B_State newP = p;

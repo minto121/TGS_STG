@@ -18,7 +18,7 @@ public:
 		float spd;    // 弾速
 		//bool active = false;
 		bool used = true;
-		bool Homing = false; // 追尾かどうかのフラグ
+		bool homing = false; // 追尾かどうかのフラグ
 		//float vx, vy;
 	};
 
@@ -33,7 +33,7 @@ public:
 	Bullet();
 	~Bullet();
 	void SetReflectEnable(bool enable);
-	void Update(int nowtime);
+	void Update(int nowtime/*, float playerX, float playerY*/);
 	void Draw();
 	void LoadCSV(const char* filePath, int repeatCnt, int Interval);
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
