@@ -15,6 +15,16 @@ GameMain::GameMain()
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // �� CSV�ǂݍ���
 	MOB_ENEMY = new Mob_Enemy;
+
+	//�摜�ǂݍ���
+	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
+	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
+	UI_Img[2] = LoadGraph("Resource/image/plyerlife.png");
+	UI_Img[3] = LoadGraph("Resource/image/time_img.png");
+	UI_Img[4] = LoadGraph("Resource/image/bomb_img.png");
+
+	LifeImg = LoadGraph("Resource/image/life_img.png");
+
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
 	currentPattern = 0;
@@ -94,6 +104,7 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
+
 	return this;
 }
 
@@ -113,4 +124,17 @@ void GameMain::Draw() const
 	if (enemy != nullptr) {
 		enemy->Draw();
 	}
+
+	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UI�\�����W
+
+	DrawGraph(850, 30, UI_Img[0], TRUE);	//�X�R�A
+	DrawGraph(850, 130, UI_Img[1], TRUE);	//�n�C�X�R�A
+	DrawGraph(840, 230, UI_Img[2], TRUE);	//�v���C���[�c�@
+	DrawGraph(850, 330, UI_Img[3], TRUE);	//�^�C��
+	DrawGraph(850, 430, UI_Img[4], TRUE);	//�{����
+
+	//�v���C���[�c�@�摜
+	DrawGraph(1050, 260, LifeImg, TRUE);
+	DrawGraph(1100, 260, LifeImg, TRUE);
+	DrawGraph(1150, 260, LifeImg, TRUE);
 }
