@@ -1,76 +1,65 @@
 #pragma once
-#include"DxLib.h"
-#include"math.h"
+#include "DxLib.h"
+#include "math.h"
 
-#define ENEMY_MAX 30
+#define ENEMY_MAX 30        // 敵の最大数
+#define ENEMY_ORDER_MAX 500 // 敵の出現指示の最大数
 
-#define ENEMY_ORDER_MAX 500
-
-
-
-//�G�Ɋւ���\����
+// 敵に関する構造体
 typedef struct {
-	//�t���O�A�J�E���^�A�ړ��p�^�[���A�����A�G�̎�ށAHP�ő�l�A���Ƃ��A�C�e���A�摜
-	int flag, cnt, pattern, muki, knd, hp, hp_max, item_n[6], img;
-	//���W�A���xx�����A���xy�����A�X�s�[�h�A�p�x
-	double x, y, vx, vy, sp, ang;
-	//�e���J�n���ԁA�e���̎�ށA�e�̎�ށA�F�A��ԁA�ҋ@���ԁA��؎���
-	int bltime, blknd, blknd2, col, state, wtime, wait;
-}enemy_t;
+    // フラグ、カウンタ、移動用パターン、向き、種類、敵の種類、HPと最大HP、ドロップアイテム、画像
+    int flag, cnt, pattern, muki, knd, hp, hp_max, item_n[6], img;
+    // 座標、速度(x/y)、スピード、角度
+    double x, y, vx, vy, sp, ang;
+    // 弾の開始時間、弾の種類1・2、当たり判定カラー、状態、待機時間、出現までの待ち時間
+    int bltime, blknd, blknd2, col, state, wtime, wait;
+} enemy_t;
 
-
+// 敵出現指示の構造体
 typedef struct {
-	//�J�E���^�A�ړ��p�^�[���A�G�̎��
-	int cnt, pattern, knd;
-	//�������W�ƈړ��X�s�[�h
-	double x, y, sp;
-	//�e���J�n���ԁA�e���̎�ށA�F�A�̗́A�e�̎�ށA��؎��ԁA�A�C�e��(6���)
-	int bltime, blknd, col, hp, blknd2, wait, item_n[6];
-}enemy_order_t;
-
-
+    // カウンタ、移動用パターン、敵の種類
+    int cnt, pattern, knd;
+    // 初期位置と移動スピード
+    double x, y, sp;
+    // 弾開始時間、弾の種類、当たり判定カラー、HP、弾種2、待機時間、アイテム種別（最大6つ）
+    int bltime, blknd, col, hp, blknd2, wait, item_n[6];
+} enemy_order_t;
 
 class Mob_Enemy
 {
 private:
-
-	enemy_t enemy[ENEMY_MAX];
-
-	enemy_order_t enemy_order[ENEMY_ORDER_MAX];
-
-	int stage_count;
+    enemy_t enemy[ENEMY_MAX];                  // 実際の敵キャラ情報
+    enemy_order_t enemy_order[ENEMY_ORDER_MAX]; // 敵出現指示情報
+    int stage_count;                           // ステージの進行カウント
 
 public:
+    // コンストラクタ
+    Mob_Enemy();
 
-	//�R���X�g���N�^
-	Mob_Enemy();
+    // デストラクタ
+    ~Mob_Enemy();
 
-	//�f�X�g���N�^
-	~Mob_Enemy();
+    // 更新処理
+    void Update();
 
-	// �X�V����
-	void  Update();
+    // 描画処理
+    void Draw() const;
 
-	// �`�揈��
-	 void Draw() const;
+    // 敵の移動パターン0：シンプルな直進など
+    void enemy_pattern0(int i);
 
+    // 渡された ±ang の範囲内でランダムな角度を返す
+    double rang(double ang);
 
-	 //�G�̈ړ��p�^�[��0�ł̈ړ�����
-	 void enemy_pattern0(int i);
+    // 空いている敵番号を探して返す
+    int enemy_num_search();
 
-	 // 渡された - ang～angまでのランダムな角度を返す
-	 double rang(double ang);
+    // 敵データの出現処理
+    void enemy_enter();
 
-	 //�󂢂Ă���G�ԍ������
-	 int enemy_num_search();
+    // 敵の行動処理
+    void enemy_act();
 
-	 //�G�f�[�^�̓o�^
-	 void enemy_enter();
-
-	 //�G�̍s������
-	 void enemy_act();
-
-	 //�G�̏o������G�N�Z������ǂݍ���Ŋi�[����֐�
-	 void load_story();
+    // 敵の出現パターンを外部ファイル（CSV等）から読み込む関数
+    void load_story();
 };
-
