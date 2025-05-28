@@ -127,6 +127,16 @@ bool demo_Player::GameOver() const
     return (Zanki <= 0);
 }
 
+bool demo_Player::IsAlive() const
+{
+    return Alive;
+}
+
+bool demo_Player::IsRespawn() const
+{
+    return Respawn;
+}
+
 AbstractScene* demo_Player::Update()
 {
     return this;

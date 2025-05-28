@@ -28,6 +28,8 @@ public:
 	void Hit();
 	bool CheckHit(float x1, float y1, float r1, float x2, float y2, float r2);
 	bool GameOver()const;
+	bool IsAlive() const;
+	bool IsRespawn() const;
 
 
 	AbstractScene* Update() override;

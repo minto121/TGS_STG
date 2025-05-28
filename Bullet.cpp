@@ -28,7 +28,10 @@ Bullet::Bullet()
     px = 0.0f;
     py = 0.0f;
     
-
+    int patternRepeatInterval = 120;
+    int lastPatternTime = 0;
+    int currentPatternType = -1; // 0: 通常, 1: 反射, 2: 追尾
+    bool repeatWhileAlive = false;
 }
 
 Bullet::~Bullet()
@@ -45,149 +48,154 @@ void Bullet::SetPlayer(demo_Player* player)
 void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 {
 
+    //bool isPlayerAlive = D_PLAYER && D_PLAYER->IsAlive();
+
     if (D_PLAYER) {
         px = D_PLAYER->GetX();
         py = D_PLAYER->GetY();
     }
 
+    if (D_PLAYER && D_PLAYER->IsAlive()) {
+        if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
 
-    printf("nowtime: %d\n", nowtime);
-    for (auto& pattern : patterns) {
-        if (!pattern.used && nowtime >= pattern.time) {
+            printf("nowtime: %d\n", nowtime);
+            for (auto& pattern : patterns) {
+                if (!pattern.used && nowtime >= pattern.time) {
 
-            float angleStep = 0;
-            if (pattern.cnt > 1) {
-                angleStep = (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1);
+                    float angleStep = 0;
+                    if (pattern.cnt > 1) {
+                        angleStep = (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1);
+                    }
+
+                    for (int i = 0; i < pattern.cnt; i++) {
+                        float angleDeg = pattern.S_angle + angleStep * i;
+                        float angleRad = angleDeg * (M_PI / 180.0f);
+
+                        BulletInstance bi;
+                        bi.x = pattern.x;
+                        bi.y = pattern.y;
+                        bi.speed = pattern.spd;
+
+                        //ホーミング処理
+                        if (pattern.homing && D_PLAYER) {
+                            float dx = D_PLAYER->GetX() - pattern.x;
+                            float dy = D_PLAYER->GetY() - pattern.y;
+                            float angle = atan2f(dy, dx);
+
+                            bi.vx = cosf(angle) * pattern.spd;
+                            bi.vy = sinf(angle) * pattern.spd;
+                            bi.speed = pattern.spd;
+                            bi.homing = true;
+                            bi.homingStrength = 0.2f;
+                        }
+                        else {
+                            float angle = angleRad;
+                            bi.vx = cosf(angle) * pattern.spd;
+                            bi.vy = sinf(angle) * pattern.spd;
+                            bi.speed = pattern.spd;
+                            bi.homing = false;
+                        }
+
+                        bi.active = true;
+                        bi.reflect = globalReflectEnable; // 反射設定もここで代入
+
+                        //bi.homingStrength = 0.5f;  
+
+                        bullets.push_back(bi);
+                    }
+                    pattern.used = true;
+                }
             }
 
+            // 弾の移動
+            float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
+            const float maxTurn = 0.087f;  // 最大回転速度（ラジアンで約5度）
+            const int MAX_REFLECT_LIFETIME = 60 * 5; // 反射後最大5秒で削除
 
-            for (int i = 0; i < pattern.cnt; i++) {
-                float angleDeg = pattern.S_angle + angleStep * i;
-                float angleRad = angleDeg * (M_PI / 180.0f);
+            for (auto& bi : bullets) {
+                if (bi.active) {
+                    bi.x += bi.vx * dt;
+                    bi.y += bi.vy * dt;
 
-                BulletInstance bi;
-                bi.x = pattern.x;
-                bi.y = pattern.y;
-                bi.speed = pattern.spd;
+                    if (bi.reflect) {
+                        bool reflected = false;
 
-                //ホーミング処理
-                if (pattern.homing && D_PLAYER) {
-                    float dx = D_PLAYER->GetX() - pattern.x;
-                    float dy = D_PLAYER->GetY() - pattern.y;
-                    float angle = atan2f(dy, dx);
+                        // 左右の壁に反射
+                        if (bi.x <= PLAY_AREA_LEFT || bi.x >= PLAY_AREA_RIGHT) {
+                            bi.vx *= -1;
+                            bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // はみ出さないように修正
+                            reflected = true;
+                        }
 
-                    bi.vx = cosf(angle) * pattern.spd;
-                    bi.vy = sinf(angle) * pattern.spd;
-                    bi.speed = pattern.spd;
-                    bi.homing = true;
-                    bi.homingStrength = 0.2f;
+                        // 上下の壁に反射
+                        if (bi.y <= PLAY_AREA_TOP || bi.y >= PLAY_AREA_BOTTOM) {
+                            bi.vy *= -1;
+                            bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // はみ出さないように修正
+                            reflected = true;
+                        }
+
+                        // 反射したらフラグを立てる
+                        if (reflected) {
+                            bi.reflectCnt++;
+                            bi.CheckReflect = true;
+                            if (bi.reflectCnt >= 2) {
+                                bi.active = false;  // 2回目の反射で削除
+                                continue;
+                            }
+                        }
+
+                        // 反射済みで、範囲外に出たら削除
+                        if (bi.CheckReflect) {
+                            bi.reflectFrameCnt++;
+                            if ((bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
+                                bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) ||
+                                bi.reflectFrameCnt >= MAX_REFLECT_LIFETIME) {
+                                bi.active = false;
+                            }
+                        }
+                    }
+                    else {
+                        // 通常の弾：1回も反射しないタイプ
+                        if (bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
+                            bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) {
+                            bi.active = false;
+                        }
+                    }
+                    // ホーミング弾として追尾する処理
+                    if (bi.homing && D_PLAYER) {
+                        float targetX = D_PLAYER->GetX();
+                        float targetY = D_PLAYER->GetY();
+
+                        float dx = targetX - bi.x;
+                        float dy = targetY - bi.y;
+                        float targetAngle = atan2f(dy, dx);
+                        // 現在の角度
+                        float currentAngle = atan2f(bi.vy, bi.vx);
+
+                        // 角度差を求めて、短い方向に補間する
+                        float angleDiff = targetAngle - currentAngle;
+
+                        // -π ～ π の範囲に収める
+                        while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
+                        while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
+
+                        // ホーミング強度をかけて補間
+                        float newAngle = currentAngle + angleDiff * bi.homingStrength;
+
+                        //// 新しい速度を設定
+                        bi.vx = cosf(newAngle) * bi.speed;
+                        bi.vy = sinf(newAngle) * bi.speed;
+                    }
+
+                    //// 通常の移動処理
+                    //bi.x += bi.vx * dt;
+                    //bi.y += bi.vy * dt;
+
                 }
-                else {
-                    float angle = angleRad;
-                    bi.vx = cosf(angle) * pattern.spd;
-                    bi.vy = sinf(angle) * pattern.spd;
-                    bi.speed = pattern.spd;
-                    bi.homing = false;
-                }
-
-                bi.active = true; 
-                bi.reflect = globalReflectEnable; // 反射設定もここで代入
-
-                //bi.homingStrength = 0.5f;  
-
-                bullets.push_back(bi);  
             }
-            pattern.used = true;
+            printf("homing: %d\n", bi.homing);
         }
     }
-
-    // 弾の移動
-    float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
-    const float maxTurn = 0.087f;  // 最大回転速度（ラジアンで約5度）
-    const int MAX_REFLECT_LIFETIME = 60 * 5; // 反射後最大5秒で削除
-
-    for (auto& bi : bullets) {
-        if (bi.active) {
-            bi.x += bi.vx * dt;
-            bi.y += bi.vy * dt;
-
-            if (bi.reflect) {
-                bool reflected = false;
-
-                // 左右の壁に反射
-                if (bi.x <= PLAY_AREA_LEFT || bi.x >= PLAY_AREA_RIGHT) {
-                    bi.vx *= -1;
-                    bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // はみ出さないように修正
-                    reflected = true;
-                }
-
-                // 上下の壁に反射
-                if (bi.y <= PLAY_AREA_TOP || bi.y >= PLAY_AREA_BOTTOM) {
-                    bi.vy *= -1;
-                    bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // はみ出さないように修正
-                    reflected = true;
-                }
-
-                // 反射したらフラグを立てる
-                if (reflected) {
-                    bi.reflectCnt++;
-                    bi.CheckReflect = true;
-                    if (bi.reflectCnt >= 2) {
-                        bi.active = false;  // 2回目の反射で削除
-                        continue;
-                    }
-                }
-
-                // 反射済みで、範囲外に出たら削除
-                if (bi.CheckReflect) {
-                    bi.reflectFrameCnt++;
-                    if((bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
-                        bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) ||
-                        bi.reflectFrameCnt >= MAX_REFLECT_LIFETIME) {
-                        bi.active = false;
-                    }
-                }
-            }
-            else {
-                // 通常の弾：1回も反射しないタイプ
-                if (bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
-                    bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) {
-                    bi.active = false;
-                }
-            }
-            // ホーミング弾として追尾する処理
-            if (bi.homing && D_PLAYER) {
-                float targetX = D_PLAYER->GetX();
-                float targetY = D_PLAYER->GetY();
-
-                float dx = targetX - bi.x;
-                float dy = targetY - bi.y;
-                float targetAngle = atan2f(dy, dx);
-                // 現在の角度
-                float currentAngle = atan2f(bi.vy, bi.vx);
-
-                // 角度差を求めて、短い方向に補間する
-                float angleDiff = targetAngle - currentAngle;
-
-                // -π ～ π の範囲に収める
-                while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
-                while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
-
-                // ホーミング強度をかけて補間
-                float newAngle = currentAngle + angleDiff * bi.homingStrength;
-
-                //// 新しい速度を設定
-                bi.vx = cosf(newAngle) * bi.speed;
-                bi.vy = sinf(newAngle) * bi.speed;
-            }
-
-                //// 通常の移動処理
-                //bi.x += bi.vx * dt;
-                //bi.y += bi.vy * dt;
-            
-        }
-    }
-    printf("homing: %d\n", bi.homing);
 }
 
 void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
