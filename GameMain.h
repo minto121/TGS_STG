@@ -5,6 +5,8 @@
 #include"Bullet.h"
 #include "Enemy.h"
 
+#include"Mob_Enemy.h"
+
 class GameMain	:public AbstractScene
 {
 public:
@@ -12,6 +14,8 @@ public:
     int currentPattern;
     bool isCKeyPressed;
 
+    int UI_Img[6];
+    int LifeImg;
 
 private:
 
@@ -34,5 +38,6 @@ public:
 
     Enemy* enemy;
 
+    Mob_Enemy* MOB_ENEMY;
 };
 

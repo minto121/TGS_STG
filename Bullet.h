@@ -18,8 +18,9 @@ public:
 		float spd;    // 弾速
 		//bool active = false;
 		bool used = true;
-		bool Homing = false; // 追尾かどうかのフラグ
+		bool homing = false; // 追尾かどうかのフラグ
 		//float vx, vy;
+		int firedCount = 0;
 	};
 
 
@@ -27,6 +28,7 @@ public:
 	BulletInstance bi;
 
 	float px, py;
+	float dy, dx;
 	int Bullet_img;
 	int nowtime = 0;
 	std::vector<BulletInstance>& GetBullets();
@@ -35,11 +37,11 @@ public:
 	Bullet();
 	~Bullet();
 	void SetReflectEnable(bool enable);
-	void Update(int nowtime);
+	void Update(int nowtime/*, float playerX, float playerY*/);
 	void Draw();
 	void LoadCSV(const char* filePath, int repeatCnt, int Interval);
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
-	//void SetPlayer(demo_Player* player);
+	void SetPlayer(demo_Player* player);
 
 	void SetEnemyPosition(float x, float y);
 	demo_Player* D_PLAYER;

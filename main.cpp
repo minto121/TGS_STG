@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	try
 	{
-		sceneMng = new SceneManager((AbstractScene*)new Title() /*GameMain()*/);
+		sceneMng = new SceneManager((AbstractScene*)new GameMain() /*GameMain()*/);
 
 	}
 	catch (const char* err)
@@ -51,6 +51,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		fopen_s(&fp, "ErrLog.txt", "a");
 		//?G???[?f?[?^?????????
 		fprintf_s(fp, "%02d?N %02d??R %02d?? %02d?? %02d?? %02d?b : %s??????????B\n", data.Year, data.Mon, data.Day, data.Hour, data.Min, data.Sec, err);
+		fclose(fp);
 
 		return 0;
 	}
