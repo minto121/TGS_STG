@@ -7,11 +7,7 @@
 #define PI 3.1415926f
 
 enum class EnemyState {
-	Enter,
-	Dash,
-	Wait,
-	Zigzag,
-	Teleport,
+    Spiral
 };
 
 class Enemy
@@ -31,6 +27,7 @@ private:
     float e_angle;      // 進行方向（ラジアン）
     float dashSpeed;
     float zigzagOffset;
+    float Spiral;
 
     int frameCount;
     int stateTimer;
@@ -41,13 +38,14 @@ private:
     
 
 
-    void EnteringBehavior();
+    /*void EnteringBehavior();
     void WaitingBehavior();
     void DashingBehavior();
     void ZigZagBehavior();
-    void TeleportingBehavior();
+    void TeleportingBehavior()*/
+    void SpiralBehavior();
 
-    void ChangeToRandomState();
+    /*void ChangeToRandomState();*/
 
 public:
 	// 

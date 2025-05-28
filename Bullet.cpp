@@ -21,10 +21,10 @@ T Clamp(T val, T minVal, T maxVal) {
     return (val < minVal) ? minVal : (val > maxVal) ? maxVal : val;
 }
 
-std::vector<BulletInstance>& Bullet::GetBullets()
-{
-    return bullets;
-}
+//std::vector<BulletInstance>& Bullet::GetBullets()
+//{
+//    return bullets;
+//}
 
 Bullet::Bullet()
 {
