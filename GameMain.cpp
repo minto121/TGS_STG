@@ -67,6 +67,14 @@ AbstractScene* GameMain::Update()
 
 	if (enemy != nullptr) {
 		enemy->Update();
+		// 敵のHPが半分を切ったら弾パターンを変える
+		if (enemy->GetHP() <= 5 && currentPattern != 99) {
+			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // 好きな弾パターンに変更
+			BULLET_DATE->SetReflectEnable(false); // 必要に応じて反射も設定
+			currentPattern = 99; // フラグ代わり：1回しか切り替えないように
+		}
+		// 敵の現在位置をBulletに教える
+		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
 
 	// 弾と敵の当たり判定
@@ -91,7 +99,6 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
-	enemy->Update();
 	return this;
 }
 

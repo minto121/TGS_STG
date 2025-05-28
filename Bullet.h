@@ -22,6 +22,8 @@ public:
 		//float vx, vy;
 	};
 
+
+
 	BulletInstance bi;
 
 	float px, py;
@@ -39,6 +41,7 @@ public:
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
 	//void SetPlayer(demo_Player* player);
 
+	void SetEnemyPosition(float x, float y);
 	demo_Player* D_PLAYER;
 
 	std::vector<B_State>patterns;
@@ -49,7 +52,8 @@ public:
 private:
 
 	bool globalReflectEnable = false;
-
+	float ex=0.0f;
+	float ey=0.0f;
 	
 
 };

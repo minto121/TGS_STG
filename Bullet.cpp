@@ -20,7 +20,12 @@ T Clamp(T val, T minVal, T maxVal) {
     return (val < minVal) ? minVal : (val > maxVal) ? maxVal : val;
 }
 
-Bullet::Bullet() 
+std::vector<BulletInstance>& Bullet::GetBullets()
+{
+    return bullets;
+}
+
+Bullet::Bullet()
 {
     Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
     D_PLAYER = new demo_Player;
@@ -58,8 +63,8 @@ void Bullet::Update(int nowtime)
                 float angleRad = angleDeg * (M_PI / 180.0f);
 
                 BulletInstance bi;
-                bi.x = pattern.x;
-                bi.y = pattern.y;
+                bi.x = ex;
+                bi.y = ey;
 
                 if (pattern.Homing) {
                     float dx = px - bi.x;
@@ -246,7 +251,7 @@ void Bullet::Draw()
     //DrawFormatString(0, 0, GetColor(255, 255, 255), "nowtime: %d", );
 
 }
-
- std::vector<Bullet::BulletInstance>& Bullet::GetBullets() {
-    return bullets;
- }
+void Bullet::SetEnemyPosition(float x, float y) {
+    ex = x;
+    ey = y;
+}

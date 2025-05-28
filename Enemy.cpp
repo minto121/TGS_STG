@@ -30,6 +30,7 @@ void Enemy::Update()
     case EnemyState::Teleport:
         TeleportingBehavior(); break;
     }
+
 }
 
 void Enemy::EnteringBehavior()
@@ -130,6 +131,10 @@ void Enemy::OnHit()
 bool Enemy::IsDead() const
 {
     return hp <= 0;
+}
+
+int Enemy::GetHP()const {
+    return hp;
 }
 
 void Enemy::Draw() const
