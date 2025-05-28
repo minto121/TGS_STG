@@ -20,11 +20,13 @@ public:
 		bool used = true;
 		bool homing = false; // ’Ç”ö‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
 		//float vx, vy;
+		int firedCount = 0;
 	};
 
 	BulletInstance bi;
 
 	float px, py;
+	float dy, dx;
 	int Bullet_img;
 	int nowtime = 0;
 	std::vector<BulletInstance>& GetBullets();
@@ -37,7 +39,7 @@ public:
 	void Draw();
 	void LoadCSV(const char* filePath, int repeatCnt, int Interval);
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
-	//void SetPlayer(demo_Player* player);
+	void SetPlayer(demo_Player* player);
 
 	demo_Player* D_PLAYER;
 

@@ -11,9 +11,10 @@
 
 GameMain::GameMain()
 {
-	P_SHOT = new Player_Shot;
 	D_PLAYER = new demo_Player;
+	P_SHOT = new Player_Shot;
 	BULLET_DATE = new Bullet;
+	BULLET_DATE->SetPlayer(D_PLAYER);
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // ← CSV読み込み
 
 	//画像読み込み
@@ -69,10 +70,9 @@ AbstractScene* GameMain::Update()
 	else {
 		isCKeyPressed = false;
 	}
-
-	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	D_PLAYER->move();
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
+	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // プレイヤーが弾を発射
 
@@ -115,7 +115,7 @@ void GameMain::Draw() const
 	BULLET_DATE->Draw();
 	//FpsControl_Draw();
 
-	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
 	// ↓ null チェックを追加
 	if (enemy != nullptr) {

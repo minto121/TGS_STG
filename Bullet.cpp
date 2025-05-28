@@ -14,6 +14,7 @@
 #define PLAY_AREA_TOP    0
 #define PLAY_AREA_BOTTOM 720
 
+const float PI = 3.14159265f;
 
 template<typename T>
 T Clamp(T val, T minVal, T maxVal) {
@@ -26,18 +27,24 @@ Bullet::Bullet()
     D_PLAYER = new demo_Player;
     px = 0.0f;
     py = 0.0f;
-
+    
 
 }
 
 Bullet::~Bullet()
 {
     delete D_PLAYER;
+}
 
+
+void Bullet::SetPlayer(demo_Player* player)
+{
+    D_PLAYER = player;
 }
 
 void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 {
+
     if (D_PLAYER) {
         px = D_PLAYER->GetX();
         py = D_PLAYER->GetY();
@@ -61,37 +68,32 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 BulletInstance bi;
                 bi.x = pattern.x;
                 bi.y = pattern.y;
+                bi.speed = pattern.spd;
 
-                if (pattern.homing) {
-                    float dx = px - bi.x;
-                    float dy = py - bi.y;
-                    float len = sqrt(dx * dx + dy * dy);
-                    if (len != 0) {
-                        dx /= len;
-                        dy /= len;
-                    }
+                //ホーミング処理
+                if (pattern.homing && D_PLAYER) {
+                    float dx = D_PLAYER->GetX() - pattern.x;
+                    float dy = D_PLAYER->GetY() - pattern.y;
+                    float angle = atan2f(dy, dx);
 
-                    float angleRad = atan2f(dy, dx);
-                    /// <summary>
-                    /// 
-                    /// </summary>
-                    /// <param name="nowtime"></param>
-                    bi.angle = angleRad;
+                    bi.vx = cosf(angle) * pattern.spd;
+                    bi.vy = sinf(angle) * pattern.spd;
                     bi.speed = pattern.spd;
-                    bi.vx = cosf(angleRad) * pattern.spd;
-                    bi.vy = sinf(angleRad) * pattern.spd;
                     bi.homing = true;
+                    bi.homingStrength = 0.2f;
                 }
                 else {
-                    bi.vx = cos(angleRad) * pattern.spd;
-                    bi.vy = sin(angleRad) * pattern.spd;
+                    float angle = angleRad;
+                    bi.vx = cosf(angle) * pattern.spd;
+                    bi.vy = sinf(angle) * pattern.spd;
+                    bi.speed = pattern.spd;
                     bi.homing = false;
                 }
 
                 bi.active = true; 
                 bi.reflect = globalReflectEnable; // 反射設定もここで代入
 
-                bi.homingStrength = 0.5f;  
+                //bi.homingStrength = 0.5f;  
 
                 bullets.push_back(bi);  
             }
@@ -102,8 +104,8 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
     // 弾の移動
     float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
     const float maxTurn = 0.087f;  // 最大回転速度（ラジアンで約5度）
-
     const int MAX_REFLECT_LIFETIME = 60 * 5; // 反射後最大5秒で削除
+
     for (auto& bi : bullets) {
         if (bi.active) {
             bi.x += bi.vx * dt;
@@ -153,42 +155,39 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                     bi.active = false;
                 }
             }
+            // ホーミング弾として追尾する処理
+            if (bi.homing && D_PLAYER) {
+                float targetX = D_PLAYER->GetX();
+                float targetY = D_PLAYER->GetY();
 
-            if (bi.homing) {
+                float dx = targetX - bi.x;
+                float dy = targetY - bi.y;
+                float targetAngle = atan2f(dy, dx);
+                // 現在の角度
+                float currentAngle = atan2f(bi.vy, bi.vx);
 
-                // ホーミング弾として追尾する処理
-                if (bi.homing && D_PLAYER) {
-                    float targetX = D_PLAYER->GetX();
-                    float targetY = D_PLAYER->GetY();
+                // 角度差を求めて、短い方向に補間する
+                float angleDiff = targetAngle - currentAngle;
 
-                    float dx = targetX - bi.x;
-                    float dy = targetY - bi.y;
-                    float targetAngle = atan2f(dy, dx);
+                // -π ～ π の範囲に収める
+                while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
+                while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
 
-                    // 現在の角度
-                    float currentAngle = atan2f(bi.vy, bi.vx);
+                // ホーミング強度をかけて補間
+                float newAngle = currentAngle + angleDiff * bi.homingStrength;
 
-                    // 角度差を求めて、短い方向に補間する
-                    float angleDiff = targetAngle - currentAngle;
-
-                    // -π ～ π の範囲に収める
-                    while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
-                    while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
-
-                    // ホーミング強度をかけて補間
-                    float newAngle = currentAngle + angleDiff * bi.homingStrength;
-
-                    //// 新しい速度を設定
-                    bi.vx = cosf(newAngle) * bi.speed;
-                    bi.vy = sinf(newAngle) * bi.speed;
-                }
+                //// 新しい速度を設定
+                bi.vx = cosf(newAngle) * bi.speed;
+                bi.vy = sinf(newAngle) * bi.speed;
+            }
 
                 //// 通常の移動処理
                 //bi.x += bi.vx * dt;
                 //bi.y += bi.vy * dt;
-            }
+            
         }
     }
+    printf("homing: %d\n", bi.homing);
 }
 
 void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
@@ -216,7 +215,6 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             std::getline(ss, value, ','); b.E_angle = std::stof(value);
             std::getline(ss, value, ','); b.cnt = std::stoi(value);
             std::getline(ss, value, ','); b.spd = std::stof(value);
-            //std::getline(ss, value, ','); b.homing = std::stof(value);
             b.used = false; // 初期状態で未使用とする
 
             if (std::getline(ss, value, ',')) {
@@ -236,14 +234,14 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
 
     // 繰り返し追加（5回）
     const int interval = 120; // 繰り返し間隔（フレーム単位、例: 2秒）
-    for (int i = 0; i < 5; i++) {
+   /* for (int i = 0; i < 5; i++) {
         for (auto& p : basePatterns) {
             B_State newP = p;
             newP.time += i * interval;
             newP.used = false;
             patterns.push_back(newP);
         }
-    }
+    }*/
 
     // パターン登録
     for (int i = 0; i < repeatCnt; i++) {
@@ -254,6 +252,20 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             patterns.push_back(newP);
         }
     }
+
+    //確認用
+    int homingCount = 0;
+    int totalCount = 0;
+    bool lastHoming = false;
+    for (auto& bi : bullets) {
+        if (bi.active) {
+            if (bi.homing) homingCount++;
+            totalCount++;
+            lastHoming = bi.homing;
+        }
+    }
+    printf("active bullets: %d, homing bullets: %d\n", totalCount, homingCount);
+
 }
 
 void Bullet::ChangePattern(const char* filePath, int repeatCnt, int Interval)
@@ -263,10 +275,6 @@ void Bullet::ChangePattern(const char* filePath, int repeatCnt, int Interval)
     LoadCSV(filePath, repeatCnt, Interval);
 }
 
-//void Bullet::SetPlayer(demo_Player* player)
-//{
-//    D_PLAYER = player;
-//}
 
 void Bullet::SetReflectEnable(bool enable)
 {
@@ -286,7 +294,22 @@ void Bullet::Draw()
         }
     }
 
-    //DrawFormatString(0, 0, GetColor(255, 255, 255), "nowtime: %d", );
+    //ホーミングの確認用
+    int homingCount = 0;
+    int totalCount = 0;
+    bool lastHoming = false;
+    for (auto& bi : bullets) {
+        if (bi.active) {
+            if (bi.homing) homingCount++;
+            totalCount++;
+            lastHoming = bi.homing;
+        }
+    }
+
+    DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
+    DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
+    DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
+
 
 }
 
