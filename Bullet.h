@@ -40,6 +40,7 @@ public:
 	void LoadCSV(const char* filePath, int repeatCnt, int Interval);
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
 	void SetPlayer(demo_Player* player);
+	void TriggerRippleEffect(float cx, float cy, float radius);
 
 	demo_Player* D_PLAYER;
 

@@ -16,6 +16,7 @@ GameMain::GameMain()
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->SetPlayer(D_PLAYER);
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // © CSV“Ç‚İ‚İ
+	D_PLAYER->SetBulletManager(BULLET_DATE);
 
 	//‰æ‘œ“Ç‚İ‚İ
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");

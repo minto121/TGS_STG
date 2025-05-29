@@ -7,7 +7,7 @@
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
-
+Bullet* BulletManager = nullptr;
 
 demo_Player::demo_Player()
 {
@@ -97,6 +97,11 @@ void demo_Player::Hit()
 {
     Zanki--;
 
+    //// --- ’e‚ğÁ‚·ˆ—‚ğŒÄ‚Ô ---
+    //if (BulletManager != nullptr) {
+    //    BulletManager->TriggerRippleEffect(x, y, 500.0f); // ”¼Œa100ˆÈ“à‚Ì’e‚ğíœ
+    //}
+
     if (Zanki <= 0) {
         Alive = false;
         Respawn = false;
@@ -135,6 +140,11 @@ bool demo_Player::IsAlive() const
 bool demo_Player::IsRespawn() const
 {
     return Respawn;
+}
+
+void demo_Player::SetBulletManager(Bullet* manager)
+{
+    BulletManager = manager;
 }
 
 AbstractScene* demo_Player::Update()

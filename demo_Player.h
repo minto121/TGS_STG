@@ -4,6 +4,8 @@
 #include "Player_Shot.h"
 #include "AbstractScene.h"
 #include <vector>
+class Bullet;
+
 class demo_Player :public AbstractScene
 {
 public:
@@ -31,11 +33,14 @@ public:
 	bool IsAlive() const;
 	bool IsRespawn() const;
 
+	void SetBulletManager(Bullet* manager);
+
 
 	AbstractScene* Update() override;
 
 private:
 	int lastShotTime = 0;
 	const int shotInterval = 500; // ミリ秒。必要に応じて調整
+
 };
 

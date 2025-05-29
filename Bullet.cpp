@@ -55,8 +55,8 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
         py = D_PLAYER->GetY();
     }
 
-    if (D_PLAYER && D_PLAYER->IsAlive()) {
-        if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
+    //if (D_PLAYER && D_PLAYER->IsAlive()) {
+    //    if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
 
             printf("nowtime: %d\n", nowtime);
             for (auto& pattern : patterns) {
@@ -191,11 +191,21 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                     //bi.x += bi.vx * dt;
                     //bi.y += bi.vy * dt;
 
+                    if (bi.rippleEffect) {
+                        bi.x += bi.rippleVx * dt;
+                        bi.y += bi.rippleVy * dt;
+                        bi.rippleFrame++;
+
+                        if (bi.rippleFrame >= bi.rippleLife) {
+                            bi.active = false;
+                            continue;
+                        }
+                    }
                 }
             }
             printf("homing: %d\n", bi.homing);
-        }
-    }
+       /* }
+    }*/
 }
 
 void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
@@ -289,6 +299,43 @@ void Bullet::SetReflectEnable(bool enable)
     globalReflectEnable = enable;
 }
 
+//void Bullet::ClearBulletsAround(float cx, float cy, float radius)
+//{
+//    float radiusSq = radius * radius;
+//
+//    for (auto& b : bullets) {
+//        if (!b.active) continue;
+//
+//        float dx = b.x - cx;
+//        float dy = b.y - cy;
+//
+//        if ((dx * dx + dy * dy) <= radiusSq) {
+//            b.active = false;
+//        }
+//    }
+//}
+void Bullet::TriggerRippleEffect(float cx, float cy, float radius)
+{
+    float radiusSq = radius * radius;
+
+    for (auto& b : bullets) {
+        if (!b.active) continue;
+
+        float dx = b.x - cx;
+        float dy = b.y - cy;
+        if ((dx * dx + dy * dy) <= radiusSq) {
+            float angle = atan2f(dy, dx);
+            float speed = 4.0f; // 波紋の飛散速度
+
+            b.rippleEffect = true;
+            b.rippleFrame = 0;
+            b.rippleVx = cosf(angle) * speed;
+            b.rippleVy = sinf(angle) * speed;
+            b.rippleLife = 30; // 波紋弾の寿命（フレーム）
+        }
+    }
+}
+
 
 void Bullet::Draw()
 {
@@ -300,24 +347,34 @@ void Bullet::Draw()
             DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
             DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img, TRUE);
         }
-    }
 
-    //ホーミングの確認用
-    int homingCount = 0;
-    int totalCount = 0;
-    bool lastHoming = false;
-    for (auto& bi : bullets) {
-        if (bi.active) {
-            if (bi.homing) homingCount++;
-            totalCount++;
-            lastHoming = bi.homing;
+   /*     if (b.rippleEffect) {
+            DrawCircle((int)b.x, (int)b.y, 8, GetColor(0, 128, 255));
         }
+        else {
+            DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
+        }*/
+
+        //DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img, TRUE);
+
+
+
+        ////ホーミングの確認用
+        //int homingCount = 0;
+        //int totalCount = 0;
+        //bool lastHoming = false;
+        //for (auto& bi : bullets) {
+        //    if (bi.active) {
+        //        if (bi.homing) homingCount++;
+        //        totalCount++;
+        //        lastHoming = bi.homing;
+        //    }
+        //}
+
+        DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
+        DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
+        //DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
     }
-
-    DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
-    DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
-    DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
-
 
 }
 
