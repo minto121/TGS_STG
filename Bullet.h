@@ -23,6 +23,8 @@ public:
 		int firedCount = 0;
 	};
 
+
+
 	BulletInstance bi;
 
 	float px, py;
@@ -42,6 +44,7 @@ public:
 	void SetPlayer(demo_Player* player);
 	void TriggerRippleEffect(float cx, float cy, float radius);
 
+	void SetEnemyPosition(float x, float y);
 	demo_Player* D_PLAYER;
 
 	std::vector<B_State>patterns;
@@ -52,7 +55,8 @@ public:
 private:
 
 	bool globalReflectEnable = false;
-
+	float ex=0.0f;
+	float ey=0.0f;
 	
 
 };

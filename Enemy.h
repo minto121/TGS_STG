@@ -1,24 +1,30 @@
 #pragma once
 #include "AbstractScene.h"
+#include "Bullet.h"
 #include <cmath>
+#include <vector>
 
 #define PI 3.1415926f
 
 enum class EnemyState {
-	Enter,
-	Dash,
-	Wait,
-	Zigzag,
-	Teleport,
+    Enter,
+    Dash,
+    Wait,
+    Zigzag,
+    Teleport,
 };
 
 class Enemy
 {
 public:
-	Enemy(float x =320.0f, float y=0.0f);
+    Enemy(float x = 320.0f, float y = 0.0f);
     bool IsDead()const;
-	~Enemy();
+    ~Enemy();
+    int GetHP() const;
 
+
+    float GetX() const { return enemy_X; }
+    float GetY() const { return enemy_Y; }
 private:
     float enemy_X, enemy_Y;
     float baseX, baseY;
@@ -32,7 +38,7 @@ private:
 
     int hp;
     float radius;       //“–‚½‚è”»’è—p”¼Œa
-    
+
 
 
     void EnteringBehavior();
@@ -44,13 +50,13 @@ private:
     void ChangeToRandomState();
 
 public:
-	// 
-	void Update();
+    // 
+    void Update();
 
-	// 
-	void Draw() const;
+    // 
+    void Draw() const;
 
-    bool CheckCollision(float bulletX, float bulletY,bool isPlayerBullet) const;
+    bool CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) const;
     void OnHit();
 };
-   
+
