@@ -2,7 +2,7 @@
 
 void FpsController::Init(float RefreshRate, int UpdateTime) {
     FrameTime = (int)(1000.0f / RefreshRate); //1ƒtƒŒ[ƒ€‚ÌŠÔ‚ÌŒvZ
-    UpdateTime = UpdateTime;
+    //UpdateTime = UpdateTime;
     WaitTime = 0;
     LastTime = NowTime = 0;
     Count = 0.0f;

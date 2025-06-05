@@ -6,7 +6,7 @@ Enemy::Enemy(float x, float y)
     : enemy_X(x), enemy_Y(y), baseX(x), baseY(y),
     e_angle(PI / 2), dashSpeed(4.0f), zigzagOffset(0.0f),
     frameCount(0), stateTimer(0), state(EnemyState::Enter),
-    hp(10),radius(16.0f)
+    hp(10), radius(16.0f)
 {
 }
 
@@ -30,6 +30,7 @@ void Enemy::Update()
     case EnemyState::Teleport:
         TeleportingBehavior(); break;
     }
+
 }
 
 void Enemy::EnteringBehavior()
@@ -130,6 +131,10 @@ void Enemy::OnHit()
 bool Enemy::IsDead() const
 {
     return hp <= 0;
+}
+
+int Enemy::GetHP()const {
+    return hp;
 }
 
 void Enemy::Draw() const
