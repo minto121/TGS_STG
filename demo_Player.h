@@ -12,6 +12,7 @@ public:
 	bool Respawn;		//リスポーン
 	int RespawnTimer;	//リスポーン中の無敵時間
 	int Zanki;
+	int player_img[11];
 
 	float GetX()const { return x; }
 	float GetY()const { return y; }
