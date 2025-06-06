@@ -21,6 +21,8 @@ private:
 	int WaterImg;
 	int LeafImg;
 
+	int player_img[11];
+
 public:
 	Title();
 	virtual ~Title();
