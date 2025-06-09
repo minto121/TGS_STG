@@ -7,14 +7,17 @@
 #include "Title.h"
 #include "Mob_Enemy.h"
 
+//#define PI 3.1415926f
+
 
 GameMain::GameMain()
 {
-	P_SHOT = new Player_Shot;
 	D_PLAYER = new demo_Player;
+	P_SHOT = new Player_Shot;
 	BULLET_DATE = new Bullet;
-	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // �� CSV�ǂݍ���
 	MOB_ENEMY = new Mob_Enemy;
+	BULLET_DATE->SetPlayer(D_PLAYER);
+	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // �� CSV�ǂݍ���
 
 	//�摜�ǂݍ���
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
@@ -70,16 +73,23 @@ AbstractScene* GameMain::Update()
 	else {
 		isCKeyPressed = false;
 	}
-
-	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	D_PLAYER->move();
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
+	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	BULLET_DATE->Update(nowtime);
 	MOB_ENEMY->Update();
 	//D_PLAYER->fire(P_SHOT);  // �v���C���[���e�𔭎�
 
 	if (enemy != nullptr) {
 		enemy->Update();
+		// �G��HP��������؂�����e�p�^�[����ς���
+		if (enemy->GetHP() <= 5 && currentPattern != 99) {
+			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // �D���Ȓe�p�^�[���ɕύX
+			BULLET_DATE->SetReflectEnable(false); // �K�v�ɉ����Ĕ��˂�ݒ�
+			currentPattern = 99; // �t���O����F1�񂵂��؂�ւ��Ȃ��悤��
+		}
+		// �G�̌��݈ʒu��Bullet�ɋ�����
+		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
 
 	// �e�ƓG�̓����蔻��
@@ -104,7 +114,6 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
-
 	return this;
 }
 
@@ -118,7 +127,7 @@ void GameMain::Draw() const
 	MOB_ENEMY->Draw();
 	//FpsControl_Draw();
 
-	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
 	// �� null �`�F�b�N��ǉ�
 	if (enemy != nullptr) {

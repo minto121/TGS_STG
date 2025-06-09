@@ -10,21 +10,25 @@ class Bullet
 public:
 
 	struct B_State {
-		int time;       // ï¿½ï¿½ï¿½Ëƒ^ï¿½Cï¿½~ï¿½ï¿½ï¿½Oï¿½imsï¿½j
-		float x, y;     // ï¿½ï¿½ï¿½ËˆÊ’u
-		float S_angle;    // ï¿½Jï¿½nï¿½pï¿½xï¿½idegï¿½j
-		float E_angle;    // ï¿½Iï¿½ï¿½ï¿½pï¿½xï¿½idegï¿½j
+		int time;       // ”­Ëƒ^ƒCƒ~ƒ“ƒOimsj
+		float x, y;     // ”­ËˆÊ’u
+		float S_angle;    // ŠJnŠp“xidegj
+		float E_angle;    // I—¹Šp“xidegj
 		int cnt;
-		float spd;    // ï¿½eï¿½ï¿½
+		float spd;    // ’e‘¬
 		//bool active = false;
 		bool used = true;
-		bool Homing = false; // ï¿½Ç”ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½Ìƒtï¿½ï¿½ï¿½O
+		bool homing = false; // ’Ç”ö‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
 		//float vx, vy;
+		int firedCount = 0;
 	};
+
+
 
 	BulletInstance bi;
 
 	float px, py;
+	float dy, dx;
 	int Bullet_img;
 	int nowtime = 0;
 	std::vector<BulletInstance>& GetBullets();
@@ -33,12 +37,13 @@ public:
 	Bullet();
 	~Bullet();
 	void SetReflectEnable(bool enable);
-	void Update(int nowtime);
+	void Update(int nowtime/*, float playerX, float playerY*/);
 	void Draw();
 	void LoadCSV(const char* filePath, int repeatCnt, int Interval);
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
-	//void SetPlayer(demo_Player* player);
+	void SetPlayer(demo_Player* player);
 
+	void SetEnemyPosition(float x, float y);
 	demo_Player* D_PLAYER;
 
 	std::vector<B_State>patterns;
@@ -49,7 +54,8 @@ public:
 private:
 
 	bool globalReflectEnable = false;
-
+	float ex=0.0f;
+	float ey=0.0f;
 	
 
 };

@@ -14,29 +14,42 @@
 #define PLAY_AREA_TOP    0
 #define PLAY_AREA_BOTTOM 720
 
+const float PI = 3.14159265f;
 
 template<typename T>
 T Clamp(T val, T minVal, T maxVal) {
     return (val < minVal) ? minVal : (val > maxVal) ? maxVal : val;
 }
 
-Bullet::Bullet() 
+//std::vector<BulletInstance>& Bullet::GetBullets()
+//{
+//    return bullets;
+//}
+
+Bullet::Bullet()
 {
     Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
     D_PLAYER = new demo_Player;
     px = 0.0f;
     py = 0.0f;
+    
 
 }
 
 Bullet::~Bullet()
 {
     delete D_PLAYER;
-
 }
 
-void Bullet::Update(int nowtime)
+
+void Bullet::SetPlayer(demo_Player* player)
 {
+    D_PLAYER = player;
+}
+
+void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
+{
+
     if (D_PLAYER) {
         px = D_PLAYER->GetX();
         py = D_PLAYER->GetY();
@@ -60,44 +73,46 @@ void Bullet::Update(int nowtime)
                 BulletInstance bi;
                 bi.x = pattern.x;
                 bi.y = pattern.y;
+                bi.speed = pattern.spd;
+                bi.x = ex;
+                bi.y = ey;
 
-                if (pattern.Homing) {
-                    float dx = px - bi.x;
-                    float dy = py - bi.y;
-                    float len = sqrt(dx * dx + dy * dy);
-                    if (len != 0) {
-                        dx /= len;
-                        dy /= len;
-                    }
+                //ƒz[ƒ~ƒ“ƒOˆ—
+                if (pattern.homing && D_PLAYER) {
+                    float dx = D_PLAYER->GetX() - pattern.x;
+                    float dy = D_PLAYER->GetY() - pattern.y;
+                    float angle = atan2f(dy, dx);
 
-                    float angleRad = atan2f(dy, dx);
-
-                    bi.angle = angleRad;
+                    bi.vx = cosf(angle) * pattern.spd;
+                    bi.vy = sinf(angle) * pattern.spd;
                     bi.speed = pattern.spd;
-                    bi.vx = cosf(angleRad) * pattern.spd;
-                    bi.vy = sinf(angleRad) * pattern.spd;
                     bi.homing = true;
+                    bi.homingStrength = 0.2f;
                 }
                 else {
-                    bi.vx = cos(angleRad) * pattern.spd;
-                    bi.vy = sin(angleRad) * pattern.spd;
+                    float angle = angleRad;
+                    bi.vx = cosf(angle) * pattern.spd;
+                    bi.vy = sinf(angle) * pattern.spd;
+                    bi.speed = pattern.spd;
                     bi.homing = false;
                 }
 
-                bi.active = true; // ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½I
-                bi.reflect = globalReflectEnable; // ï¿½ï¿½ï¿½Ëİ’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‘ï¿½ï¿½
+                bi.active = true; 
+                bi.reflect = globalReflectEnable; // ”½Ëİ’è‚à‚±‚±‚Å‘ã“ü
 
-                bullets.push_back(bi);  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Yï¿½ê‚¸ï¿½ÉI
+                //bi.homingStrength = 0.5f;  
+
+                bullets.push_back(bi);  
             }
             pattern.used = true;
         }
     }
 
-    // ï¿½eï¿½ÌˆÚ“ï¿½
+    // ’e‚ÌˆÚ“®
     float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
-    const float maxTurn = 0.087f;  // ï¿½Å‘ï¿½ï¿½]ï¿½ï¿½ï¿½xï¿½iï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½Å–ï¿½5ï¿½xï¿½j
+    const float maxTurn = 0.087f;  // Å‘å‰ñ“]‘¬“xiƒ‰ƒWƒAƒ“‚Å–ñ5“xj
+    const int MAX_REFLECT_LIFETIME = 60 * 5; // ”½ËŒãÅ‘å5•b‚Åíœ
 
-    const int MAX_REFLECT_LIFETIME = 60 * 5; // ï¿½ï¿½ï¿½ËŒï¿½Å‘ï¿½5ï¿½bï¿½Åíœ
     for (auto& bi : bullets) {
         if (bi.active) {
             bi.x += bi.vx * dt;
@@ -106,31 +121,31 @@ void Bullet::Update(int nowtime)
             if (bi.reflect) {
                 bool reflected = false;
 
-                // ï¿½ï¿½ï¿½Eï¿½Ì•Ç‚É”ï¿½ï¿½ï¿½
+                // ¶‰E‚Ì•Ç‚É”½Ë
                 if (bi.x <= PLAY_AREA_LEFT || bi.x >= PLAY_AREA_RIGHT) {
                     bi.vx *= -1;
-                    bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // ï¿½Í‚İoï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ÉCï¿½ï¿½
+                    bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // ‚Í‚İo‚³‚È‚¢‚æ‚¤‚ÉC³
                     reflected = true;
                 }
 
-                // ï¿½ã‰ºï¿½Ì•Ç‚É”ï¿½ï¿½ï¿½
+                // ã‰º‚Ì•Ç‚É”½Ë
                 if (bi.y <= PLAY_AREA_TOP || bi.y >= PLAY_AREA_BOTTOM) {
                     bi.vy *= -1;
-                    bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // ï¿½Í‚İoï¿½ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ÉCï¿½ï¿½
+                    bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // ‚Í‚İo‚³‚È‚¢‚æ‚¤‚ÉC³
                     reflected = true;
                 }
 
-                // ï¿½ï¿½ï¿½Ë‚ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½Oï¿½ğ—§‚Ä‚ï¿½
+                // ”½Ë‚µ‚½‚çƒtƒ‰ƒO‚ğ—§‚Ä‚é
                 if (reflected) {
                     bi.reflectCnt++;
                     bi.CheckReflect = true;
                     if (bi.reflectCnt >= 2) {
-                        bi.active = false;  // 2ï¿½ï¿½Ú‚Ì”ï¿½ï¿½Ë‚Åíœ
+                        bi.active = false;  // 2‰ñ–Ú‚Ì”½Ë‚Åíœ
                         continue;
                     }
                 }
 
-                // ï¿½ï¿½ï¿½ËÏ‚İ‚ÅAï¿½ÍˆÍŠOï¿½Éoï¿½ï¿½ï¿½ï¿½íœ
+                // ”½ËÏ‚İ‚ÅA”ÍˆÍŠO‚Éo‚½‚çíœ
                 if (bi.CheckReflect) {
                     bi.reflectFrameCnt++;
                     if((bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
@@ -141,28 +156,59 @@ void Bullet::Update(int nowtime)
                 }
             }
             else {
-                // ï¿½Êï¿½Ì’eï¿½F1ï¿½ï¿½ï¿½ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½ï¿½^ï¿½Cï¿½v
+                // ’Êí‚Ì’eF1‰ñ‚à”½Ë‚µ‚È‚¢ƒ^ƒCƒv
                 if (bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
                     bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) {
                     bi.active = false;
                 }
             }
+            // ƒz[ƒ~ƒ“ƒO’e‚Æ‚µ‚Ä’Ç”ö‚·‚éˆ—
+            if (bi.homing && D_PLAYER) {
+                float targetX = D_PLAYER->GetX();
+                float targetY = D_PLAYER->GetY();
+
+                float dx = targetX - bi.x;
+                float dy = targetY - bi.y;
+                float targetAngle = atan2f(dy, dx);
+                // Œ»İ‚ÌŠp“x
+                float currentAngle = atan2f(bi.vy, bi.vx);
+
+                // Šp“x·‚ğ‹‚ß‚ÄA’Z‚¢•ûŒü‚É•âŠÔ‚·‚é
+                float angleDiff = targetAngle - currentAngle;
+
+                // -ƒÎ ` ƒÎ ‚Ì”ÍˆÍ‚Éû‚ß‚é
+                while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
+                while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
+
+                // ƒz[ƒ~ƒ“ƒO‹­“x‚ğ‚©‚¯‚Ä•âŠÔ
+                float newAngle = currentAngle + angleDiff * bi.homingStrength;
+
+                //// V‚µ‚¢‘¬“x‚ğİ’è
+                bi.vx = cosf(newAngle) * bi.speed;
+                bi.vy = sinf(newAngle) * bi.speed;
+            }
+
+                //// ’Êí‚ÌˆÚ“®ˆ—
+                //bi.x += bi.vx * dt;
+                //bi.y += bi.vy * dt;
+            
         }
     }
+    printf("homing: %d\n", bi.homing);
 }
 
 void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
 {
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        printf("ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌƒIï¿½[ï¿½vï¿½ï¿½ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½: %s\n", filePath);
+        printf("ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: %s\n", filePath);
         return;
     }
 
     std::vector<B_State> basePatterns;
     std::string line;
     while (std::getline(file, line)) {
-        if (line.empty()) continue;  // ï¿½ï¿½sï¿½ÍƒXï¿½Lï¿½bï¿½v
+        if (line.empty()) continue;  // ‹ós‚ÍƒXƒLƒbƒv
 
         std::stringstream ss(line);
         std::string value;
@@ -176,33 +222,35 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             std::getline(ss, value, ','); b.E_angle = std::stof(value);
             std::getline(ss, value, ','); b.cnt = std::stoi(value);
             std::getline(ss, value, ','); b.spd = std::stof(value);
-            b.used = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚Å–ï¿½ï¿½gï¿½pï¿½Æ‚ï¿½ï¿½ï¿½
+            b.used = false; // ‰Šúó‘Ô‚Å–¢g—p‚Æ‚·‚é
 
             if (std::getline(ss, value, ',')) {
-                b.Homing = (value == "true" || value == "1");
+                value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+                b.homing = (value == "true" || value == "1");
             }
             else {
-                b.Homing = false; // ï¿½Ã‚ï¿½CSVï¿½pï¿½Éƒfï¿½tï¿½Hï¿½ï¿½ï¿½g
+                b.homing = false; // ŒÃ‚¢CSV—p‚ÉƒfƒtƒHƒ‹ƒg
             }
 
             basePatterns.push_back(b);
         }
         catch (...) {
-            printf("CSVï¿½Ç‚İï¿½ï¿½İƒGï¿½ï¿½ï¿½[: %s\n", line.c_str());
+            printf("CSV“Ç‚İ‚İƒGƒ‰[: %s\n", line.c_str());
         }
     }
 
-    // ï¿½Jï¿½ï¿½Ô‚ï¿½ï¿½Ç‰ï¿½ï¿½i5ï¿½ï¿½j
-    const int interval = 120; // ï¿½Jï¿½ï¿½Ô‚ï¿½ï¿½ÔŠuï¿½iï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Pï¿½ÊAï¿½ï¿½: 2ï¿½bï¿½j
-    for (int i = 0; i < 5; i++) {
+    // ŒJ‚è•Ô‚µ’Ç‰Ái5‰ñj
+    const int interval = 120; // ŒJ‚è•Ô‚µŠÔŠuiƒtƒŒ[ƒ€’PˆÊA—á: 2•bj
+   /* for (int i = 0; i < 5; i++) {
         for (auto& p : basePatterns) {
             B_State newP = p;
             newP.time += i * interval;
             newP.used = false;
             patterns.push_back(newP);
         }
-    }
+    }*/
 
+    // ƒpƒ^[ƒ““o˜^
     for (int i = 0; i < repeatCnt; i++) {
         for (auto& p : basePatterns) {
             B_State newP = p;
@@ -211,6 +259,20 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             patterns.push_back(newP);
         }
     }
+
+    //Šm”F—p
+    int homingCount = 0;
+    int totalCount = 0;
+    bool lastHoming = false;
+    for (auto& bi : bullets) {
+        if (bi.active) {
+            if (bi.homing) homingCount++;
+            totalCount++;
+            lastHoming = bi.homing;
+        }
+    }
+    printf("active bullets: %d, homing bullets: %d\n", totalCount, homingCount);
+
 }
 
 void Bullet::ChangePattern(const char* filePath, int repeatCnt, int Interval)
@@ -220,10 +282,6 @@ void Bullet::ChangePattern(const char* filePath, int repeatCnt, int Interval)
     LoadCSV(filePath, repeatCnt, Interval);
 }
 
-//void Bullet::SetPlayer(demo_Player* player)
-//{
-//    D_PLAYER = player;
-//}
 
 void Bullet::SetReflectEnable(bool enable)
 {
@@ -243,10 +301,29 @@ void Bullet::Draw()
         }
     }
 
-    //DrawFormatString(0, 0, GetColor(255, 255, 255), "nowtime: %d", );
+    //ƒz[ƒ~ƒ“ƒO‚ÌŠm”F—p
+    int homingCount = 0;
+    int totalCount = 0;
+    bool lastHoming = false;
+    for (auto& bi : bullets) {
+        if (bi.active) {
+            if (bi.homing) homingCount++;
+            totalCount++;
+            lastHoming = bi.homing;
+        }
+    }
+
+    DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
+    DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
+    DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
+
 
 }
 
 std::vector<BulletInstance>& Bullet::GetBullets()  {
     return bullets;
  }
+void Bullet::SetEnemyPosition(float x, float y) {
+    ex = x;
+    ey = y;
+}
