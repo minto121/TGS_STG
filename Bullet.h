@@ -44,6 +44,7 @@ public:
 	void SetPlayer(demo_Player* player);
 
 	void SetEnemyPosition(float x, float y);
+	void ClearAllBullets();
 	demo_Player* D_PLAYER;
 
 	std::vector<B_State>patterns;

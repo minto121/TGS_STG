@@ -6,7 +6,7 @@ Enemy::Enemy(float x, float y)
     : enemy_X(x), enemy_Y(y), baseX(x), baseY(y),
     e_angle(PI / 2), dashSpeed(4.0f), zigzagOffset(0.0f),
     frameCount(0), stateTimer(0), state(EnemyState::Enter),
-    hp(10), radius(16.0f)
+    hp(10), radius(18.0f)
 {
 }
 
