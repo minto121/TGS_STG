@@ -22,6 +22,8 @@ Title::Title()
 	FireImg = LoadGraph("Resource/image/FireBall_img.png");
 	WaterImg = LoadGraph("Resource/image/WaterBall_img.png");
 	LeafImg = LoadGraph("Resource/image/leaf_img.png");
+
+	player_img[11] = LoadGraph("Resource/image/Character_image/sample006.png");
 }
 
 Title::~Title()
@@ -75,4 +77,6 @@ void Title::Draw() const
 	DrawGraph(100, 150, FireImg, TRUE);
 	DrawGraph(200, 150, WaterImg, TRUE);
 	DrawGraph(300, 150, LeafImg, TRUE);*/
+
+	DrawGraph(500, 300, player_img[1], TRUE);
 }
