@@ -30,7 +30,6 @@ AbstractScene* SceneManager::Update()
 		delete mScene;
 		mScene = NextScene;
 	}
-
 	return mScene;
 }
 

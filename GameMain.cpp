@@ -54,8 +54,9 @@ AbstractScene* GameMain::Update()
 			currentPattern = (currentPattern + 1) % 3;
 
 			if (currentPattern == 0) {
-				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
+				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", -1, 120);
 				BULLET_DATE->SetReflectEnable(false); // ’Êí’e‚Í”½Ë‚µ‚È‚¢
+				BULLET_DATE->bi.fall == true;
 			}
 			else if (currentPattern == 1) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);

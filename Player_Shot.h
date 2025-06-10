@@ -18,6 +18,7 @@ public:
     int ShotTime;
     int lastShotTime;
     int Bullet_img;
+    int P_Shot_img[8];
 
 
 public:

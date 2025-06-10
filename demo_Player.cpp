@@ -60,6 +60,8 @@ void demo_Player::move()
         else {
             y -= 4.0f;
         }
+
+        if (y < 0.0f)y = 0.0f;
     }
 
     // â∫
@@ -70,6 +72,7 @@ void demo_Player::move()
         else {
             y += 4.0f;
         }
+        if (y > SCREEN_HEIGHT)y = SCREEN_HEIGHT;
     }
 
     // ç∂
@@ -80,6 +83,7 @@ void demo_Player::move()
         else {
             x -= 4.0f;
         }
+        if (x < 0.0f)x = 0.0f;
     }
 
     // âE
@@ -90,6 +94,7 @@ void demo_Player::move()
         else {
             x += 4.0f;
         }
+        if (x > 850)x = 850;
     }
 }
 

@@ -43,4 +43,3 @@ private:
 	const int shotInterval = 500; // ミリ秒。必要に応じて調整
 
 };
-

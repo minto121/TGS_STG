@@ -2,13 +2,17 @@
 struct BulletInstance {
 	float x, y;
 	float vx, vy;
-	bool isAlive;
+	float ay = 0.0f;
+	float scale;
+	bool isAlive = true;
 	bool active;
 	bool reflect;
+	bool reflected = false;
+	bool fall = false;
 	bool homing = false;  // ホーミング弾かどうかのフラグ
 	bool CheckReflect;
-	int reflectFrameCnt;
-	int reflectCnt = 0;
+	int time;
+	int reflectCount = 0;
 
 	float homingStrength = 0.05f;
 	float angle = 0.0f;   // 現在の向き（ラジアン）

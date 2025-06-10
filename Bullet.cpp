@@ -9,17 +9,19 @@
 #include"FpsControl.h"
 #include"demo_player.h"
 
-#define PLAY_AREA_LEFT   0
-#define PLAY_AREA_RIGHT  850
-#define PLAY_AREA_TOP    0
-#define PLAY_AREA_BOTTOM 720
-
-const float PI = 3.14159265f;
-
 template<typename T>
 T Clamp(T val, T minVal, T maxVal) {
     return (val < minVal) ? minVal : (val > maxVal) ? maxVal : val;
 }
+
+
+#define PLAY_AREA_LEFT   0.0f
+#define PLAY_AREA_RIGHT  850.0f
+#define PLAY_AREA_TOP    0.0f
+#define PLAY_AREA_BOTTOM 720.0f
+
+const float PI = 3.14159265f;
+
 
 //std::vector<BulletInstance>& Bullet::GetBullets()
 //{
@@ -62,51 +64,42 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 
     //if (D_PLAYER && D_PLAYER->IsAlive()) {
     //    if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
-
+            //弾幕の生成
             printf("nowtime: %d\n", nowtime);
             for (auto& pattern : patterns) {
                 if (!pattern.used && nowtime >= pattern.time) {
+                    float angleStep = (pattern.cnt > 1) ? (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1) : 0;
 
-                    float angleStep = 0;
-                    if (pattern.cnt > 1) {
-                        angleStep = (pattern.E_angle - pattern.S_angle) / (pattern.cnt - 1);
-                    }
-
-                    for (int i = 0; i < pattern.cnt; i++) {
+                    for (int i = 0; i < pattern.cnt; ++i) {
                         float angleDeg = pattern.S_angle + angleStep * i;
                         float angleRad = angleDeg * (M_PI / 180.0f);
 
-                BulletInstance bi;
-                bi.x = pattern.x;
-                bi.y = pattern.y;
-                bi.speed = pattern.spd;
-                bi.x = ex;
-                bi.y = ey;
+                        BulletInstance bi;
+                        bi.x = ex;
+                        bi.y = ey;
+                        bi.speed = pattern.spd;
+                        bi.ay = 0.0f;
+                        bi.vx = cosf(angleRad) * pattern.spd;
+                        bi.vy = sinf(angleRad) * pattern.spd;
 
-                        //ホーミング処理
+                        // fall処理
+                        if (pattern.fall == true) {
+                            bi.ay = 0.05f; // 重力で落下
+                            //printf("fall bullet generated at time: %d\n", nowtime);
+                        }
+                        //追尾弾処理
                         if (pattern.homing && D_PLAYER) {
-                            float dx = D_PLAYER->GetX() - pattern.x;
-                            float dy = D_PLAYER->GetY() - pattern.y;
+                            float dx = px - pattern.x;
+                            float dy = py - pattern.y;
                             float angle = atan2f(dy, dx);
-
                             bi.vx = cosf(angle) * pattern.spd;
                             bi.vy = sinf(angle) * pattern.spd;
-                            bi.speed = pattern.spd;
                             bi.homing = true;
-                            bi.homingStrength = 0.2f;
+                            bi.homingStrength = 0.1f;
                         }
-                        else {
-                            float angle = angleRad;
-                            bi.vx = cosf(angle) * pattern.spd;
-                            bi.vy = sinf(angle) * pattern.spd;
-                            bi.speed = pattern.spd;
-                            bi.homing = false;
-                        }
-
+                        bi.fall = pattern.fall;
+                        bi.reflect = pattern.reflect;
                         bi.active = true;
-                        bi.reflect = globalReflectEnable; // 反射設定もここで代入
-
-                        //bi.homingStrength = 0.5f;  
 
                         bullets.push_back(bi);
                     }
@@ -114,105 +107,80 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 }
             }
 
-            // 弾の移動
-            float dt = 1.0f / 60.0f;//FpsControl_GetDeltaTime();
-            const float maxTurn = 0.087f;  // 最大回転速度（ラジアンで約5度）
-            const int MAX_REFLECT_LIFETIME = 60 * 5; // 反射後最大5秒で削除
+            //弾の移動
+            for (auto& b : bullets) {
+                if (!b.active) continue;
 
-            for (auto& bi : bullets) {
-                if (bi.active) {
-                    bi.x += bi.vx * dt;
-                    bi.y += bi.vy * dt;
+                // 通常移動
+                b.vy += b.ay; // 加速度（重力）
+                b.x += b.vx;
+                b.y += b.vy;
 
-                    if (bi.reflect) {
-                        bool reflected = false;
+                if (b.reflect == true) {
+                    // 最大1回まで反射させる
+                    if (b.reflectCount == 0) {
+                        //bool reflected = false;
 
-                        // 左右の壁に反射
-                        if (bi.x <= PLAY_AREA_LEFT || bi.x >= PLAY_AREA_RIGHT) {
-                            bi.vx *= -1;
-                            bi.x = Clamp<float>(bi.x, PLAY_AREA_LEFT, PLAY_AREA_RIGHT); // はみ出さないように修正
-                            reflected = true;
+                        if (b.x < PLAY_AREA_LEFT || b.x > PLAY_AREA_RIGHT) {
+                            b.vx *= -1;
+                            b.reflected = true;
+                        }
+                        if (b.y < PLAY_AREA_TOP || b.y > PLAY_AREA_BOTTOM) {
+                            b.vy *= -1;
+                            b.reflected = true;
                         }
 
-                        // 上下の壁に反射
-                        if (bi.y <= PLAY_AREA_TOP || bi.y >= PLAY_AREA_BOTTOM) {
-                            bi.vy *= -1;
-                            bi.y = Clamp<float>(bi.y, PLAY_AREA_TOP, PLAY_AREA_BOTTOM); // はみ出さないように修正
-                            reflected = true;
+                        if (b.reflected) {
+                            b.reflectCount = 1;
                         }
+                    }else {
 
-                        // 反射したらフラグを立てる
-                        if (reflected) {
-                            bi.reflectCnt++;
-                            bi.CheckReflect = true;
-                            if (bi.reflectCnt >= 2) {
-                                bi.active = false;  // 2回目の反射で削除
-                                continue;
-                            }
-                        }
-
-                        // 反射済みで、範囲外に出たら削除
-                        if (bi.CheckReflect) {
-                            bi.reflectFrameCnt++;
-                            if ((bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
-                                bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) ||
-                                bi.reflectFrameCnt >= MAX_REFLECT_LIFETIME) {
-                                bi.active = false;
-                            }
-                        }
-                    }
-                    else {
-                        // 通常の弾：1回も反射しないタイプ
-                        if (bi.x < PLAY_AREA_LEFT || bi.x > PLAY_AREA_RIGHT ||
-                            bi.y < PLAY_AREA_TOP || bi.y > PLAY_AREA_BOTTOM) {
-                            bi.active = false;
-                        }
-                    }
-                    // ホーミング弾として追尾する処理
-                    if (bi.homing && D_PLAYER) {
-                        float targetX = D_PLAYER->GetX();
-                        float targetY = D_PLAYER->GetY();
-
-                        float dx = targetX - bi.x;
-                        float dy = targetY - bi.y;
-                        float targetAngle = atan2f(dy, dx);
-                        // 現在の角度
-                        float currentAngle = atan2f(bi.vy, bi.vx);
-
-                        // 角度差を求めて、短い方向に補間する
-                        float angleDiff = targetAngle - currentAngle;
-
-                        // -π ～ π の範囲に収める
-                        while (angleDiff > M_PI) angleDiff -= 2 * M_PI;
-                        while (angleDiff < -M_PI) angleDiff += 2 * M_PI;
-
-                        // ホーミング強度をかけて補間
-                        float newAngle = currentAngle + angleDiff * bi.homingStrength;
-
-                        //// 新しい速度を設定
-                        bi.vx = cosf(newAngle) * bi.speed;
-                        bi.vy = sinf(newAngle) * bi.speed;
-                    }
-
-                    //// 通常の移動処理
-                    //bi.x += bi.vx * dt;
-                    //bi.y += bi.vy * dt;
-
-                    if (bi.rippleEffect) {
-                        bi.x += bi.rippleVx * dt;
-                        bi.y += bi.rippleVy * dt;
-                        bi.rippleFrame++;
-
-                        if (bi.rippleFrame >= bi.rippleLife) {
-                            bi.active = false;
-                            continue;
+                        // 画面外に出たら削除
+                        if (b.x < PLAY_AREA_LEFT || b.x > PLAY_AREA_RIGHT
+                            || b.y < PLAY_AREA_TOP || b.y > PLAY_AREA_BOTTOM) {
+                            b.isAlive = false;
                         }
                     }
                 }
+
+                // ホーミング弾の調整（任意）
+                if (b.homing && D_PLAYER) {
+                    float dx = px - b.x;
+                    float dy = py - b.y;
+                    float angle = atan2f(dy, dx);
+                    float targetVx = cosf(angle) * b.speed;
+                    float targetVy = sinf(angle) * b.speed;
+                    b.vx += (targetVx - b.vx) * b.homingStrength;
+                    b.vy += (targetVy - b.vy) * b.homingStrength;
+                }
+
+                //// 画面外で無効化（任意）
+                //if (b.x < PLAY_AREA_LEFT || b.x > PLAY_AREA_RIGHT ||
+                //    b.y < PLAY_AREA_TOP || b.y > PLAY_AREA_BOTTOM) {
+                //    b.active = false;
+                //}
+
+                // 波紋弾の寿命処理
+                if (b.rippleEffect) {
+                    b.rippleFrame++;
+                    b.vx = b.rippleVx;
+                    b.vy = b.rippleVy;
+                    if (b.rippleFrame > b.rippleLife) {
+                        b.active = false;
+                    }
+                }
             }
-            printf("homing: %d\n", bi.homing);
-       /* }
-    }*/
+
+            if (nowtime - lastPatternLoopTime >= patternLoopInterval) {
+                for (auto& p : basePatterns) {
+                    B_State newP = p;
+                    newP.time = nowtime + (p.time % patternLoopInterval);  // 相対時間で再利用
+                    newP.used = false;
+                    if (p.homing && nowtime > 0) continue; // ホーミング弾は1回だけにしたい場合
+                    patterns.push_back(newP);
+                }
+                lastPatternLoopTime = nowtime;
+            }
 }
 
 void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
@@ -240,8 +208,21 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             std::getline(ss, value, ','); b.E_angle = std::stof(value);
             std::getline(ss, value, ','); b.cnt = std::stoi(value);
             std::getline(ss, value, ','); b.spd = std::stof(value);
-            b.used = false; // 初期状態で未使用とする
-
+            // 初期値
+ /*           b.used = false;*/
+  /*          b.fall = false;
+            b.homing = false;
+            b.reflect = false;
+            b.ripple = false;*/
+            //fall
+            if (std::getline(ss, value, ',')) {
+                value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+                b.fall = (value == "true" || value == "1");
+            }
+            else {
+                b.fall = false; // 古いCSV用にデフォルト
+            }
+            //homing
             if (std::getline(ss, value, ',')) {
                 value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
                 b.homing = (value == "true" || value == "1");
@@ -249,7 +230,18 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             else {
                 b.homing = false; // 古いCSV用にデフォルト
             }
+  
+            // reflect
+            if (std::getline(ss, value, ',')) {
+                value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+                b.reflect = (value == "true" || value == "1");
+            }
 
+            // ripple
+            if (std::getline(ss, value, ',')) {
+                value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+                b.ripple = (value == "true" || value == "1");
+            }
             basePatterns.push_back(b);
         }
         catch (...) {
@@ -259,37 +251,49 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
 
     // 繰り返し追加（5回）
     const int interval = 120; // 繰り返し間隔（フレーム単位、例: 2秒）
-   /* for (int i = 0; i < 5; i++) {
-        for (auto& p : basePatterns) {
-            B_State newP = p;
-            newP.time += i * interval;
-            newP.used = false;
-            patterns.push_back(newP);
-        }
-    }*/
+    //for (int i = 0; i < 5; i++) {
+    //    for (auto& p : basePatterns) {
+    //        B_State newP = p;
+    //        newP.time += i * interval;
+    //        newP.used = false;
+    //        patterns.push_back(newP);
+    //    }
+    //}
 
-    // パターン登録
-    for (int i = 0; i < repeatCnt; i++) {
-        for (auto& p : basePatterns) {
-            B_State newP = p;
-            newP.time += i * interval;
-            newP.used = false;
-            patterns.push_back(newP);
-        }
+
+    //// パターン登録
+    //for (int i = 0; i < 5; i++) {
+    //    for (auto& p : basePatterns) {
+    //        if (p.homing && i > 0) continue;
+    //        B_State newP = p;
+    //        newP.time += i * interval;
+    //        newP.used = false;
+    //        patterns.push_back(newP);
+    //    }
+    //}
+
+
+    this->basePatterns = basePatterns;
+    // 最初のループ分だけロード
+    for (auto& p : basePatterns) {
+        B_State newP = p;
+        newP.time += 0;
+        newP.used = false;
+        patterns.push_back(newP);
     }
 
-    //確認用
-    int homingCount = 0;
-    int totalCount = 0;
-    bool lastHoming = false;
-    for (auto& bi : bullets) {
-        if (bi.active) {
-            if (bi.homing) homingCount++;
-            totalCount++;
-            lastHoming = bi.homing;
-        }
-    }
-    printf("active bullets: %d, homing bullets: %d\n", totalCount, homingCount);
+    ////確認用
+    //int homingCount = 0;
+    //int totalCount = 0;
+    //bool lastHoming = false;
+    //for (auto& bi : bullets) {
+    //    if (bi.active) {
+    //        if (bi.homing) homingCount++;
+    //        totalCount++;
+    //        lastHoming = bi.homing;
+    //    }
+    //}
+    //printf("active bullets: %d, homing bullets: %d\n", totalCount, homingCount);
 
 }
 
@@ -378,8 +382,8 @@ void Bullet::Draw()
         //    }
         //}
 
-        DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
-        DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
+        //DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
+        //DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
         //DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
     }
 
