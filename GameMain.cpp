@@ -25,6 +25,7 @@ GameMain::GameMain()
 	UI_Img[4] = LoadGraph("Resource/image/bomb_img.png");
 
 	LifeImg = LoadGraph("Resource/image/life_img.png");
+	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
@@ -115,6 +116,8 @@ AbstractScene* GameMain::Update()
 
 void GameMain::Draw() const
 {
+	DrawGraph(0, -600, BackGroundImg, FALSE);
+
 	// プレイヤー描画（仮：白い四角）
 	//DrawBox((int)(player.x - 10), (int)(player.y - 10), (int)(player.x + 10), (int)(player.y + 10), GetColor(255, 255, 255), TRUE);
 	P_SHOT->Draw();
