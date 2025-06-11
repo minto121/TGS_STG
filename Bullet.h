@@ -40,7 +40,7 @@ public:
 	int lastPatternLoopTime = 0;
 
 	float px, py;
-	float dy, dx;
+	//float dy, dx;
 	int Bullet_img;
 	int nowtime = 0;
 	bool homingFiredOnce = false;

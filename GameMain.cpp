@@ -54,7 +54,7 @@ AbstractScene* GameMain::Update()
 			currentPattern = (currentPattern + 1) % 3;
 
 			if (currentPattern == 0) {
-				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", -1, 120);
+				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
 				BULLET_DATE->SetReflectEnable(false); // ’Êí’e‚Í”½ŽË‚µ‚È‚¢
 				BULLET_DATE->bi.fall == true;
 			}
@@ -112,7 +112,7 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
-	return this;
+	return 0;
 }
 
 void GameMain::Draw() const

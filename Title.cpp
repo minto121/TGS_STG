@@ -78,5 +78,5 @@ void Title::Draw() const
 	DrawGraph(200, 150, WaterImg, TRUE);
 	DrawGraph(300, 150, LeafImg, TRUE);*/
 
-	DrawGraph(500, 300, player_img[1], TRUE);
+	//DrawGraph(500, 300, player_img[1], TRUE);
 }

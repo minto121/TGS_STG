@@ -1,2 +1,3 @@
 time,x,y,S_angle,E_angle,cnt,spd,fall,homing,reflect
 0,500,100,-140,-40,12,4,true,false,false
+0,100,0,90,90,10,0,true,false,false

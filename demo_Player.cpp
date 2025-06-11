@@ -11,7 +11,7 @@ Bullet* BulletManager = nullptr;
 
 demo_Player::demo_Player()
 {
-    x = 800 / 2.0f;
+    x = 400;
     y = 650;
     radius = 5.0f;
     Alive = true;
@@ -19,7 +19,13 @@ demo_Player::demo_Player()
     RespawnTimer = 0;
     Zanki = 3;
 
-    player_img[11] = LoadGraph("Resource/image/Character_image/sample006.png");
+    LoadDivGraph("Resource/image/Character_image/sample006.png",12, 3, 4, 48, 48, player_img);
+
+ /*   int result = LoadDivGraph("Resource/image/Character_image/sample006.png", 12, 3, 4, 32, 48, player_img);
+    if (result == -1) {
+        printfDx("プレイヤー画像の読み込みに失敗しました\n");
+    }*/
+
 }
 
 void demo_Player::Update(const std::vector<BulletInstance>& bullets)
@@ -118,7 +124,7 @@ void demo_Player::Hit()
     Alive = false;
     Respawn = true;
     RespawnTimer = 120;
-    x = 800 / 2.0f;
+    x = 400;
     y = SCREEN_HEIGHT + 30;
  
 }
@@ -174,13 +180,24 @@ void demo_Player::Draw()const
     // プレイヤーを白い四角で描画
     //DrawBox((int)(x - 10), (int)(y - 10), (int)(x + 10), (int)(y + 10), GetColor(255, 255, 255), TRUE);
     if (Alive || Respawn) {
-        //DrawCircle((int)x, (int)y, (int)radius, GetColor(0, 255, 0), TRUE); // ヒットボックスの表示
-        DrawGraph((int)x, (int)y, player_img[10], TRUE);
+        DrawCircle((int)x, (int)y, (int)radius, GetColor(0, 255, 0), TRUE); // ヒットボックスの表示
+        //int frame = (GetNowCount() / 200) % 3; // アニメーション（9～11番）
+        if (CheckHitKey(KEY_INPUT_A) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_LEFT) == 1) {
+            player_img[9];
+        }
+        if (CheckHitKey(KEY_INPUT_D) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_RIGHT) == 1) {
+            player_img[11];
+        }
+
+            DrawGraph((int)(x - 16), (int)(y - 24), player_img[10], TRUE);
     }
 
-    DrawFormatString(0, 20, 0xffffff, "Alive:%d", Alive);
+   
+
+    DrawFormatString(0, 20, 0xffffff, "x,4:%d,%d", x, y);
     DrawFormatString(0, 40, 0xffffff, "ReSpawnTimer:%d", RespawnTimer);
     DrawFormatString(0, 80, 0xffffff, "Zanki:%d", Zanki);
+ 
 
 }
 

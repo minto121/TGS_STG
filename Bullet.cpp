@@ -86,6 +86,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         if (pattern.fall == true) {
                             bi.ay = 0.05f; // d—Í‚Å—‰º
                             //printf("fall bullet generated at time: %d\n", nowtime);
+
                         }
                         //’Ç”ö’eˆ—
                         if (pattern.homing && D_PLAYER) {
