@@ -8,7 +8,7 @@ Enemy::Enemy(float x, float y)
     frameCount(0), stateTimer(0), state(EnemyState::Enter),
     hp(10), radius(16.0f)
 {
-    enemy_img = LoadGraph("Resource/image/Enemy_image/pipo-boss003.png");
+    enemy_img = LoadGraph("Resource/image/Enemy_image/pipo-boss001.png");
 }
 
 Enemy::~Enemy() {}
