@@ -18,6 +18,8 @@ public:
     int LifeImg;
     int BackGroundImg;
 
+    int EnemyPhase;
+
 private:
 
 public:

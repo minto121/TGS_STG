@@ -397,3 +397,9 @@ void Bullet::SetEnemyPosition(float x, float y) {
     ex = x;
     ey = y;
 }
+
+void Bullet::ClearAllBullets() {
+    for (auto& b : bullets) {
+        b.active = false;
+    }
+}

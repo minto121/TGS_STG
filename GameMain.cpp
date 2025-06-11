@@ -29,6 +29,7 @@ GameMain::GameMain()
 	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
 	enemy = new Enemy(320.0f, 100.0f);
+	int EnemyPhase = 0;
 	nowtime = 0;
 	currentPattern = 0;
 	bool isCKeyPressed = false;//確認用
@@ -81,12 +82,6 @@ AbstractScene* GameMain::Update()
 
 	if (enemy != nullptr) {
 		enemy->Update();
-		// 敵のHPが半分を切ったら弾パターンを変える
-		if (enemy->GetHP() <= 5 && currentPattern != 99) {
-			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // 好きな弾パターンに変更
-			BULLET_DATE->SetReflectEnable(false); // 必要に応じて反射も設定
-			currentPattern = 99; // フラグ代わり：1回しか切り替えないように
-		}
 		// 敵の現在位置をBulletに教える
 		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
@@ -94,18 +89,38 @@ AbstractScene* GameMain::Update()
 	// 弾と敵の当たり判定
 	for (auto& b : P_SHOT->bullets) {  // P_SHOTの弾をチェック
 		if (b.active && enemy != nullptr) {
-			// プレイヤーの弾であることを確認して衝突判定
-			if (enemy->CheckCollision(b.x, b.y, true)) {  // trueでプレイヤーの弾と判定
-				enemy->OnHit();  // HPを減らす
+			if (enemy->CheckCollision(b.x, b.y, true)) {
+				enemy->OnHit(); // HPを減らす
 				b.active = false;  // 弾を消す
 
-				if (enemy->IsDead()) {
-					delete enemy;
-					enemy = nullptr;
-					printfDx("WIN");
+				if (enemy->IsDead()) { // ★ HPが0以下なら倒す
+					EnemyPhase++;
 
-					break;
+					if (EnemyPhase < 3) {
+						delete enemy;
+						enemy = new Enemy(320.0f, 100.0f); // 敵復活
+
+						if (EnemyPhase == 1) {
+							BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
+							BULLET_DATE->SetReflectEnable(true);
+							currentPattern = 1;
+						}
+						else if (EnemyPhase == 2) {
+							BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
+							BULLET_DATE->SetReflectEnable(false);
+							currentPattern = 2;
+						}
+					}
+					else {
+						delete enemy;
+						enemy = nullptr;
+
+						BULLET_DATE->ClearAllBullets();
+						printfDx("WIN!! 最終形態撃破\n");
+					}
 				}
+
+				break;
 			}
 		}
 	}

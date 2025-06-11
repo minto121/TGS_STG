@@ -58,6 +58,7 @@ public:
 	void TriggerRippleEffect(float cx, float cy, float radius);
 
 	void SetEnemyPosition(float x, float y);
+	void ClearAllBullets();
 	demo_Player* D_PLAYER;
 
 	std::vector<B_State>patterns;
