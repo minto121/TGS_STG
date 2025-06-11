@@ -17,6 +17,10 @@ GameMain::GameMain()
 	BULLET_DATE->SetPlayer(D_PLAYER);
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // © CSV“Ç‚İ‚İ
 
+
+	//BGMESE“Ç
+	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+
 	//‰æ‘œ“Ç‚İ‚İ
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
 	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
@@ -40,10 +44,19 @@ GameMain::~GameMain()
 	delete D_PLAYER;
 	delete BULLET_DATE;
 	delete enemy;
+
+	//BGMíœ
+	DeleteSoundMem(GameMain_BGM);
+	StopSoundMem(GameMain_BGM);
 }
 
 AbstractScene* GameMain::Update()
 {
+	//BGM
+	if (CheckSoundMem(GameMain_BGM) == 0)
+	{
+		PlaySoundMem(GameMain_BGM, DX_PLAYTYPE_LOOP, TRUE);
+	}
 
 	nowtime++;
 

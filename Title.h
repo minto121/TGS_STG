@@ -17,9 +17,10 @@ private:
 	int interval;
 	int button_wait;
 
-	int TitleBGM;
-	int TitleSE;
-	int TitleImg;
+	int Title_BGM;
+	int Select_SE;
+	int CursorMove_SE;
+	int Title_Img;
 
 	int cursor;
 	int cursor_img;
