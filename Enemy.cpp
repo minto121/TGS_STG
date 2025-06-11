@@ -121,7 +121,7 @@ bool Enemy::CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) co
     float dx = bulletX - (enemy_X-10.0f);
     float dy = bulletY - enemy_Y;
     float distanceSq = dx * dx + dy * dy;
-    return distanceSq <= (radius + 15.0f) * (radius + 15.0f);  // ’e‚Ì”¼Œa‚à‰ÁŽZi8.0f‚ÍƒvƒŒƒCƒ„[’e‚Ì”¼Œaj
+    return distanceSq <= (radius + 25.0f) * (radius + 25.0f);  // ’e‚Ì”¼Œa‚à‰ÁŽZi8.0f‚ÍƒvƒŒƒCƒ„[’e‚Ì”¼Œaj
 }
 
 void Enemy::OnHit()
