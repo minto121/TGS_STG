@@ -117,10 +117,10 @@ bool Enemy::CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) co
         return false;  // プレイヤーの弾でない場合は衝突しない
     }
 
-    float dx = bulletX - enemy_X;
+    float dx = bulletX - (enemy_X-10.0f);
     float dy = bulletY - enemy_Y;
     float distanceSq = dx * dx + dy * dy;
-    return distanceSq <= (radius + 8.0f) * (radius + 8.0f);  // 弾の半径も加算（8.0fはプレイヤー弾の半径）
+    return distanceSq <= (radius + 15.0f) * (radius + 15.0f);  // 弾の半径も加算（8.0fはプレイヤー弾の半径）
 }
 
 void Enemy::OnHit()
@@ -152,13 +152,8 @@ void Enemy::Draw() const
         GetColor(255, 0, 0),
         TRUE
     );
-    //// HP表示（敵の上に表示）
-    //DrawFormatString(
-    //    static_cast<int>(enemy_X - 10),
-    //    static_cast<int>(enemy_Y - size / 2 - 16),
-    //    GetColor(255, 255, 255),
-    //    "HP: %d", hp
-    //);
+    DrawCircle(static_cast<int>(enemy_X), static_cast<int>(enemy_Y), static_cast<int>(radius + 8.0f), GetColor(0, 255, 255), FALSE);
+
     int maxHP = 10;  // 最大HP（後で変数にしてもOK）
     int barX = 50;   // バーの左端位置
     int barY = 20;   // バーの上位置
