@@ -39,7 +39,7 @@ private:
     int hp;
     float radius;       //“–‚½‚è”»’è—p”¼Œa
 
-
+    int enemy_img;
 
     void EnteringBehavior();
     void WaitingBehavior();

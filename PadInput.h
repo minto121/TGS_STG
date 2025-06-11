@@ -3,6 +3,10 @@
 
 #define BUTTONS 16
 
+#define PRESS   1 // 押された瞬間
+#define PRESSED 2 // 押されている間
+#define RELEASE 3 // 離した瞬間
+
 //�X�e�B�b�N
 struct Stick
 {

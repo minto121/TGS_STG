@@ -16,6 +16,7 @@ public:
     ~SceneManager()
     {
         delete mScene;
+
     }
 
     //?`???O??X?V????s

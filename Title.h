@@ -13,13 +13,16 @@ private:
 	TITLE_MENU Menu_Number1;
 	TITLE_MENU Menu_Number2;
 
+	int select;
+	int interval;
+	int button_wait;
+
 	int TitleBGM;
 	int TitleSE;
-	int UI_Img[6];
-	int LifeImg;
-	int FireImg;
-	int WaterImg;
-	int LeafImg;
+	int TitleImg;
+
+	int cursor;
+	int cursor_img;
 
 public:
 	Title();

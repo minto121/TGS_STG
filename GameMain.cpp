@@ -5,7 +5,6 @@
 #include"Bullet.h"
 #include "Enemy.h"
 #include "Title.h"
-#include "Mob_Enemy.h"
 
 //#define PI 3.1415926f
 
@@ -15,11 +14,11 @@ GameMain::GameMain()
 	D_PLAYER = new demo_Player;
 	P_SHOT = new Player_Shot;
 	BULLET_DATE = new Bullet;
-	MOB_ENEMY = new Mob_Enemy;
 	BULLET_DATE->SetPlayer(D_PLAYER);
-	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // ï¿½ï¿½ CSVï¿½Ç‚İï¿½ï¿½ï¿½
+	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // © CSV“Ç‚İ‚İ
+	D_PLAYER->SetBulletManager(BULLET_DATE);
 
-	//ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½
+	//‰æ‘œ“Ç‚İ‚İ
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
 	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
 	UI_Img[2] = LoadGraph("Resource/image/plyerlife.png");
@@ -27,11 +26,12 @@ GameMain::GameMain()
 	UI_Img[4] = LoadGraph("Resource/image/bomb_img.png");
 
 	LifeImg = LoadGraph("Resource/image/life_img.png");
+	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
 	currentPattern = 0;
-	bool isCKeyPressed = false;//ï¿½mï¿½Fï¿½p
+	bool isCKeyPressed = false;//Šm”F—p
 
 }
 
@@ -41,7 +41,6 @@ GameMain::~GameMain()
 	delete D_PLAYER;
 	delete BULLET_DATE;
 	delete enemy;
-	delete MOB_ENEMY;
 }
 
 AbstractScene* GameMain::Update()
@@ -57,15 +56,16 @@ AbstractScene* GameMain::Update()
 
 			if (currentPattern == 0) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // ï¿½Êï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½
+				BULLET_DATE->SetReflectEnable(false); // ’Êí’e‚Í”½Ë‚µ‚È‚¢
+				BULLET_DATE->bi.fall == true;
 			}
 			else if (currentPattern == 1) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(true); // ï¿½Êï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½
+				BULLET_DATE->SetReflectEnable(true); // ’Êí’e‚Í”½Ë‚µ‚È‚¢
 			}
 			else if (currentPattern == 2) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // ï¿½Ç”ï¿½ï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½
+				BULLET_DATE->SetReflectEnable(false); // ’Ç”ö’e‚Í”½Ë‚³‚¹‚È‚¢•û‚ª—Ç‚¢
 			}
 		}
 		nowtime = 0;
@@ -77,28 +77,27 @@ AbstractScene* GameMain::Update()
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
 	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	BULLET_DATE->Update(nowtime);
-	MOB_ENEMY->Update();
-	//D_PLAYER->fire(P_SHOT);  // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½eï¿½ğ”­ï¿½
+	//D_PLAYER->fire(P_SHOT);  // ƒvƒŒƒCƒ„[‚ª’e‚ğ”­Ë
 
 	if (enemy != nullptr) {
 		enemy->Update();
-		// ï¿½Gï¿½ï¿½HPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø‚ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½Ï‚ï¿½ï¿½ï¿½
+		// “G‚ÌHP‚ª”¼•ª‚ğØ‚Á‚½‚ç’eƒpƒ^[ƒ“‚ğ•Ï‚¦‚é
 		if (enemy->GetHP() <= 5 && currentPattern != 99) {
-			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // ï¿½Dï¿½ï¿½ï¿½È’eï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½É•ÏX
-			BULLET_DATE->SetReflectEnable(false); // ï¿½Kï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½Ä”ï¿½ï¿½Ë‚ï¿½İ’ï¿½
-			currentPattern = 99; // ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½F1ï¿½ñ‚µ‚ï¿½ï¿½Ø‚ï¿½Ö‚ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ï¿½
+			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // D‚«‚È’eƒpƒ^[ƒ“‚É•ÏX
+			BULLET_DATE->SetReflectEnable(false); // •K—v‚É‰‚¶‚Ä”½Ë‚àİ’è
+			currentPattern = 99; // ƒtƒ‰ƒO‘ã‚í‚èF1‰ñ‚µ‚©Ø‚è‘Ö‚¦‚È‚¢‚æ‚¤‚É
 		}
-		// ï¿½Gï¿½ÌŒï¿½ï¿½İˆÊ’uï¿½ï¿½Bulletï¿½É‹ï¿½ï¿½ï¿½ï¿½ï¿½
+		// “G‚ÌŒ»İˆÊ’u‚ğBullet‚É‹³‚¦‚é
 		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
 
-	// ï¿½eï¿½Æ“Gï¿½Ì“ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½
-	for (auto& b : P_SHOT->bullets) {  // P_SHOTï¿½Ì’eï¿½ï¿½`ï¿½Fï¿½bï¿½N
+	// ’e‚Æ“G‚Ì“–‚½‚è”»’è
+	for (auto& b : P_SHOT->bullets) {  // P_SHOT‚Ì’e‚ğƒ`ƒFƒbƒN
 		if (b.active && enemy != nullptr) {
-			// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì’eï¿½Å‚ï¿½ï¿½é‚±ï¿½Æ‚ï¿½mï¿½Fï¿½ï¿½ï¿½ÄÕ“Ë”ï¿½ï¿½ï¿½
-			if (enemy->CheckCollision(b.x, b.y, true)) {  // trueï¿½Åƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì’eï¿½Æ”ï¿½ï¿½ï¿½
-				enemy->OnHit();  // HPï¿½ï¿½ï¿½ï¿½ç‚·
-				b.active = false;  // ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½
+			// ƒvƒŒƒCƒ„[‚Ì’e‚Å‚ ‚é‚±‚Æ‚ğŠm”F‚µ‚ÄÕ“Ë”»’è
+			if (enemy->CheckCollision(b.x, b.y, true)) {  // true‚ÅƒvƒŒƒCƒ„[‚Ì’e‚Æ”»’è
+				enemy->OnHit();  // HP‚ğŒ¸‚ç‚·
+				b.active = false;  // ’e‚ğÁ‚·
 
 				if (enemy->IsDead()) {
 					delete enemy;
@@ -114,35 +113,36 @@ AbstractScene* GameMain::Update()
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
-	return this;
+	return 0;
 }
 
 void GameMain::Draw() const
 {
-	// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½iï¿½ï¿½ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½lï¿½pï¿½j
+	DrawGraph(0, -600, BackGroundImg, FALSE);
+
+	// ƒvƒŒƒCƒ„[•`‰æi‰¼F”’‚¢lŠpj
 	//DrawBox((int)(player.x - 10), (int)(player.y - 10), (int)(player.x + 10), (int)(player.y + 10), GetColor(255, 255, 255), TRUE);
 	P_SHOT->Draw();
 	D_PLAYER->Draw();
 	BULLET_DATE->Draw();
-	MOB_ENEMY->Draw();
 	//FpsControl_Draw();
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
-	// ï¿½ï¿½ null ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½Ç‰ï¿½
+	// « null ƒ`ƒFƒbƒN‚ğ’Ç‰Á
 	if (enemy != nullptr) {
 		enemy->Draw();
 	}
 
-	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UIï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½W
+	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UI•\¦À•W
 
-	DrawGraph(850, 30, UI_Img[0], TRUE);	//ï¿½Xï¿½Rï¿½A
-	DrawGraph(850, 130, UI_Img[1], TRUE);	//ï¿½nï¿½Cï¿½Xï¿½Rï¿½A
-	DrawGraph(840, 230, UI_Img[2], TRUE);	//ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½cï¿½@
-	DrawGraph(850, 330, UI_Img[3], TRUE);	//ï¿½^ï¿½Cï¿½ï¿½
-	DrawGraph(850, 430, UI_Img[4], TRUE);	//ï¿½{ï¿½ï¿½ï¿½ï¿½
+	DrawGraph(850, 30, UI_Img[0], TRUE);	//ƒXƒRƒA
+	DrawGraph(850, 130, UI_Img[1], TRUE);	//ƒnƒCƒXƒRƒA
+	DrawGraph(840, 230, UI_Img[2], TRUE);	//ƒvƒŒƒCƒ„[c‹@
+	DrawGraph(850, 330, UI_Img[3], TRUE);	//ƒ^ƒCƒ€
+	DrawGraph(850, 430, UI_Img[4], TRUE);	//ƒ{ƒ€”
 
-	//ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½cï¿½@ï¿½æ‘œ
+	//ƒvƒŒƒCƒ„[c‹@‰æ‘œ
 	DrawGraph(1050, 260, LifeImg, TRUE);
 	DrawGraph(1100, 260, LifeImg, TRUE);
 	DrawGraph(1150, 260, LifeImg, TRUE);

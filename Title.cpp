@@ -7,21 +7,17 @@
 
 Title::Title()
 {
-
 	TitleBGM = 0;
 	TitleSE = 0;
 
-	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
-	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
-	UI_Img[2] = LoadGraph("Resource/image/plyerlife.png");
-	UI_Img[3] = LoadGraph("Resource/image/time_img.png");
-	UI_Img[4] = LoadGraph("Resource/image/bomb_img.png");
+	//初期化
+	select = 0;
+	interval = 0;
+	button_wait = 50;
 
-	LifeImg = LoadGraph("Resource/image/life_img.png");
-
-	FireImg = LoadGraph("Resource/image/FireBall_img.png");
-	WaterImg = LoadGraph("Resource/image/WaterBall_img.png");
-	LeafImg = LoadGraph("Resource/image/leaf_img.png");
+	//画像読込
+	TitleImg = LoadGraph("Resource/image/Title_img.jpg");
+	cursor_img = LoadGraph("Resource/image/cursor_img.png");
 }
 
 Title::~Title()
@@ -30,49 +26,53 @@ Title::~Title()
 
 AbstractScene* Title::Update()
 {
-	if (CheckHitKey(KEY_INPUT_Z))
-	{
-		return new GameMain();
+	if (interval < 20)interval++;
+	if (button_wait > 0)button_wait--;
+
+	//カーソル移動
+	if (PAD_INPUT::OnButton(XINPUT_BUTTON_DPAD_UP) && interval >= 20) {
+		select--;
+		interval = 0;
 	}
-	
-	if (CheckHitKey(KEY_INPUT_E))
-	{
-		return new End();
-	}
-	
-	if (CheckHitKey(KEY_INPUT_H))
-	{
-		return new Help();
+	else if (PAD_INPUT::OnButton(XINPUT_BUTTON_DPAD_DOWN) && interval >= 20) {
+		select++;
+		interval = 0;
 	}
 
+	if (select == 0) Menu_Number1 = TITLE_MENU::START;
+	if (select == 1) Menu_Number1 = TITLE_MENU::HELP;
+	if (select == 2) Menu_Number1 = TITLE_MENU::END;
+
+	if (select < 0)select = 2;
+	if (select > 2)select = 0;
+
+	//遷移先
+	if (button_wait == 0) {
+		if (PAD_INPUT::OnButton(XINPUT_BUTTON_A) == PRESS) {
+			////各シーン
+			if (TITLE_MENU::START == Menu_Number1) return new GameMain();
+			if (TITLE_MENU::HELP == Menu_Number1) return new Help();
+			if (TITLE_MENU::END == Menu_Number1) return new End();
+
+			interval = 0;
+		}
+	}
 	return this;
 }
 
 void Title::Draw() const
 {
-	//SetBackgroundColor(255, 255, 255);
+	//タイトル画像
+	DrawGraph(0, 0, TitleImg, TRUE);
 
 	SetFontSize(100);
-	DrawFormatString(350, 100, 0xffffff, "タイトル画面");
+	DrawFormatString(350, 100, 0xffffff, "タイトル");
 
 	SetFontSize(50);
 	DrawFormatString(550, 300, 0xffffff, "スタート");
 	DrawFormatString(550, 400, 0xffffff, "ヘルプ");
 	DrawFormatString(550, 500, 0xffffff, "エンド");
 
-	/*DrawBox(800, 0, 1280, 700, 0xffffff, TRUE);
+	DrawGraph(240 , 190+ select * 100, cursor_img, TRUE);
 
-	DrawGraph(850, 50, UI_Img[0], TRUE);
-	DrawGraph(850, 100, UI_Img[1], TRUE);
-	DrawGraph(800, 150, UI_Img[2], TRUE);
-	DrawGraph(850, 200, UI_Img[3], TRUE);
-	DrawGraph(850, 250, UI_Img[4], TRUE);
-
-	DrawGraph(1000, 170, LifeImg, TRUE);
-	DrawGraph(1050, 170, LifeImg, TRUE);
-	DrawGraph(1100, 170, LifeImg, TRUE);
-
-	DrawGraph(100, 150, FireImg, TRUE);
-	DrawGraph(200, 150, WaterImg, TRUE);
-	DrawGraph(300, 150, LeafImg, TRUE);*/
 }

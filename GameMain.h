@@ -16,6 +16,7 @@ public:
 
     int UI_Img[6];
     int LifeImg;
+    int BackGroundImg;
 
 private:
 
