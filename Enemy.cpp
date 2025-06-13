@@ -138,7 +138,9 @@ bool Enemy::CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) co
     float dx = bulletX - (enemy_X-10.0f);
     float dy = bulletY - enemy_Y;
     float distanceSq = dx * dx + dy * dy;
-    return distanceSq <= (radius + 25.0f) * (radius + 25.0f);  // 弾の半径も加算（8.0fはプレイヤー弾の半径）
+
+    return distanceSq <= (radius + 25.0f) * (radius + 25.0f);  // �e�̔��a����Z�i8.0f�̓v���C���[�e�̔��a�j
+
 }
 
 void Enemy::OnHit()
@@ -164,20 +166,22 @@ int Enemy::GetHP()const {
 void Enemy::Draw() const
 {
     int size = 32;
-    DrawBox(
-        static_cast<int>(enemy_X - size / 2),
-        static_cast<int>(enemy_Y - size / 2),
-        static_cast<int>(enemy_X + size / 2),
-        static_cast<int>(enemy_Y + size / 2),
-        GetColor(255, 0, 0),
-        TRUE
-    );
-    DrawCircle(static_cast<int>(enemy_X), static_cast<int>(enemy_Y), static_cast<int>(radius + 8.0f), GetColor(0, 255, 255), FALSE);
 
-    int maxHP = 10;  // 最大HP（後で変数にしてもOK）
-    int barX = 50;   // バーの左端位置
-    int barY = 20;   // バーの上位置
-    int barWidth = 540; // 全体のバーの長さ（画面幅640の約85%）
+    //DrawBox(
+    //    static_cast<int>(enemy_X - size / 2),
+    //    static_cast<int>(enemy_Y - size / 2),
+    //    static_cast<int>(enemy_X + size / 2),
+    //    static_cast<int>(enemy_Y + size / 2),
+    //    GetColor(255, 0, 0),
+    //    TRUE
+    //);
+    //DrawCircle(static_cast<int>(enemy_X), static_cast<int>(enemy_Y), static_cast<int>(radius + 8.0f), GetColor(0, 255, 255), FALSE);
+
+    int maxHP = 10;  // �ő�HP�i��ŕϐ��ɂ��Ă�OK�j
+    int barX = 50;   // �o�[�̍��[�ʒu
+    int barY = 20;   // �o�[�̏�ʒu
+    int barWidth = 540; // �S�̂̃o�[�̒����i��ʕ�640�̖�85%�j
+
     int barHeight = 20;
 
     // 背景（枠のような見た目に）
