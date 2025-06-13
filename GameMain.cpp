@@ -143,7 +143,7 @@ AbstractScene* GameMain::Update()
 					else {
 						delete enemy;
 						enemy = nullptr;
-
+						isGameClear = true;
 						BULLET_DATE->ClearAllBullets();
 						printfDx("WIN!! ÅIŒ`‘ÔŒ‚”j\n");
 					}

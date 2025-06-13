@@ -1,4 +1,5 @@
 ﻿#include "Enemy.h"
+#include "GameMain.h"
 #include <DxLib.h>
 #include <cstdlib>
 
