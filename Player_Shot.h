@@ -14,12 +14,13 @@ public:
 
     }pshot_t;
 
-    pshot_t bullets[PSHOT_MAX];
+    pshot_t bullets[PSHOT_MAX] = {};
     //int ShotTime;
     int lastShotTime;
     //int Bullet_img;
     int P_Shot_img[8];
-    float x, y;
+    float x = 0.0f;
+    float y = 0.0f;
 
 
 public:

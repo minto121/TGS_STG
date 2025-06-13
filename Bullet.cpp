@@ -125,19 +125,18 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                             const int tailDelay = 16; // 2フレームごと
 
 
-                            for (int t = 1; t <= tailCount; ++t) {
-                                B_State tailPattern;
-                                int index = t * tailDelay;
-                                tailPattern.x = pattern.x;
-                                tailPattern.y = pattern.y;
-                                tailPattern.cnt = 1;
-                                tailPattern.spd = pattern.spd;
-                                tailPattern.fall = false;
-                                tailPattern.homing = false;
-                                tailPattern.reflect = false;
-                                tailPattern.used = false;
+                            if (!pattern.homing) {
+                                BulletInstance tail;
+                                tail.x = ex;
+                                tail.y = ey;
+                                tail.speed = pattern.spd;
+                                tail.vx = cosf(angleRad) * pattern.spd;
+                                tail.vy = sinf(angleRad) * pattern.spd;
+                                tail.active = true;
+                                tail.reflect = pattern.reflect;
+                                tail.fall = pattern.fall;
 
-                                patterns.push_back(tailPattern);
+                                bullets.push_back(tail);
                             }
                         }
                         bi.fall = pattern.fall;
@@ -403,49 +402,28 @@ void Bullet::Draw()
     int bulletW, bulletH;
     GetGraphSize(Bullet_img[7], &bulletW, &bulletH);
 
-    for (auto& b : bullets) {
-        if (b.active) {
-            if (b.fall == true) {
-                DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
-                DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[6], TRUE);
-            }
-            else if (b.reflect == true) {
-                //DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
-                DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[0], TRUE);
-            }
-            else if(b.homing == true) {
-                //DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
-                DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[2], TRUE);
+     for (auto& b : bullets) {
+        if (!b.active) continue;
 
-            }
+        int index = 0; // 画像インデックス
+        if (b.fall == true) {
+            index = 6;
         }
-
-   /*     if (b.rippleEffect) {
-            DrawCircle((int)b.x, (int)b.y, 8, GetColor(0, 128, 255));
+        else if (b.reflect == true) {
+            index = 0;
+        }
+        else if (b.homing == true) {
+            index = 2;
         }
         else {
-            DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
-        }*/
+            index = 0; // それ以外の通常弾など
+        }
 
-        //DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img, TRUE);
+        int bulletW, bulletH;
+        GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
 
-
-
-        ////ホーミングの確認用
-        //int homingCount = 0;
-        //int totalCount = 0;
-        //bool lastHoming = false;
-        //for (auto& bi : bullets) {
-        //    if (bi.active) {
-        //        if (bi.homing) homingCount++;
-        //        totalCount++;
-        //        lastHoming = bi.homing;
-        //    }
-        //}
-
-        //DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
-        //DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
-        //DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
+        // 弾の座標は中心座標として描画
+        DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
     }
 
 }

@@ -1,7 +1,7 @@
 #pragma once
 struct BulletInstance {
-	float x, y;
-	float vx, vy;
+	float x, y = 0.0f;
+	float vx, vy = 0.0f;
 	float ay = 0.0f;
 	float scale;
 	bool isAlive = true;

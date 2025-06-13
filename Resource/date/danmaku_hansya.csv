@@ -1,4 +1,4 @@
 ﻿time,x,y,S_angle,E_angle,cnt,spd,fall,homing,reflect
-10,350,100,60,60,5,4,false,false,true
-120,350,100,60,90,10,4,false,false,true
-240,350,100,90,120,10,4,false,false,true
+40,350,100,60,180,5,2,false,false,true
+40,350,100,0,90,5,2,false,false,true
+90,350,100,50,320,5,5,false,false,true

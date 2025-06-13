@@ -12,7 +12,8 @@ public:
 
 	struct B_State {
 		int time;       // 発射タイミング（ms）
-		float x, y = 0.0f;     // 発射位置
+		float x = 0.0f;
+		float y = 0.0f;     
 		float vx, vy;
 		float ay;
 		float S_angle;    // 開始角度（deg）

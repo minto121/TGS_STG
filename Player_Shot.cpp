@@ -9,9 +9,6 @@ Player_Shot::Player_Shot() {
     //ShotTime = 0;
     lastShotTime = GetNowCount();
     LoadDivGraph("Resource/image/í èÌíeñã.png", 8, 8, 1, 64, 32, P_Shot_img);
-    Player_Shot::bullets;
-    Player_Shot::x;
-    Player_Shot::y;
 }
 
 void Player_Shot::FireBullet(float playerX, float playerY)
