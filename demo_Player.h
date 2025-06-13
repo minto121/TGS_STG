@@ -4,6 +4,8 @@
 #include "Player_Shot.h"
 #include "AbstractScene.h"
 #include <vector>
+class Bullet;
+
 class demo_Player :public AbstractScene
 {
 public:
@@ -12,7 +14,7 @@ public:
 	bool Respawn;		//リスポーン
 	int RespawnTimer;	//リスポーン中の無敵時間
 	int Zanki;
-	int player_img[11];
+	int player_img[12];
 
 	float GetX()const { return x; }
 	float GetY()const { return y; }
@@ -29,6 +31,10 @@ public:
 	void Hit();
 	bool CheckHit(float x1, float y1, float r1, float x2, float y2, float r2);
 	bool GameOver()const;
+	bool IsAlive() const;
+	bool IsRespawn() const;
+
+	void SetBulletManager(Bullet* manager);
 
 
 	AbstractScene* Update() override;
@@ -36,5 +42,5 @@ public:
 private:
 	int lastShotTime = 0;
 	const int shotInterval = 500; // ミリ秒。必要に応じて調整
-};
 
+};

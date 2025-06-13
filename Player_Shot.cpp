@@ -7,7 +7,7 @@
 Player_Shot::Player_Shot() {
     //ShotTime = 0;
     lastShotTime = GetNowCount();
-    Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
+    LoadDivGraph("Resource/image/通常弾幕.png", 8, 8, 1, 64, 32, P_Shot_img);
 }
 
 void Player_Shot::FireBullet(float playerX, float playerY)
@@ -45,7 +45,7 @@ void Player_Shot::Update(float playerX, float playerY)
             bullets[i].cnt++;
 
             // 画面外に出たら非アクティブ化（仮に800x600の画面として）
-            if (bullets[i].x < 0 || bullets[i].x > 700 || bullets[i].y < 0 || bullets[i].y > 720) {
+            if (bullets[i].x < 0 || bullets[i].x > 850 || bullets[i].y < 0 || bullets[i].y > 720) {
                 bullets[i].active = false;
             }
         }
@@ -65,7 +65,7 @@ void Player_Shot::Draw()
         if (bullets[i].active) {
             // 例：小さな白い丸を描画（関数は自作 or ライブラリ依存）
             //DrawCircle((int)bullets[i].x, (int)bullets[i].y, 5, 0xFF0000);
-            DrawGraph(bullets[i].x, bullets[i].y, Bullet_img,TRUE);
+            DrawGraph(bullets[i].x, bullets[i].y, P_Shot_img[4], TRUE);
         }
     }
     

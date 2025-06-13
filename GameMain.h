@@ -19,6 +19,8 @@ public:
     int BackGroundImg;
     int GameMain_BGM;
 
+    int EnemyPhase;
+
 private:
 
 public:
