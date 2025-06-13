@@ -18,6 +18,9 @@ public:
     int UI_Img[6];
     int LifeImg;
     int BackGroundImg;
+    int GameMain_BGM;
+
+    int EnemyPhase;
 
     bool isGameClear = false;      // ゲームクリア状態
     int clearTimer = 0;            // クリア演出のタイマー
