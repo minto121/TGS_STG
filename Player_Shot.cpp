@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Player_Shot.h"
 #include"FpsControl.h"
+#include"Bullet.h"
 #include"DxLib.h"
 #include<math.h>
 
@@ -8,13 +9,16 @@ Player_Shot::Player_Shot() {
     //ShotTime = 0;
     lastShotTime = GetNowCount();
     LoadDivGraph("Resource/image/í èÌíeñã.png", 8, 8, 1, 64, 32, P_Shot_img);
+    Player_Shot::bullets;
+    Player_Shot::x;
+    Player_Shot::y;
 }
 
 void Player_Shot::FireBullet(float playerX, float playerY)
 {
     for (int i = 0; i < PSHOT_MAX; i++) {
         if (!bullets[i].active) {
-            bullets[i].x = playerX - 20;
+            bullets[i].x = playerX - 15;
             bullets[i].y = playerY;
             bullets[i].spd = 600.0f;
             bullets[i].angle = -90.0f; // ê^è„ï˚å¸
@@ -22,14 +26,16 @@ void Player_Shot::FireBullet(float playerX, float playerY)
             break;
         }
     }
+
 }
 
-void Player_Shot::Update(float playerX, float playerY)
+void Player_Shot::Update(float playerX, float playerY,bool canFire)
 {
     const int shotInterval = 200; // É~Éäïb
 
     int now = GetNowCount();
-    if (now - lastShotTime >= shotInterval) {
+
+    if (canFire && now - lastShotTime >= shotInterval) {
         FireBullet(playerX, playerY);
         lastShotTime = now;
     }
@@ -52,6 +58,11 @@ void Player_Shot::Update(float playerX, float playerY)
     }
 }
 
+void Player_Shot::StopAllBullets() {
+    for (int i = 0; i < PSHOT_MAX; i++) {
+        bullets[i].active = false;
+    }
+}
 void Player_Shot::init()
 {
     for (int i = 0; i < PSHOT_MAX; i++) {
@@ -68,6 +79,7 @@ void Player_Shot::Draw()
             DrawGraph(bullets[i].x, bullets[i].y, P_Shot_img[4], TRUE);
         }
     }
-    
+    //DrawFormatString(0,70,0xffffff,"Player pos: %f, %f\n", bullets[i].x, bullets[i].y);
+
     //DrawFormatString(0, 0, 0xFFFFFF, "%d",);
 }

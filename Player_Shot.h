@@ -19,6 +19,7 @@ public:
     int lastShotTime;
     //int Bullet_img;
     int P_Shot_img[8];
+    float x, y;
 
 
 public:
@@ -26,8 +27,8 @@ public:
     Player_Shot();
 
     void FireBullet(float playerX, float playerY);
-
-    void Update(float playerX, float playerY);
+    void StopAllBullets();
+    void Update(float playerX, float playerY, bool canFire);
     void init();
     void Draw();
 

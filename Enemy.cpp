@@ -1,4 +1,4 @@
-#include "Enemy.h"
+ï»¿#include "Enemy.h"
 #include <DxLib.h>
 #include <cstdlib>
 
@@ -32,6 +32,23 @@ void Enemy::Update()
         TeleportingBehavior(); break;
     }
 
+    if (isDying) {
+        dyingTimer++;
+
+        // éœ‡ãˆåŠ¹æœï¼šå°åˆ»ã¿ã«ãƒ©ãƒ³ãƒ€ãƒ ç§»å‹•
+        enemy_X += (rand() % 7) - 3; // -2ã€œ2ã®ç¯„å›²ã§æºã‚‰ã™
+        enemy_Y += (rand() % 7) - 3;
+
+        // å¾ã€…ã«é€æ˜ã«ï¼ˆ5ç§’ = 300ãƒ•ãƒ¬ãƒ¼ãƒ ã§ 255 â†’ 0ï¼‰
+        dyingAlpha = 255.0f * (1.0f - dyingTimer / 300.0f);
+
+        if (dyingTimer >= 300) {
+            IsDead();  // æ­»äº¡å®Œäº†ãƒ•ãƒ©ã‚°ï¼ˆåˆ¥ã§ç®¡ç†ã—ã¦ã„ã‚‹å ´åˆï¼‰
+        }
+
+        return; // æ­»äº¡ä¸­ã¯å‹•ã‹ã•ãªã„
+    }
+
 }
 
 void Enemy::EnteringBehavior()
@@ -47,7 +64,7 @@ void Enemy::EnteringBehavior()
 
 void Enemy::WaitingBehavior()
 {
-    if (stateTimer >= 240) // 1•b‘Ò‹@
+    if (stateTimer >= 240) // 1ç§’å¾…æ©Ÿ
     {
         ChangeToRandomState();
     }
@@ -115,27 +132,29 @@ void Enemy::ChangeToRandomState()
 bool Enemy::CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) const
 {
     if (!isPlayerBullet) {
-        return false;  // ƒvƒŒƒCƒ„[‚Ì’e‚Å‚È‚¢ê‡‚ÍÕ“Ë‚µ‚È‚¢
+        return false;  // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å¼¾ã§ãªã„å ´åˆã¯è¡çªã—ãªã„
     }
 
     float dx = bulletX - enemy_X;
     float dy = bulletY - enemy_Y;
     float distanceSq = dx * dx + dy * dy;
-    return distanceSq <= (radius + 8.0f) * (radius + 8.0f);  // ’e‚Ì”¼Œa‚à‰ÁZi8.0f‚ÍƒvƒŒƒCƒ„[’e‚Ì”¼Œaj
+    return distanceSq <= (radius + 8.0f) * (radius + 8.0f);  // å¼¾ã®åŠå¾„ã‚‚åŠ ç®—ï¼ˆ8.0fã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å¼¾ã®åŠå¾„ï¼‰
 }
 
 void Enemy::OnHit()
 {
+     if (isDying) return;  // æ­»äº¡ä¸­ã¯ãƒ€ãƒ¡ãƒ¼ã‚¸å—ã‘ãªã„
     hp--;
-    if (hp <= 0)
-    {
-        // €–Sˆ—i”š”­‰‰o‚Æ‚©j
+    if (hp <= 0) {
+        isDying = true;
+        dyingTimer = 0;
     }
 }
 
 bool Enemy::IsDead() const
 {
-    return hp <= 0;
+    //return hp <= 0;
+    return isDying && dyingTimer >= 300;
 }
 
 int Enemy::GetHP()const {
@@ -145,41 +164,45 @@ int Enemy::GetHP()const {
 void Enemy::Draw() const
 {
     int size = 32;
-    DrawBox(
-        static_cast<int>(enemy_X - size / 2),
-        static_cast<int>(enemy_Y - size / 2),
-        static_cast<int>(enemy_X + size / 2),
-        static_cast<int>(enemy_Y + size / 2),
-        GetColor(255, 0, 0),
-        TRUE
-    );
-    //// HP•\¦i“G‚Ìã‚É•\¦j
+    //DrawBox(
+    //    static_cast<int>(enemy_X - size / 2),
+    //    static_cast<int>(enemy_Y - size / 2),
+    //    static_cast<int>(enemy_X + size / 2),
+    //    static_cast<int>(enemy_Y + size / 2),
+    //    GetColor(255, 0, 0),
+    //    TRUE
+    //);
+    //// HPè¡¨ç¤ºï¼ˆæ•µã®ä¸Šã«è¡¨ç¤ºï¼‰
     //DrawFormatString(
     //    static_cast<int>(enemy_X - 10),
     //    static_cast<int>(enemy_Y - size / 2 - 16),
     //    GetColor(255, 255, 255),
     //    "HP: %d", hp
     //);
-    int maxHP = 10;  // Å‘åHPiŒã‚Å•Ï”‚É‚µ‚Ä‚àOKj
-    int barX = 50;   // ƒo[‚Ì¶’[ˆÊ’u
-    int barY = 20;   // ƒo[‚ÌãˆÊ’u
-    int barWidth = 540; // ‘S‘Ì‚Ìƒo[‚Ì’·‚³i‰æ–Ê•640‚Ì–ñ85%j
+    int maxHP = 10;  // æœ€å¤§HPï¼ˆå¾Œã§å¤‰æ•°ã«ã—ã¦ã‚‚OKï¼‰
+    int barX = 50;   // ãƒãƒ¼ã®å·¦ç«¯ä½ç½®
+    int barY = 20;   // ãƒãƒ¼ã®ä¸Šä½ç½®
+    int barWidth = 540; // å…¨ä½“ã®ãƒãƒ¼ã®é•·ã•ï¼ˆç”»é¢å¹…640ã®ç´„85%ï¼‰
     int barHeight = 20;
 
-    // ”wŒii˜g‚Ì‚æ‚¤‚ÈŒ©‚½–Ú‚Éj
-    DrawBox(barX - 2, barY - 2, barX + barWidth + 2, barY + barHeight + 2, GetColor(255, 255, 255), FALSE); // ”’˜g
-    DrawBox(barX, barY, barX + barWidth, barY + barHeight, GetColor(100, 100, 100), TRUE); // ƒOƒŒ[”wŒi
+    // èƒŒæ™¯ï¼ˆæ ã®ã‚ˆã†ãªè¦‹ãŸç›®ã«ï¼‰
+    DrawBox(barX - 2, barY - 2, barX + barWidth + 2, barY + barHeight + 2, GetColor(255, 255, 255), FALSE); // ç™½æ 
+    DrawBox(barX, barY, barX + barWidth, barY + barHeight, GetColor(100, 100, 100), TRUE); // ã‚°ãƒ¬ãƒ¼èƒŒæ™¯
 
-    // Œ»İ‚ÌHPŠ„‡
+    // ç¾åœ¨ã®HPå‰²åˆ
     float hpRatio = static_cast<float>(hp) / maxHP;
     int currentWidth = static_cast<int>(barWidth * hpRatio);
 
-    // cHPiÔj
+    // æ®‹HPï¼ˆèµ¤ï¼‰
     DrawBox(barX, barY, barX + currentWidth, barY + barHeight, GetColor(255, 0, 0), TRUE);
 
-    // ”’l•\¦i”CˆÓj
+    // æ•°å€¤è¡¨ç¤ºï¼ˆä»»æ„ï¼‰
     DrawFormatString(barX + barWidth / 2 - 20, barY + barHeight + 4, GetColor(255, 255, 255), "HP: %d", hp);
 
-    //“G‰æ‘œ
+    //æ•µç”»åƒ
+    //DrawGraph(enemy_X - 125, enemy_Y - 65, enemy_img, TRUE);
+
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)dyingAlpha); // é€æ˜åº¦æŒ‡å®š
     DrawGraph(enemy_X - 125, enemy_Y - 65, enemy_img, TRUE);
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ãƒªã‚»ãƒƒãƒˆ
 }

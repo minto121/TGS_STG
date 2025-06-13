@@ -12,7 +12,7 @@ public:
 
 	struct B_State {
 		int time;       // 発射タイミング（ms）
-		float x, y;     // 発射位置
+		float x, y = 0.0f;     // 発射位置
 		float vx, vy;
 		float ay;
 		float S_angle;    // 開始角度（deg）
@@ -41,7 +41,7 @@ public:
 
 	float px, py;
 	//float dy, dx;
-	int Bullet_img;
+	int Bullet_img[8];
 	int nowtime = 0;
 	bool homingFiredOnce = false;
 	std::vector<BulletInstance>& GetBullets();
@@ -56,7 +56,7 @@ public:
 	void ChangePattern(const char* filePath, int repeatCnt, int Interval);
 	void SetPlayer(demo_Player* player);
 	void TriggerRippleEffect(float cx, float cy, float radius);
-
+	void StopAllBullets();
 	void SetEnemyPosition(float x, float y);
 	demo_Player* D_PLAYER;
 

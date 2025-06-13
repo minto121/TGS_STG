@@ -38,41 +38,49 @@
 //	mScene->Draw();
 //}
 
-AbstractScene* SceneManager::Update() {
-    AbstractScene* NextScene = nullptr;
+AbstractScene* SceneManager::Update()
+{
+	AbstractScene* NextScene;
+	try
+	{
+		if (!mScene) {
+			throw "mScene is nullptr";
+		}
+		NextScene = mScene->Update();
+	}
+	catch (const char* err)
+	{
+		FILE* fp = NULL;
 
-    if (!mScene) {
-        throw "Scene が初期化されていません";
-    }
+		DATEDATA data;
 
-    try {
-        NextScene = mScene->Update();
-    }
-    catch (const char* err) {
-        FILE* fp = nullptr;
-        DATEDATA data;
-        GetDateTime(&data);
+		GetDateTime(&data);
 
-        if (fopen_s(&fp, "ErrLog.txt", "a") == 0 && fp) {
-            fprintf_s(fp, "%04d/%02d/%02d %02d:%02d:%02d : %s\n",
-                data.Year, data.Mon, data.Day, data.Hour, data.Min, data.Sec,
-                err ? err : "不明なエラー");
-            fclose(fp);
-        }
-        return nullptr;
-    }
+		//�t�@�C���I�[�v��
+		fopen_s(&fp, "ErrLog.txt", "a");
+		//�G���[�f�[�^�̏�������
+		fprintf_s(fp, "%02d�N %02d�� %02d�� %02d�� %02d�� %02d�b : %s������܂���B\n", data.Year, data.Mon, data.Day, data.Hour, data.Min, data.Sec, err);
 
-    if (NextScene && NextScene != mScene) {
-        delete mScene;
-        mScene = NextScene;
-    }
+		return nullptr;
+	}
 
+	if (NextScene && NextScene != mScene) {
+		//delete mScene;
+		mScene = nullptr;
+		mScene = NextScene;
+		mSceneChanged = true; // フラグを立てて通知
+	}
+	else
+	{
+		mSceneChanged = false;
+	}
 
-    return mScene;
+	return mScene;
 }
 
+
 void SceneManager::Draw() const {
-    	//���̃V�[���̕`��
-    	mScene->Draw();
+	//���̃V�[���̕`��
+	mScene->Draw();
 }
 

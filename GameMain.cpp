@@ -47,6 +47,21 @@ AbstractScene* GameMain::Update()
 {
 
 	nowtime++;
+	//ゲームクリア処理
+	if (isGameClear) {
+		clearTimer++;
+
+		if (!clearBulletStopped) {
+			BULLET_DATE->StopAllBullets();  // 全ての弾を停止する関数（自作する）
+			clearBulletStopped = true;
+		}
+
+		// 100フレーム（約1.6秒）待ったらタイトルに戻す、または演出続行
+		if (clearTimer >= 200) {
+			 return new Title(); // タイトルへ戻る
+		}
+		return this;
+	}
 
 	if (CheckHitKey(KEY_INPUT_C)) {
 		if (!isCKeyPressed) {
@@ -75,7 +90,8 @@ AbstractScene* GameMain::Update()
 	}
 	D_PLAYER->move();
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
-	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
+	bool canFire = !(D_PLAYER->GameOver() && D_PLAYER->Zanki == 0);
+	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y,canFire);
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // プレイヤーが弾を発射
 
@@ -99,21 +115,33 @@ AbstractScene* GameMain::Update()
 				enemy->OnHit();  // HPを減らす
 				b.active = false;  // 弾を消す
 
-				if (enemy->IsDead()) {
+				if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
 					delete enemy;
 					enemy = nullptr;
 					printfDx("WIN");
 
-					break;
+					isGameClear = true;
+					clearTimer = 0;
+					BULLET_DATE->StopAllBullets();
+					//P_SHOT->StopAllBullets();
+					return this;  // ← return しないで次フレームでタイマーを進める
 				}
 			}
 		}
 	}
 
 	if (D_PLAYER->GameOver()) {
-		return new Title();
+		if (!isGameOver && D_PLAYER->Zanki == 0) {
+			isGameOver = true;
+			gameOverTimer = 0;
+		}
+		gameOverTimer++;
+
+		if (gameOverTimer >= 120) { // 約2秒（60FPS想定）
+			return new Title();
+		}
 	}
-	return 0;
+	return this;
 }
 
 void GameMain::Draw() const
@@ -132,6 +160,10 @@ void GameMain::Draw() const
 	// ↓ null チェックを追加
 	if (enemy != nullptr) {
 		enemy->Draw();
+	}
+
+	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
+		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 	}
 
 	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UI表示座標
