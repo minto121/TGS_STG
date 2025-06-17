@@ -42,14 +42,14 @@ GameMain::GameMain()
 
 GameMain::~GameMain()
 {
+	//BGMíœ
+	DeleteSoundMem(GameMain_BGM);
+	StopSoundMem(GameMain_BGM);
+
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
 	delete enemy;
-
-	//BGMíœ
-	DeleteSoundMem(GameMain_BGM);
-	StopSoundMem(GameMain_BGM);
 }
 
 AbstractScene* GameMain::Update()
@@ -171,6 +171,9 @@ AbstractScene* GameMain::Update()
 		gameOverTimer++;
 
 		if (gameOverTimer >= 120) { // –ñ2•bi60FPS‘z’èj
+			//BGMíœ
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
 			return new Title();
 		}
 	}
