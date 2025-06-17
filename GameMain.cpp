@@ -15,10 +15,10 @@ GameMain::GameMain()
 	P_SHOT = new Player_Shot;
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->SetPlayer(D_PLAYER);
-	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // © CSV“Ç‚İ‚İ
+	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // ï¿½ï¿½ CSVï¿½Ç‚İï¿½ï¿½ï¿½
 	D_PLAYER->SetBulletManager(BULLET_DATE);
 
-	//‰æ‘œ“Ç‚İ‚İ
+	//ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
 	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
 	UI_Img[2] = LoadGraph("Resource/image/plyerlife.png");
@@ -28,10 +28,17 @@ GameMain::GameMain()
 	LifeImg = LoadGraph("Resource/image/life_img.png");
 	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
+	// ç”»åƒåˆ†å‰²èª­ã¿è¾¼ã¿
+	LoadDivGraph("Resource/image/Score_image/suuji16x32_03.png", 13, 13, 1, 208/13, 32, TextImg);
+
+
+
 	enemy = new Enemy(320.0f, 100.0f);
 	nowtime = 0;
 	currentPattern = 0;
-	bool isCKeyPressed = false;//Šm”F—p
+	bool isCKeyPressed = false;//ï¿½mï¿½Fï¿½p
+
+	score = 0;
 
 }
 
@@ -56,16 +63,16 @@ AbstractScene* GameMain::Update()
 
 			if (currentPattern == 0) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // ’Êí’e‚Í”½Ë‚µ‚È‚¢
+				BULLET_DATE->SetReflectEnable(false); // ï¿½Êï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½
 				BULLET_DATE->bi.fall == true;
 			}
 			else if (currentPattern == 1) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(true); // ’Êí’e‚Í”½Ë‚µ‚È‚¢
+				BULLET_DATE->SetReflectEnable(true); // ï¿½Êï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½
 			}
 			else if (currentPattern == 2) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // ’Ç”ö’e‚Í”½Ë‚³‚¹‚È‚¢•û‚ª—Ç‚¢
+				BULLET_DATE->SetReflectEnable(false); // ï¿½Ç”ï¿½ï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½
 			}
 		}
 		nowtime = 0;
@@ -77,27 +84,27 @@ AbstractScene* GameMain::Update()
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
 	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
 	BULLET_DATE->Update(nowtime);
-	//D_PLAYER->fire(P_SHOT);  // ƒvƒŒƒCƒ„[‚ª’e‚ğ”­Ë
+	//D_PLAYER->fire(P_SHOT);  // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½eï¿½ğ”­ï¿½
 
 	if (enemy != nullptr) {
 		enemy->Update();
-		// “G‚ÌHP‚ª”¼•ª‚ğØ‚Á‚½‚ç’eƒpƒ^[ƒ“‚ğ•Ï‚¦‚é
+		// ï¿½Gï¿½ï¿½HPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø‚ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½Ï‚ï¿½ï¿½ï¿½
 		if (enemy->GetHP() <= 5 && currentPattern != 99) {
-			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // D‚«‚È’eƒpƒ^[ƒ“‚É•ÏX
-			BULLET_DATE->SetReflectEnable(false); // •K—v‚É‰‚¶‚Ä”½Ë‚àİ’è
-			currentPattern = 99; // ƒtƒ‰ƒO‘ã‚í‚èF1‰ñ‚µ‚©Ø‚è‘Ö‚¦‚È‚¢‚æ‚¤‚É
+			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // ï¿½Dï¿½ï¿½ï¿½È’eï¿½pï¿½^ï¿½[ï¿½ï¿½ï¿½É•ÏX
+			BULLET_DATE->SetReflectEnable(false); // ï¿½Kï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½Ä”ï¿½ï¿½Ë‚ï¿½İ’ï¿½
+			currentPattern = 99; // ï¿½tï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½F1ï¿½ñ‚µ‚ï¿½ï¿½Ø‚ï¿½Ö‚ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½ï¿½
 		}
-		// “G‚ÌŒ»İˆÊ’u‚ğBullet‚É‹³‚¦‚é
+		// ï¿½Gï¿½ÌŒï¿½ï¿½İˆÊ’uï¿½ï¿½Bulletï¿½É‹ï¿½ï¿½ï¿½ï¿½ï¿½
 		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
 
-	// ’e‚Æ“G‚Ì“–‚½‚è”»’è
-	for (auto& b : P_SHOT->bullets) {  // P_SHOT‚Ì’e‚ğƒ`ƒFƒbƒN
+	// ï¿½eï¿½Æ“Gï¿½Ì“ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½
+	for (auto& b : P_SHOT->bullets) {  // P_SHOTï¿½Ì’eï¿½ï¿½`ï¿½Fï¿½bï¿½N
 		if (b.active && enemy != nullptr) {
-			// ƒvƒŒƒCƒ„[‚Ì’e‚Å‚ ‚é‚±‚Æ‚ğŠm”F‚µ‚ÄÕ“Ë”»’è
-			if (enemy->CheckCollision(b.x, b.y, true)) {  // true‚ÅƒvƒŒƒCƒ„[‚Ì’e‚Æ”»’è
-				enemy->OnHit();  // HP‚ğŒ¸‚ç‚·
-				b.active = false;  // ’e‚ğÁ‚·
+			// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì’eï¿½Å‚ï¿½ï¿½é‚±ï¿½Æ‚ï¿½mï¿½Fï¿½ï¿½ï¿½ÄÕ“Ë”ï¿½ï¿½ï¿½
+			if (enemy->CheckCollision(b.x, b.y, true)) {  // trueï¿½Åƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ì’eï¿½Æ”ï¿½ï¿½ï¿½
+				enemy->OnHit();  // HPï¿½ï¿½ï¿½ï¿½ç‚·
+				b.active = false;  // ï¿½eï¿½ï¿½ï¿½ï¿½ï¿½
 
 				if (enemy->IsDead()) {
 					delete enemy;
@@ -110,6 +117,8 @@ AbstractScene* GameMain::Update()
 		}
 	}
 
+	Score_math();
+
 	if (D_PLAYER->GameOver()) {
 		return new Title();
 	}
@@ -120,7 +129,7 @@ void GameMain::Draw() const
 {
 	DrawGraph(0, -600, BackGroundImg, FALSE);
 
-	// ƒvƒŒƒCƒ„[•`‰æi‰¼F”’‚¢lŠpj
+	// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½iï¿½ï¿½ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½lï¿½pï¿½j
 	//DrawBox((int)(player.x - 10), (int)(player.y - 10), (int)(player.x + 10), (int)(player.y + 10), GetColor(255, 255, 255), TRUE);
 	P_SHOT->Draw();
 	D_PLAYER->Draw();
@@ -129,21 +138,56 @@ void GameMain::Draw() const
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
-	// « null ƒ`ƒFƒbƒN‚ğ’Ç‰Á
+	// ï¿½ï¿½ null ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½Ç‰ï¿½
 	if (enemy != nullptr) {
 		enemy->Draw();
 	}
 
-	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UI•\¦À•W
+	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UIï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½W
 
-	DrawGraph(850, 30, UI_Img[0], TRUE);	//ƒXƒRƒA
-	DrawGraph(850, 130, UI_Img[1], TRUE);	//ƒnƒCƒXƒRƒA
-	DrawGraph(840, 230, UI_Img[2], TRUE);	//ƒvƒŒƒCƒ„[c‹@
-	DrawGraph(850, 330, UI_Img[3], TRUE);	//ƒ^ƒCƒ€
-	DrawGraph(850, 430, UI_Img[4], TRUE);	//ƒ{ƒ€”
+	DrawGraph(850, 30, UI_Img[0], TRUE);	//ï¿½Xï¿½Rï¿½A
+	DrawGraph(850, 130, UI_Img[1], TRUE);	//ï¿½nï¿½Cï¿½Xï¿½Rï¿½A
+	DrawGraph(840, 230, UI_Img[2], TRUE);	//ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½cï¿½@
+	DrawGraph(850, 330, UI_Img[3], TRUE);	//ï¿½^ï¿½Cï¿½ï¿½
+	DrawGraph(850, 430, UI_Img[4], TRUE);	//ï¿½{ï¿½ï¿½ï¿½ï¿½
 
-	//ƒvƒŒƒCƒ„[c‹@‰æ‘œ
+	//ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½cï¿½@ï¿½æ‘œ
 	DrawGraph(1050, 260, LifeImg, TRUE);
 	DrawGraph(1100, 260, LifeImg, TRUE);
 	DrawGraph(1150, 260, LifeImg, TRUE);
+
+
+	DrawNumber(1100, 107, score);
+
+	/*for (int i = 0; i < 13; i++) {
+		DrawGraph(850+i*15, 30, TextImg[i], TRUE);
+	}*/
+}
+
+void GameMain::Score_math()
+{
+	score = 7819932;
+
+
+}
+
+void GameMain::DrawNumber(int x, int y, int value) const
+{
+	std::string str = std::to_string(value);
+
+	for (int i = 0; i < str.size(); i++) {
+		int index = GetImageIndex(str[i]);
+		if (index != -1) {
+			DrawGraph(x + i * 17, y, TextImg[index], TRUE);
+		}
+	}
+}
+
+int GameMain::GetImageIndex(char ch) const
+{
+	if ('0' <= ch && ch <= '9') return ch - '0';
+	if (ch == '+') return 10;
+	if (ch == '-') return 11;
+	if (ch == '.') return 12;
+	return -1;
 }
