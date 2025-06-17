@@ -9,6 +9,9 @@ Player_Shot::Player_Shot() {
     //ShotTime = 0;
     lastShotTime = GetNowCount();
     LoadDivGraph("Resource/image/í èÌíeñã.png", 8, 8, 1, 64, 32, P_Shot_img);
+
+    //BGMÅESEì«çû
+    Shot_SE = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
 }
 
 void Player_Shot::FireBullet(float playerX, float playerY)
