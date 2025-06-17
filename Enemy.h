@@ -39,6 +39,7 @@ private:
     int hp;
     float radius;       //当たり判定用半径
 
+
     int enemy_img;
 
     void EnteringBehavior();
@@ -58,5 +59,10 @@ public:
 
     bool CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) const;
     void OnHit();
+
+
+    bool isDying = false;       // 死亡演出中か
+    int dyingTimer = 0;         // 死亡演出タイマー
+    float dyingAlpha = 255.0f;  // 透明度
 };
 

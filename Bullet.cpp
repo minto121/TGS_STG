@@ -30,10 +30,14 @@ const float PI = 3.14159265f;
 
 Bullet::Bullet()
 {
-    Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
+    //Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
+    LoadDivGraph("Resource/image/通常弾幕.png", 8, 8, 1, 64, 32, Bullet_img);
+
     D_PLAYER = new demo_Player;
     px = 0.0f;
     py = 0.0f;
+
+    SetEnemyPosition(ex,ey);
     
     int patternRepeatInterval = 120;
     int lastPatternTime = 0;
@@ -82,6 +86,19 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         bi.vx = cosf(angleRad) * pattern.spd;
                         bi.vy = sinf(angleRad) * pattern.spd;
 
+                        if (!pattern.homing && pattern.vx != 0.0f && pattern.vy != 0.0f) {
+                            BulletInstance tail;
+                            tail.x = ex;
+                            tail.y = ey;
+                            tail.vx = pattern.vx;
+                            tail.vy = pattern.vy;
+                            tail.speed = pattern.spd;
+                            tail.active = true;
+
+                            bullets.push_back(tail);
+                            pattern.used = true;
+                        }
+
                         // fall処理
                         if (pattern.fall == true) {
                             bi.ay = 0.05f; // 重力で落下
@@ -89,20 +106,45 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 
                         }
                         //追尾弾処理
-                        if (pattern.homing && D_PLAYER) {
-                            float dx = px - pattern.x;
-                            float dy = py - pattern.y;
+                        if (pattern.homing && !pattern.used) {
+                            float dx = px - ex;
+                            float dy = py - ey;
                             float angle = atan2f(dy, dx);
-                            bi.vx = cosf(angle) * pattern.spd;
-                            bi.vy = sinf(angle) * pattern.spd;
+                            float cosA = cosf(angle);
+                            float sinA = sinf(angle);
+
+
+                            bi.vx = cosA * pattern.spd;
+                            bi.vy = sinA * pattern.spd;
                             bi.homing = true;
-                            bi.homingStrength = 0.1f;
+                            bi.homingStrength = 0.5f;
+
+                            // 後ろに尾弾を複数発射（例えば3つ）
+                            const int tailCount = 3;
+                            const float tailSpacing = 20.0f; // 距離（フレーム単位）
+                            const int tailDelay = 16; // 2フレームごと
+
+
+                            if (!pattern.homing) {
+                                BulletInstance tail;
+                                tail.x = ex;
+                                tail.y = ey;
+                                tail.speed = pattern.spd;
+                                tail.vx = cosf(angleRad) * pattern.spd;
+                                tail.vy = sinf(angleRad) * pattern.spd;
+                                tail.active = true;
+                                tail.reflect = pattern.reflect;
+                                tail.fall = pattern.fall;
+
+                                bullets.push_back(tail);
+                            }
                         }
                         bi.fall = pattern.fall;
+                        bi.homing = pattern.homing;
                         bi.reflect = pattern.reflect;
                         bi.active = true;
-
                         bullets.push_back(bi);
+
                     }
                     pattern.used = true;
                 }
@@ -144,16 +186,16 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                     }
                 }
 
-                // ホーミング弾の調整（任意）
-                if (b.homing && D_PLAYER) {
-                    float dx = px - b.x;
-                    float dy = py - b.y;
-                    float angle = atan2f(dy, dx);
-                    float targetVx = cosf(angle) * b.speed;
-                    float targetVy = sinf(angle) * b.speed;
-                    b.vx += (targetVx - b.vx) * b.homingStrength;
-                    b.vy += (targetVy - b.vy) * b.homingStrength;
-                }
+                //// ホーミング弾の調整（任意）
+                //if (b.homing == true) {
+                //    float dx = px - ex;
+                //    float dy = py - ey;
+                //    float angle = atan2f(dy, dx);
+                //    float targetVx = cosf(angle) * b.speed;
+                //    float targetVy = sinf(angle) * b.speed;
+                //    b.vx += (targetVx - b.vx) * b.homingStrength;
+                //    b.vy += (targetVy - b.vy) * b.homingStrength;
+                //}
 
                 //// 画面外で無効化（任意）
                 //if (b.x < PLAY_AREA_LEFT || b.x > PLAY_AREA_RIGHT ||
@@ -177,7 +219,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                     B_State newP = p;
                     newP.time = nowtime + (p.time % patternLoopInterval);  // 相対時間で再利用
                     newP.used = false;
-                    if (p.homing && nowtime > 0) continue; // ホーミング弾は1回だけにしたい場合
+                    //if (p.homing && nowtime > 0) continue; // ホーミング弾は1回だけにしたい場合
                     patterns.push_back(newP);
                 }
                 lastPatternLoopTime = nowtime;
@@ -251,7 +293,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
     }
 
     // 繰り返し追加（5回）
-    const int interval = 120; // 繰り返し間隔（フレーム単位、例: 2秒）
+    //const int interval = 120; // 繰り返し間隔（フレーム単位、例: 2秒）
     //for (int i = 0; i < 5; i++) {
     //    for (auto& p : basePatterns) {
     //        B_State newP = p;
@@ -296,6 +338,12 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
     //}
     //printf("active bullets: %d, homing bullets: %d\n", totalCount, homingCount);
 
+}
+
+void Bullet::StopAllBullets() {
+    for (auto& b : bullets) {
+        b.speed = 0.0f;
+    }
 }
 
 void Bullet::ChangePattern(const char* filePath, int repeatCnt, int Interval)
@@ -352,40 +400,30 @@ void Bullet::TriggerRippleEffect(float cx, float cy, float radius)
 void Bullet::Draw()
 {
     int bulletW, bulletH;
-    GetGraphSize(Bullet_img, &bulletW, &bulletH);
+    GetGraphSize(Bullet_img[7], &bulletW, &bulletH);
 
-    for (auto& b : bullets) {
-        if (b.active) {
-            DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
-            DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img, TRUE);
+     for (auto& b : bullets) {
+        if (!b.active) continue;
+
+        int index = 0; // 画像インデックス
+        if (b.fall == true) {
+            index = 6;
         }
-
-   /*     if (b.rippleEffect) {
-            DrawCircle((int)b.x, (int)b.y, 8, GetColor(0, 128, 255));
+        else if (b.reflect == true) {
+            index = 0;
+        }
+        else if (b.homing == true) {
+            index = 2;
         }
         else {
-            DrawCircle((int)b.x, (int)b.y, 8, GetColor(255, 0, 0));
-        }*/
+            index = 0; // それ以外の通常弾など
+        }
 
-        //DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img, TRUE);
+        int bulletW, bulletH;
+        GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
 
-
-
-        ////ホーミングの確認用
-        //int homingCount = 0;
-        //int totalCount = 0;
-        //bool lastHoming = false;
-        //for (auto& bi : bullets) {
-        //    if (bi.active) {
-        //        if (bi.homing) homingCount++;
-        //        totalCount++;
-        //        lastHoming = bi.homing;
-        //    }
-        //}
-
-        //DrawFormatString(0, 100, GetColor(255, 255, 255), "PlayerX: %f, PlayerY: %f", px, py);
-        //DrawFormatString(0, 120, GetColor(255, 255, 255), "homing:%d", bi.homing);
-        //DrawFormatString(0, 140, GetColor(255, 255, 255), "homing:%d", lastHoming);
+        // 弾の座標は中心座標として描画
+        DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
     }
 
 }
@@ -396,4 +434,10 @@ std::vector<BulletInstance>& Bullet::GetBullets()  {
 void Bullet::SetEnemyPosition(float x, float y) {
     ex = x;
     ey = y;
+}
+
+void Bullet::ClearAllBullets() {
+    for (auto& b : bullets) {
+        b.active = false;
+    }
 }

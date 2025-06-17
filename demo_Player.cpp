@@ -180,23 +180,41 @@ void demo_Player::Draw()const
     // プレイヤーを白い四角で描画
     //DrawBox((int)(x - 10), (int)(y - 10), (int)(x + 10), (int)(y + 10), GetColor(255, 255, 255), TRUE);
     if (Alive || Respawn) {
-        DrawCircle((int)x, (int)y, (int)radius, GetColor(0, 255, 0), TRUE); // ヒットボックスの表示
-        //int frame = (GetNowCount() / 200) % 3; // アニメーション（9～11番）
-        if (CheckHitKey(KEY_INPUT_A) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_LEFT) == 1) {
-            player_img[9];
-        }
-        if (CheckHitKey(KEY_INPUT_D) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_RIGHT) == 1) {
-            player_img[11];
+        // --- 点滅判定 ---
+        bool visible = true;
+        if (Respawn) {
+            // 10フレームごとに表示・非表示を切り替える
+            if ((RespawnTimer / 5) % 2 == 0) {
+                visible = false;
+            }
         }
 
-            DrawGraph((int)(x - 16), (int)(y - 24), player_img[10], TRUE);
+        if (visible) {
+            int drawIndex = 10; // 通常状態（中央）
+
+            if (CheckHitKey(KEY_INPUT_A) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_LEFT) == 1) {
+                drawIndex = 9; // 左
+            }
+            else if (CheckHitKey(KEY_INPUT_D) || PAD_INPUT::OnHold(XINPUT_BUTTON_DPAD_RIGHT) == 1) {
+                drawIndex = 11; // 右
+            }
+
+            const int imgCenterX = 24; // 48 / 2
+            const int imgCenterY = 24;
+
+            DrawGraph((int)(x - imgCenterX), (int)(y - imgCenterY), player_img[drawIndex], TRUE);
+        }
+
+        // ヒットボックスは常に描画（必要に応じて非表示にしてもよい）
+        DrawCircle((int)x, (int)y, (int)radius, GetColor(255, 0, 0), TRUE);
     }
+
 
    
 
-    DrawFormatString(0, 20, 0xffffff, "x,4:%d,%d", x, y);
-    DrawFormatString(0, 40, 0xffffff, "ReSpawnTimer:%d", RespawnTimer);
-    DrawFormatString(0, 80, 0xffffff, "Zanki:%d", Zanki);
+    //DrawFormatString(0, 20, 0xffffff, "x,4:%d,%d", x, y);
+    //DrawFormatString(0, 40, 0xffffff, "ReSpawnTimer:%d", RespawnTimer);
+    //DrawFormatString(0, 80, 0xffffff, "Zanki:%d", Zanki);
  
 
 }

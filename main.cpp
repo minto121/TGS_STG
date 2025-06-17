@@ -62,9 +62,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		ClearDrawScreen();		// ?????????
 		PAD_INPUT::UpdateKey();
-		sceneMng->Draw();
+		//sceneMng->Draw();
 		FPSC->All();
 		FPSC->Disp();
+
+		if (sceneMng->IsSceneChanged()) {
+			sceneMng->ResetSceneChangedFlag();
+			continue; // シーン切り替え直後は Draw をスキップ
+		}
+		sceneMng->Draw();
 
 	
 		//?????I??

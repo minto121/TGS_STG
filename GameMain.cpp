@@ -18,6 +18,11 @@ GameMain::GameMain()
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // �� CSV�ǂݍ���
 	D_PLAYER->SetBulletManager(BULLET_DATE);
 
+
+
+	//BGM�ESE�Ǎ�
+	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+
 	//�摜�ǂݍ���
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
 	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
@@ -34,6 +39,7 @@ GameMain::GameMain()
 
 
 	enemy = new Enemy(320.0f, 100.0f);
+	int EnemyPhase = 0;
 	nowtime = 0;
 	currentPattern = 0;
 	bool isCKeyPressed = false;//�m�F�p
@@ -44,6 +50,10 @@ GameMain::GameMain()
 
 GameMain::~GameMain()
 {
+	//BGM�폜
+	DeleteSoundMem(GameMain_BGM);
+	StopSoundMem(GameMain_BGM);
+
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
@@ -52,8 +62,28 @@ GameMain::~GameMain()
 
 AbstractScene* GameMain::Update()
 {
+	//BGM
+	if (CheckSoundMem(GameMain_BGM) == 0)
+	{
+		PlaySoundMem(GameMain_BGM, DX_PLAYTYPE_LOOP, TRUE);
+	}
 
 	nowtime++;
+	//�Q�[���N���A����
+	if (isGameClear) {
+		clearTimer++;
+
+		if (!clearBulletStopped) {
+			BULLET_DATE->StopAllBullets();  // �S�Ă̒e���~����֐��i���삷��j
+			clearBulletStopped = true;
+		}
+
+		// 100�t���[���i��1.6�b�j�҂�����^�C�g���ɖ߂��A�܂��͉��o���s
+		if (clearTimer >= 200) {
+			 return new Title(); // �^�C�g���֖߂�
+		}
+		return this;
+	}
 
 	if (CheckHitKey(KEY_INPUT_C)) {
 		if (!isCKeyPressed) {
@@ -82,7 +112,8 @@ AbstractScene* GameMain::Update()
 	}
 	D_PLAYER->move();
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
-	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y);
+	bool canFire = !(D_PLAYER->GameOver() && D_PLAYER->Zanki == 0);
+	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y,canFire);
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // �v���C���[���e�𔭎�
 
@@ -94,24 +125,54 @@ AbstractScene* GameMain::Update()
 			BULLET_DATE->SetReflectEnable(false); // �K�v�ɉ����Ĕ��˂�ݒ�
 			currentPattern = 99; // �t���O����F1�񂵂��؂�ւ��Ȃ��悤��
 		}
+		
 		// �G�̌��݈ʒu��Bullet�ɋ�����
+
 		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
 
 	// �e�ƓG�̓����蔻��
 	for (auto& b : P_SHOT->bullets) {  // P_SHOT�̒e��`�F�b�N
 		if (b.active && enemy != nullptr) {
-			// �v���C���[�̒e�ł��邱�Ƃ�m�F���ďՓ˔���
-			if (enemy->CheckCollision(b.x, b.y, true)) {  // true�Ńv���C���[�̒e�Ɣ���
-				enemy->OnHit();  // HP����炷
+			if (enemy->CheckCollision(b.x, b.y, true)) {
+				enemy->OnHit(); // HP����炷
 				b.active = false;  // �e�����
+				if (enemy->IsDead()) { // �� HP��0�ȉ��Ȃ�|��
+					EnemyPhase++;
 
-				if (enemy->IsDead()) {
+					if (EnemyPhase < 3) {
+						delete enemy;
+						enemy = new Enemy(320.0f, 100.0f); // �G����
+
+						if (EnemyPhase == 1) {
+							BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
+							BULLET_DATE->SetReflectEnable(true);
+							currentPattern = 1;
+						}
+						else if (EnemyPhase == 2) {
+							BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
+							BULLET_DATE->SetReflectEnable(false);
+							currentPattern = 2;
+						}
+					}
+					else {
+						delete enemy;
+						enemy = nullptr;
+						isGameClear = true;
+						BULLET_DATE->ClearAllBullets();
+						printfDx("WIN!! �ŏI�`�Ԍ��j\n");
+					}
+				}
+				if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
 					delete enemy;
 					enemy = nullptr;
 					printfDx("WIN");
 
-					break;
+					isGameClear = true;
+					clearTimer = 0;
+					BULLET_DATE->StopAllBullets();
+					//P_SHOT->StopAllBullets();
+					return this;  // �� return ���Ȃ��Ŏ��t���[���Ń^�C�}�[��i�߂�
 				}
 			}
 		}
@@ -120,9 +181,20 @@ AbstractScene* GameMain::Update()
 	Score_math();
 
 	if (D_PLAYER->GameOver()) {
-		return new Title();
+		if (!isGameOver && D_PLAYER->Zanki == 0) {
+			isGameOver = true;
+			gameOverTimer = 0;
+		}
+		gameOverTimer++;
+
+		if (gameOverTimer >= 120) { // ��2�b�i60FPS�z��j
+			//BGM�폜
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
+			return new Title();
+		}
 	}
-	return 0;
+	return this;
 }
 
 void GameMain::Draw() const
@@ -141,6 +213,11 @@ void GameMain::Draw() const
 	// �� null �`�F�b�N��ǉ�
 	if (enemy != nullptr) {
 		enemy->Draw();
+	}
+
+
+	if (isGameClear && clearTimer >= 30) {  // �����o���Ă���\��
+		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 	}
 
 	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UI�\�����W

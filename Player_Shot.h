@@ -14,11 +14,13 @@ public:
 
     }pshot_t;
 
-    pshot_t bullets[PSHOT_MAX];
+    pshot_t bullets[PSHOT_MAX] = {};
     //int ShotTime;
     int lastShotTime;
     //int Bullet_img;
     int P_Shot_img[8];
+    float x = 0.0f;
+    float y = 0.0f;
 
 
 public:
@@ -26,8 +28,8 @@ public:
     Player_Shot();
 
     void FireBullet(float playerX, float playerY);
-
-    void Update(float playerX, float playerY);
+    void StopAllBullets();
+    void Update(float playerX, float playerY, bool canFire);
     void init();
     void Draw();
 
