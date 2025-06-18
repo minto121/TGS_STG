@@ -22,6 +22,7 @@ GameMain::GameMain()
 
 	//BGMESE“Ç
 	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+	Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
 
 	//‰æ‘œ“Ç‚İ‚İ
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
