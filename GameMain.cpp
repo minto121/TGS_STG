@@ -74,7 +74,7 @@ AbstractScene* GameMain::Update()
 
 		// 100フレーム（約1.6秒）待ったらタイトルに戻す、または演出続行
 		if (clearTimer >= 200) {
-			return new Title(); // タイトルへ戻る
+			return new Result();
 		}
 		return this;
 	}
@@ -207,10 +207,13 @@ AbstractScene* GameMain::Update()
 		gameOverTimer++;
 
 		if (gameOverTimer >= 120) { // 約2秒（60FPS想定）
-			return new Title();
+			//BGM削除
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
+			return new Result();
 		}
 	}
-	return this;
+	
 }
 void GameMain::Draw() const
 {

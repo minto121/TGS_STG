@@ -4,7 +4,7 @@
 #include"demo_Player.h"
 #include"Bullet.h"
 #include "Enemy.h"
-
+#include "Result.h"
 #include"Mob_Enemy.h"
 
 class GameMain	:public AbstractScene
@@ -28,6 +28,8 @@ public:
     bool isGameOver = false;      // ゲームオーバー中かどうか
     int gameOverTimer = 0;        // ゲームオーバー経過時間（フレーム）
 
+
+    Result* result = nullptr;
 private:
 
     bool isGameClear = false;      // ゲームクリア状態
