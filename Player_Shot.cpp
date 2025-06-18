@@ -30,10 +30,14 @@ void Player_Shot::FireBullet(float playerX, float playerY)
 }
 
 void Player_Shot::Update(float playerX, float playerY,bool canFire)
-{
+{ 
+    // ‰¹—Ê‚ÌÝ’è
+    ChangeVolumeSoundMem(255 * 60 / 100, Shot_SE);
+
     const int shotInterval = 150; // ƒ~ƒŠ•b
 
     int now = GetNowCount();
+   
 
     if (canFire && now - lastShotTime >= shotInterval) {
         PlaySoundMem(Shot_SE, DX_PLAYTYPE_BACK, TRUE);

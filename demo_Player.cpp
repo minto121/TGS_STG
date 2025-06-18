@@ -22,7 +22,7 @@ demo_Player::demo_Player()
     LoadDivGraph("Resource/image/Character_image/sample006.png",12, 3, 4, 48, 48, player_img);
 
     //BGMÅESEì«çû
-    Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
+    Hit_SE = LoadSoundMem("Resource/bgm/hit2_SE.wav");
 
  /*   int result = LoadDivGraph("Resource/image/Character_image/sample006.png", 12, 3, 4, 32, 48, player_img);
     if (result == -1) {

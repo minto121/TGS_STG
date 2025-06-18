@@ -57,6 +57,9 @@ GameMain::~GameMain()
 
 AbstractScene* GameMain::Update()
 {
+	// 音量の設定
+	ChangeVolumeSoundMem(255 * 70 / 100, Hit_SE);
+
 	//BGM
 	if (CheckSoundMem(GameMain_BGM) == 0)
 	{
@@ -75,6 +78,9 @@ AbstractScene* GameMain::Update()
 
 		// 100フレーム（約1.6秒）待ったらタイトルに戻す、または演出続行
 		if (clearTimer >= 200) {
+			//BGM削除
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
 			return new Title(); // タイトルへ戻る
 		}
 		return this;
@@ -203,12 +209,20 @@ AbstractScene* GameMain::Update()
 
 	if (D_PLAYER->GameOver()) {
 		if (!isGameOver && D_PLAYER->Zanki == 0) {
+			////BGM削除
+			//DeleteSoundMem(GameMain_BGM);
+			//StopSoundMem(GameMain_BGM);
+
 			isGameOver = true;
 			gameOverTimer = 0;
 		}
 		gameOverTimer++;
 
 		if (gameOverTimer >= 120) { // 約2秒（60FPS想定）
+			//BGM削除
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
+
 			return new Title();
 		}
 	}
