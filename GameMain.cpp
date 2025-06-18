@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "Title.h"
 
+
 //#define PI 3.1415926f
 
 
@@ -33,7 +34,7 @@ GameMain::GameMain()
 	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
 	enemy = new Enemy(320.0f, 100.0f);
-	EnemyPhase = 0;
+	int EnemyPhase = 0;
 	nowtime = 0;
 	currentPattern = 0;
 	bool isCKeyPressed = false;//確認用
@@ -87,7 +88,7 @@ AbstractScene* GameMain::Update()
 			if (currentPattern == 0) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
 				BULLET_DATE->SetReflectEnable(false); // 通常弾は反射しない
-				BULLET_DATE->bi.fall = true;
+				BULLET_DATE->bi.fall == true;
 			}
 			else if (currentPattern == 1) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
@@ -110,79 +111,57 @@ AbstractScene* GameMain::Update()
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // プレイヤーが弾を発射
 
-	//if (enemy != nullptr) {
-	//	if (!enemy->IsDead()) {
-	//		enemy->Update();  // 死んでなければ更新
-	//		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
-	//	}
-	//}
-
-	// 弾と敵の当たり判定処理（シンプルに）
-	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
-		for (auto& b : P_SHOT->bullets) {
-			if (b.active && enemy->CheckCollision(b.x, b.y, true)) {
-				enemy->OnHit(); // HPを減らす
-				b.active = false; // 弾を消す
-			}
-		}
+	if (enemy != nullptr) {
+		enemy->Update();
+		// 敵の現在位置をBulletに教える
+		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 	}
 
-	// 敵の状態別処理（毎フレーム）
-	if (enemy != nullptr) {
-		switch (enemy->GetState()) {
-		case EnemyLifeState::ALIVE:
-			enemy->Update();
-			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
-			if (enemy->GetHP() <= 0) {
-				if (EnemyPhase < MaxEnemyPhase) {
-					// 次のフェーズへ移行
-					EnemyPhase++;
-					delete enemy;
-					enemy = new Enemy(320.0f, 100.0f);
+	// 弾と敵の当たり判定
+	for (auto& b : P_SHOT->bullets) {  // P_SHOTの弾をチェック
+		if (b.active && enemy != nullptr) {
+			if (enemy->CheckCollision(b.x, b.y, true)) {
+				enemy->OnHit(); // HPを減らす
+				b.active = false;  // 弾を消す
 
-					// 弾幕切り替え
-					if (EnemyPhase == 1) {
-						BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
-						BULLET_DATE->SetReflectEnable(true);
-						currentPattern = 1;
+				if (enemy->IsDead()) { // ★ HPが0以下なら倒す
+					EnemyPhase++;
+
+					if (EnemyPhase < 3) {
+						delete enemy;
+						enemy = new Enemy(320.0f, 100.0f); // 敵復活
+
+						if (EnemyPhase == 1) {
+							BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
+							BULLET_DATE->SetReflectEnable(true);
+							currentPattern = 1;
+						}
+						else if (EnemyPhase == 2) {
+							BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
+							BULLET_DATE->SetReflectEnable(false);
+							currentPattern = 2;
+						}
 					}
-					else if (EnemyPhase == 2) {
-						BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
-						BULLET_DATE->SetReflectEnable(false);
-						currentPattern = 2;
+					else {
+						delete enemy;
+						enemy = nullptr;
+						isGameClear = true;
+						BULLET_DATE->ClearAllBullets();
+						printfDx("WIN!! 最終形態撃破\n");
 					}
-					return this;
-				}else {
-					// 最終フェーズ終了 → DYINGへ移行
-					enemy->RequestDying();
+				}
+				if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
+					delete enemy;
+					enemy = nullptr;
+					printfDx("WIN");
+
+					isGameClear = true;
+					clearTimer = 0;
+					BULLET_DATE->StopAllBullets();
+					//P_SHOT->StopAllBullets();
+					return this;  // ← return しないで次フレームでタイマーを進める
 				}
 			}
-			// DYING予約が入っていたら次のフレームから移行
-			if (enemy->IsRequestingDying()) {
-				enemy->StartDying();
-			}
-			break;
-
-		case EnemyLifeState::DYING:
-			enemy->UpdateDying();
-			BULLET_DATE->ClearAllBullets();
-			BULLET_DATE->StopAllBullets();
-			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
-			if (enemy->IsDyingFinished()) {
-				enemy->SetState(EnemyLifeState::DEAD);
-			}
-			break;
-
-		case EnemyLifeState::DEAD:
-			delete enemy;
-			enemy = nullptr;
-			isGameClear = true;
-			clearTimer = 0;
-			BULLET_DATE->ClearAllBullets();
-			BULLET_DATE->StopAllBullets();
-			//return new Title;
-			isGameClear = true;
-			break;
 		}
 	}
 					//if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
@@ -197,7 +176,6 @@ AbstractScene* GameMain::Update()
 					//	return this;  // ← return しないで次フレームでタイマーを進める
 					//}
 		
-	//ゲームオーバー
 	if (D_PLAYER->GameOver()) {
 		if (!isGameOver && D_PLAYER->Zanki == 0) {
 			isGameOver = true;
@@ -212,7 +190,28 @@ AbstractScene* GameMain::Update()
 			return new Title();
 		}
 	}
-	return this;
+	if (clearTimer >= 200) {
+		if (result == nullptr) {
+			result = new Result();
+			// ここでスコアを渡したい場合は：result->SetScore(score);
+		}
+
+		result->UpdateInput();
+		int selected = result->GetSelected();
+		if (selected == 1) {
+			// リトライ：GameMain を新しく作って返す
+			delete result;
+			result = nullptr;
+			return new GameMain();
+		}
+		else if (selected == 2) {
+			// タイトル：Title へ戻る
+			delete result;
+			result = nullptr;
+			return new Title();
+		}
+		return this;
+	}
 }
 
 void GameMain::Draw() const
@@ -226,16 +225,17 @@ void GameMain::Draw() const
 	BULLET_DATE->Draw();
 	//FpsControl_Draw();
 
-	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
-	//DrawFormatString(0, 80, GetColor(255, 255, 255), "State: %d", static_cast<int>(enemy->GetState()));
-	/*DrawFormatString(0, 100, GetColor(255, 255, 255), "gameclear: %d", isGameClear);
-	DrawFormatString(0, 120, GetColor(255, 255, 255), "gameclear: %f", enemy->dyingTimer);*/
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
 	// ↓ null チェックを追加
 	if (enemy != nullptr) {
 		enemy->Draw();
 	}
-	//printfDx("EnemyPhase: %d, Enemy HP: %d\n", EnemyPhase, enemy->GetHP());
+
+	if (result != nullptr) {
+		result->Draw();
+	}
+
 	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
 		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 	}
