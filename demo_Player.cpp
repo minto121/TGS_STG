@@ -21,6 +21,9 @@ demo_Player::demo_Player()
 
     LoadDivGraph("Resource/image/Character_image/sample006.png",12, 3, 4, 48, 48, player_img);
 
+    //BGM・SE読込
+    Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
+
  /*   int result = LoadDivGraph("Resource/image/Character_image/sample006.png", 12, 3, 4, 32, 48, player_img);
     if (result == -1) {
         printfDx("プレイヤー画像の読み込みに失敗しました\n");
@@ -33,6 +36,7 @@ void demo_Player::Update(const std::vector<BulletInstance>& bullets)
     if (Alive) {
         for (const auto& b : bullets) {
             if (b.active && CheckHit(x, y, radius, b.x, b.y, 8.0f)) {
+                PlaySoundMem(Hit_SE, DX_PLAYTYPE_BACK, TRUE);
                 Hit(); // 被弾時の処理
                 break;
             }

@@ -21,6 +21,7 @@ GameMain::GameMain()
 
 	//BGM・SE読込
 	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+	Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
 
 	//画像読み込み
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
@@ -119,6 +120,7 @@ AbstractScene* GameMain::Update()
 	for (auto& b : P_SHOT->bullets) {  // P_SHOTの弾をチェック
 		if (b.active && enemy != nullptr) {
 			if (enemy->CheckCollision(b.x, b.y, true)) {
+				PlaySoundMem(Hit_SE, DX_PLAYTYPE_BACK, TRUE);
 				enemy->OnHit(); // HPを減らす
 				b.active = false;  // 弾を消す
 

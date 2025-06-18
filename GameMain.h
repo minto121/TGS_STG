@@ -19,6 +19,7 @@ public:
     int LifeImg;
     int BackGroundImg;
     int GameMain_BGM;
+    int Hit_SE;
 
     int EnemyPhase;
 

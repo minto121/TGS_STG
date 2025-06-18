@@ -24,7 +24,6 @@ void Player_Shot::FireBullet(float playerX, float playerY)
             bullets[i].angle = -90.0f; // ^ã•ûŒü
             bullets[i].active = true;
             break;
-            PlaySoundMem(Shot_SE, DX_PLAYTYPE_LOOP, TRUE); //ŠÔˆá‚¢
         }
     }
 
@@ -37,6 +36,7 @@ void Player_Shot::Update(float playerX, float playerY,bool canFire)
     int now = GetNowCount();
 
     if (canFire && now - lastShotTime >= shotInterval) {
+        PlaySoundMem(Shot_SE, DX_PLAYTYPE_BACK, TRUE);
         FireBullet(playerX, playerY);
         lastShotTime = now;
     }
