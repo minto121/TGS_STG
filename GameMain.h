@@ -23,8 +23,6 @@ public:
     const int MaxEnemyPhase = 2;  // 0,1,2 の 3フェーズ
     int Hit_SE;
 
-    int EnemyPhase;
-
     int clearTimer = 0;            // クリア演出のタイマー
     bool clearBulletStopped = false; // 弾を止めたかどうか
 
