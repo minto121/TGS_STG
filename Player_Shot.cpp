@@ -20,7 +20,7 @@ void Player_Shot::FireBullet(float playerX, float playerY)
         if (!bullets[i].active) {
             bullets[i].x = playerX - 15;
             bullets[i].y = playerY;
-            bullets[i].spd = 600.0f;
+            bullets[i].spd = 800.0f;
             bullets[i].angle = -90.0f; // ê^è„ï˚å¸
             bullets[i].active = true;
             break;
@@ -31,7 +31,7 @@ void Player_Shot::FireBullet(float playerX, float playerY)
 
 void Player_Shot::Update(float playerX, float playerY,bool canFire)
 {
-    const int shotInterval = 200; // É~Éäïb
+    const int shotInterval = 150; // É~Éäïb
 
     int now = GetNowCount();
 

@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "Title.h"
 
+
 //#define PI 3.1415926f
 
 
@@ -179,7 +180,28 @@ AbstractScene* GameMain::Update()
 			return new Title();
 		}
 	}
-	return this;
+	if (clearTimer >= 200) {
+		if (result == nullptr) {
+			result = new Result();
+			// ここでスコアを渡したい場合は：result->SetScore(score);
+		}
+
+		result->UpdateInput();
+		int selected = result->GetSelected();
+		if (selected == 1) {
+			// リトライ：GameMain を新しく作って返す
+			delete result;
+			result = nullptr;
+			return new GameMain();
+		}
+		else if (selected == 2) {
+			// タイトル：Title へ戻る
+			delete result;
+			result = nullptr;
+			return new Title();
+		}
+		return this;
+	}
 }
 
 void GameMain::Draw() const
@@ -198,6 +220,10 @@ void GameMain::Draw() const
 	// ↓ null チェックを追加
 	if (enemy != nullptr) {
 		enemy->Draw();
+	}
+
+	if (result != nullptr) {
+		result->Draw();
 	}
 
 	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
