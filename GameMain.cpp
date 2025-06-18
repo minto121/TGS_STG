@@ -46,6 +46,7 @@ GameMain::~GameMain()
 	DeleteSoundMem(GameMain_BGM);
 	StopSoundMem(GameMain_BGM);
 
+	//削除
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
@@ -196,6 +197,7 @@ AbstractScene* GameMain::Update()
 					//	return this;  // ← return しないで次フレームでタイマーを進める
 					//}
 		
+	//ゲームオーバー
 	if (D_PLAYER->GameOver()) {
 		if (!isGameOver && D_PLAYER->Zanki == 0) {
 			isGameOver = true;
