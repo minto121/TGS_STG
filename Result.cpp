@@ -1,5 +1,44 @@
 #include "Result.h"
+#include "GameMain.h"
+#include "Title.h"
 
+Result::Result()
+{
+}
+
+Result::~Result()
+{
+}
+
+AbstractScene* Result::Update()
+{
+    UpdateInput();
+
+    int selected = GetSelected();
+    if (selected == 1) {
+        // リトライ：GameMain を新しく作って返す
+        return new GameMain();
+    }
+    else if (selected == 2) {
+        // タイトル：Title へ戻る
+        return new Title();
+    }
+    return this;
+}
+
+void Result::Draw() const
+{
+    //DrawFormatString(350, 100, 0xffffff, "タイトル");
+
+    DrawString(240, 150, "RESULT", GetColor(255, 255, 255));
+
+    int retryColor = selectedOption == ResultOption::Retry ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
+    int titleColor = selectedOption == ResultOption::Title ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
+
+    DrawString(180, 220, "RETRY", retryColor);
+    DrawString(340, 220, "TITLE", titleColor);
+
+}
 
 void Result::UpdateInput()
 {

@@ -73,7 +73,7 @@ AbstractScene* GameMain::Update()
 
 		// 100フレーム（約1.6秒）待ったらタイトルに戻す、または演出続行
 		if (clearTimer >= 200) {
-			 return new Title(); // タイトルへ戻る
+			return new Result();
 		}
 		return this;
 	}
@@ -208,31 +208,10 @@ AbstractScene* GameMain::Update()
 			//BGM削除
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
-			return new Title();
+			return new Result();
 		}
 	}
-	if (clearTimer >= 200) {
-		if (result == nullptr) {
-			result = new Result();
-			// ここでスコアを渡したい場合は：result->SetScore(score);
-		}
-
-		result->UpdateInput();
-		int selected = result->GetSelected();
-		if (selected == 1) {
-			// リトライ：GameMain を新しく作って返す
-			delete result;
-			result = nullptr;
-			return new GameMain();
-		}
-		else if (selected == 2) {
-			// タイトル：Title へ戻る
-			delete result;
-			result = nullptr;
-			return new Title();
-		}
-		return this;
-	}
+	
 }
 
 void GameMain::Draw() const
