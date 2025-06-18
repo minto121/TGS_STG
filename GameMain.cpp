@@ -123,6 +123,7 @@ AbstractScene* GameMain::Update()
 	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
 		for (auto& b : P_SHOT->bullets) {
 			if (b.active && enemy->CheckCollision(b.x, b.y, true)) {
+				PlaySoundMem(Hit_SE, DX_PLAYTYPE_BACK, TRUE);
 				enemy->OnHit(); // HP‚ğŒ¸‚ç‚·
 				b.active = false; // ’e‚ğÁ‚·
 			}
