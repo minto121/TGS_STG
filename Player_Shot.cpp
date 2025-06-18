@@ -11,7 +11,7 @@ Player_Shot::Player_Shot() {
     LoadDivGraph("Resource/image/í èÌíeñã.png", 8, 8, 1, 64, 32, P_Shot_img);
 
     //BGMÅESEì«çû
-    Shot_SE = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+    Shot_SE = LoadSoundMem("Resource/bgm/hassya_SE.wav");
 }
 
 void Player_Shot::FireBullet(float playerX, float playerY)
@@ -24,6 +24,7 @@ void Player_Shot::FireBullet(float playerX, float playerY)
             bullets[i].angle = -90.0f; // ê^è„ï˚å¸
             bullets[i].active = true;
             break;
+            PlaySoundMem(Shot_SE, DX_PLAYTYPE_LOOP, TRUE); //ä‘à·Ç¢
         }
     }
 
