@@ -1,5 +1,7 @@
 ﻿#include "Enemy.h"
 #include "GameMain.h"
+#include "Bullet.h"
+#include <cmath>
 #include <DxLib.h>
 #include <cstdlib>
 
@@ -9,6 +11,7 @@ Enemy::Enemy(float x, float y)
     frameCount(0), stateTimer(0), state(EnemyState::Enter),
     hp(10), radius(18.0f)
 {
+    BULLET_DATE = new Bullet;
     enemy_img = LoadGraph("Resource/image/Enemy_image/pipo-boss001.png");
 }
 
@@ -18,6 +21,26 @@ void Enemy::Update()
 {
     frameCount++;
     stateTimer++;
+
+    //if (isDying) {
+    //    dyingTimer++;
+
+    //    // 震え効果：小刻みにランダム移動
+    //    enemy_X += (rand() % 7) - 3; // -2〜2の範囲で揺らす
+    //    enemy_Y += (rand() % 7) - 3;
+
+    //    // 徐々に透明に（5秒 = 300フレームで 255 → 0）
+    //    dyingAlpha = 255.0f * (1.0f - dyingTimer / 300.0f);
+
+    //    if (dyingTimer >= 300) {
+    //        L_STATE = EnemyLifeState::DEAD;  // ここで明示的にDEADへ
+    //        //isDeadFlag = true;  // 死亡完了を通知
+    //    }
+
+    //    return; // 死亡中は動かさない
+    //}
+
+    if (L_STATE != EnemyLifeState::ALIVE) return;
 
     switch (state)
     {
@@ -33,23 +56,31 @@ void Enemy::Update()
         TeleportingBehavior(); break;
     }
 
-    if (isDying) {
-        dyingTimer++;
+    
 
-        // 震え効果：小刻みにランダム移動
-        enemy_X += (rand() % 7) - 3; // -2〜2の範囲で揺らす
-        enemy_Y += (rand() % 7) - 3;
+}
 
-        // 徐々に透明に（5秒 = 300フレームで 255 → 0）
-        dyingAlpha = 255.0f * (1.0f - dyingTimer / 300.0f);
-
-        if (dyingTimer >= 300) {
-            IsDead();  // 死亡完了フラグ（別で管理している場合）
-        }
-
-        return; // 死亡中は動かさない
+void Enemy::UpdateDying() {
+    dyingTimer++;
+    dyingAlpha = 255.0f * (1.0f - dyingTimer / 300.0f);
+    enemy_X += (rand() % 7) - 3;
+    enemy_Y += (rand() % 7) - 3;
+    if (dyingTimer >= 300) {
+        L_STATE = EnemyLifeState::DEAD;
     }
+}
 
+bool Enemy::IsRequestingDying() const {
+    return requestDying;
+
+}
+
+void Enemy::RequestDying() {
+    requestDying = true;
+}
+
+bool Enemy::IsDyingFinished() const {
+    return dyingTimer >= 300;
 }
 
 void Enemy::EnteringBehavior()
@@ -132,6 +163,8 @@ void Enemy::ChangeToRandomState()
 
 bool Enemy::CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) const
 {
+    if (L_STATE != EnemyLifeState::ALIVE) return false;  // 死亡した敵は当たり判定なし
+
     if (!isPlayerBullet) {
         return false;  // プレイヤーの弾でない場合は衝突しない
     }
@@ -146,22 +179,34 @@ bool Enemy::CheckCollision(float bulletX, float bulletY, bool isPlayerBullet) co
 
 void Enemy::OnHit()
 {
-     if (isDying) return;  // 死亡中はダメージ受けない
-    hp--;
-    if (hp <= 0) {
+    // if (isDying) return;  // 死亡中はダメージ受けない
+    //hp--;
+  /*  if (hp <= 0) {
         isDying = true;
         dyingTimer = 0;
-    }
+    }*/
+
+    if (L_STATE != EnemyLifeState::ALIVE) return;
+
+    hp--;
+    //if (hp <= 0) StartDying();
 }
 
 bool Enemy::IsDead() const
 {
-    //return hp <= 0;
-    return isDying && dyingTimer >= 300;
+    //return isDeadFlag;;
+    return L_STATE == EnemyLifeState::DEAD;
 }
-
 int Enemy::GetHP()const {
     return hp;
+}
+
+void Enemy::StartDying() {
+    if (L_STATE == EnemyLifeState::ALIVE) {
+        L_STATE = EnemyLifeState::DYING;
+        dyingTimer = 0;
+        dyingAlpha = 255.0f;
+    }
 }
 
 void Enemy::Draw() const
@@ -203,6 +248,6 @@ void Enemy::Draw() const
     //DrawGraph(enemy_X - 125, enemy_Y - 65, enemy_img, TRUE);
 
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)dyingAlpha); // 透明度指定
-    DrawGraph(enemy_X - 125, enemy_Y - 65, enemy_img, TRUE);
+    DrawGraph(static_cast<int>(enemy_X) - 125, static_cast<int>(enemy_Y) - 65, enemy_img, TRUE);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // リセット
 }
