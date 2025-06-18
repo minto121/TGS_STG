@@ -18,11 +18,10 @@ public:
     int UI_Img[6];
     int LifeImg;
     int BackGroundImg;
-    int GameMain_BGM;
-
     int EnemyPhase;
+    int GameMain_BGM;
+    const int MaxEnemyPhase = 2;  // 0,1,2 の 3フェーズ
 
-    bool isGameClear = false;      // ゲームクリア状態
     int clearTimer = 0;            // クリア演出のタイマー
     bool clearBulletStopped = false; // 弾を止めたかどうか
 
@@ -33,6 +32,7 @@ public:
     Result* result = nullptr;
 private:
 
+    bool isGameClear = false;      // ゲームクリア状態
 public:
     //�R���X�g���N�^
     GameMain();

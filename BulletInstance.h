@@ -5,8 +5,8 @@ struct BulletInstance {
 	float ay = 0.0f;
 	float scale;
 	bool isAlive = true;
-	bool active;
-	bool reflect;
+	bool active = false;
+	bool reflect = false;
 	bool reflected = false;
 	bool fall = false;
 	bool homing = false;  // ホーミング弾かどうかのフラグ
