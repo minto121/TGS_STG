@@ -47,6 +47,7 @@ GameMain::~GameMain()
 	DeleteSoundMem(GameMain_BGM);
 	StopSoundMem(GameMain_BGM);
 
+	//íœ
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
