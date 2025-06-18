@@ -2,24 +2,34 @@
 #include <vector>
 #include<string>
 #include"demo_Player.h"
+#include"Enemy.h"
 #include"BulletInstance.h"
 
 class demo_Player;
+class Enemy;
+
+namespace BulletConstants {
+	constexpr float PI = 3.14159265f;
+}
 
 class Bullet
 {
 public:
 
+	demo_Player* D_PLAYER;
+	Enemy* enemyRef;
+
 	struct B_State {
 		int time;       // 発射タイミング（ms）
 		float x = 0.0f;
 		float y = 0.0f;     
-		float vx, vy;
-		float ay;
-		float S_angle;    // 開始角度（deg）
-		float E_angle;    // 終了角度（deg）
+		float vx = 0.0f;
+		float vy = 0.0f;
+		float ay = 0.0f;
+		float S_angle= 0.0f;    // 開始角度（deg）
+		float E_angle = 0.0f;    // 終了角度（deg）
 		int cnt;
-		float spd;    // 弾速
+		float spd = 0.0f;    // 弾速
 
 		std::string type;
 		//bool active = false;
@@ -45,6 +55,7 @@ public:
 	int Bullet_img[8];
 	int nowtime = 0;
 	bool homingFiredOnce = false;
+	bool enemyAlive = true;
 	std::vector<BulletInstance>& GetBullets();
 
 
@@ -60,13 +71,12 @@ public:
 	void StopAllBullets();
 	void SetEnemyPosition(float x, float y);
 	void ClearAllBullets();
-	demo_Player* D_PLAYER;
+	void SetEnemyRef(Enemy* e);
+	void SetEnemyAlive(bool isAlive);
+
 
 	std::vector<B_State>patterns;
 	std::vector<BulletInstance> bullets;
-
-
-
 private:
 
 	bool globalReflectEnable = false;
