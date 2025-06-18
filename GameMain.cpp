@@ -82,6 +82,7 @@ AbstractScene* GameMain::Update()
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
 			return new Title(); // ƒ^ƒCƒgƒ‹‚Ö–ß‚é
+			return new Result();
 		}
 		return this;
 	}
@@ -222,11 +223,10 @@ AbstractScene* GameMain::Update()
 			//BGMíœ
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
-
-			return new Title();
+			return new Result();
 		}
 	}
-	return this;
+	
 }
 void GameMain::Draw() const
 {

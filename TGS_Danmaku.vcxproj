@@ -164,6 +164,7 @@
     <ClCompile Include="Mob_Enemy.cpp" />
     <ClCompile Include="PadInput.cpp" />
     <ClCompile Include="Player_Shot.cpp" />
+    <ClCompile Include="Result.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Title.cpp" />
   </ItemGroup>
@@ -180,6 +181,7 @@
     <ClInclude Include="Mob_Enemy.h" />
     <ClInclude Include="PadInput.h" />
     <ClInclude Include="Player_Shot.h" />
+    <ClInclude Include="Result.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Title.h" />
   </ItemGroup>
