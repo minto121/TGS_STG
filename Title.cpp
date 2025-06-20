@@ -16,6 +16,10 @@ Title::Title()
 	Title_Img = LoadGraph("Resource/image/Title_img.jpg");
 	cursor_img = LoadGraph("Resource/image/cursor_img.png");
 
+	moji_img[0] = LoadGraph("Resource/image/start.png");
+	moji_img[1] = LoadGraph("Resource/image/help.png");
+	moji_img[2] = LoadGraph("Resource/image/end.png");
+
 	//BGM・SE読込
 	Title_BGM = LoadSoundMem("Resource/bgm/Title_BGM.wav");
 	Select_SE = LoadSoundMem("Resource/bgm/Cursor_SE.wav");
@@ -101,11 +105,15 @@ void Title::Draw() const
 	SetFontSize(100);
 	DrawFormatString(350, 100, 0xffffff, "タイトル");
 
-	SetFontSize(50);
+	/*SetFontSize(50);
 	DrawFormatString(550, 300, 0xffffff, "スタート");
 	DrawFormatString(550, 400, 0xffffff, "ヘルプ");
-	DrawFormatString(550, 500, 0xffffff, "エンド");
+	DrawFormatString(550, 500, 0xffffff, "エンド");*/
 
-	DrawGraph(240 , 190+ select * 100, cursor_img, TRUE);
+	DrawGraph(200, 300, moji_img[0], TRUE);
+	DrawGraph(200, 400, moji_img[1], TRUE);
+	DrawGraph(165, 500, moji_img[2], TRUE);
+
+	DrawGraph(-70 , 220+ select * 100, cursor_img, TRUE);
 
 }

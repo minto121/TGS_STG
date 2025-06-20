@@ -21,6 +21,7 @@ private:
 	int Select_SE;
 	int CursorMove_SE;
 	int Title_Img;
+	int moji_img[3];
 
 	int cursor;
 	int cursor_img;
