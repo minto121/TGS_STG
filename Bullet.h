@@ -63,12 +63,17 @@ public:
 	float px, py;
 	//float dy, dx;
 	int Bullet_img[8];
+	int HomingBulletImg[8];
 	int nowtime = 0;
 	bool homingFiredOnce = false;
 	bool enemyAlive = true;
+	bool isSpiralActive = false;
 	std::vector<BulletInstance>& GetBullets();
 
-
+	float spiralAngle = 0.0f;  // 初期角度
+	float spiralSpeed = 5.0f;  // 毎フレーム回転する角度（度数）
+	int spiralInterval = 5;    // 発射間隔（フレーム）
+	int spiralLastTime = 0;
 
 
 	Bullet();
@@ -86,6 +91,7 @@ public:
 	void SetEnemyRef(Enemy* e);
 	void SetEnemyAlive(bool isAlive);
 	void CreateSatelliteBullets(int count, float radius, float speed);
+	void EnableSpiral(float angle = 0.0f, float speed = 6.0f, int interval = 4);
 
 
 	std::vector<B_State>patterns;

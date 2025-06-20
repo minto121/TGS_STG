@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES
+ï»¿#define _USE_MATH_DEFINES
 #define NOMINMAX  
 #include <algorithm>
 #include <vector>
@@ -31,17 +31,18 @@ const float PI = 3.14159265f;
 Bullet::Bullet()
 {
     //Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
-    LoadDivGraph("Resource/image/’Êí’e–‹.png", 8, 8, 1, 64, 32, Bullet_img);
+    LoadDivGraph("Resource/image/é€šå¸¸å¼¾å¹•.png", 8, 8, 1, 64, 32, Bullet_img);
+    LoadDivGraph("Resource/image/å¤§å¼¾å¼¾å¹•.png", 8, 8, 1, 64, 64, HomingBulletImg);
 
     D_PLAYER = new demo_Player;
     px = 0.0f;
     py = 0.0f;
-
+    isSpiralActive = false;
     SetEnemyPosition(ex,ey);
     
     int patternRepeatInterval = 120;
     int lastPatternTime = 0;
-    int currentPatternType = -1; // 0: ’Êí, 1: ”½Ë, 2: ’Ç”ö
+    int currentPatternType = -1; // 0: é€šå¸¸, 1: åå°„, 2: è¿½å°¾
     bool repeatWhileAlive = false;
 }
 
@@ -62,7 +63,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
     if (!enemyAlive) return;
 
     //if (enemyRef != nullptr && enemyRef->IsDead()) {
-    //    return;  // €–S’†‚È‚ç’e–‹XV‚µ‚È‚¢
+    //    return;  // æ­»äº¡ä¸­ãªã‚‰å¼¾å¹•æ›´æ–°ã—ãªã„
     //}
 
     //bool isPlayerAlive = D_PLAYER && D_PLAYER->IsAlive();
@@ -76,7 +77,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 
     //if (D_PLAYER && D_PLAYER->IsAlive()) {
     //    if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
-            //’e–‹‚Ì¶¬
+            //å¼¾å¹•ã®ç”Ÿæˆ
             printf("nowtime: %d\n", nowtime);
             for (auto& pattern : patterns) {
                 if (!pattern.used && nowtime >= pattern.time) {
@@ -94,9 +95,9 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         bi.vx = cosf(angleRad) * pattern.spd;
                         bi.vy = sinf(angleRad) * pattern.spd;
 
-                        // fallˆ—
+                        // fallå‡¦ç†
                         if (pattern.fall == true) {
-                            bi.ay = 0.02f; // d—Í‚Å—‰º
+                            bi.ay = 0.02f; // é‡åŠ›ã§è½ä¸‹
                             //printf("fall bullet generated at time: %d\n", nowtime);
 
                         }
@@ -114,12 +115,9 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                             bullets.push_back(tail);
                             pattern.used = true;
                         }*/
-                        float spiralAngle = 0.0f;  // ‰ŠúŠp“x
-                        float spiralSpeed = 5.0f;  // –ˆƒtƒŒ[ƒ€‰ñ“]‚·‚éŠp“xi“x”j
-                        int spiralInterval = 5;    // ”­ËŠÔŠuiƒtƒŒ[ƒ€j
-                        int spiralLastTime = 0;
+      
 
-                        //// ƒXƒpƒCƒ‰ƒ‹’e‚Ì”­Ëƒ^ƒCƒ~ƒ“ƒO
+                        //// ã‚¹ãƒ‘ã‚¤ãƒ©ãƒ«å¼¾ã®ç™ºå°„ã‚¿ã‚¤ãƒŸãƒ³ã‚°
                         //if (nowtime - spiralLastTime >= spiralInterval) {
                         //    spiralLastTime = nowtime;
 
@@ -142,10 +140,10 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         //}
 
                         if (pattern.spiral && !pattern.used) {
-                            pattern.used = true; // ”­ËƒgƒŠƒK[‚Íˆê“x‚¾‚¯
+                            pattern.used = true; // ç™ºå°„ãƒˆãƒªã‚¬ãƒ¼ã¯ä¸€åº¦ã ã‘
 
                             spiralAngle = pattern.S_angle;
-                            spiralSpeed = 6.0f; // ”CˆÓ
+                            spiralSpeed = 6.0f; // ä»»æ„
                             spiralInterval = 4;
                             spiralLastTime = nowtime;
 
@@ -153,7 +151,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         }
                    
                     
-                        //’Ç”ö’eˆ—
+                        //è¿½å°¾å¼¾å‡¦ç†
                         if (pattern.homing && !pattern.used) {
                             float dx = px - ex;
                             float dy = py - ey;
@@ -170,12 +168,12 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                             bi.active = true;
                             bullets.push_back(bi);
 
-                            // ”ö’eF‚Ü‚Î‚ç‚È delay ‚Æ‘¬“x’²®
+                            // å°¾å¼¾ï¼šã¾ã°ã‚‰ãª delay ã¨é€Ÿåº¦èª¿æ•´
                             const int tailCount = 5;
                             const float tailSpacing = 50.0f;
 
-                            // ”CˆÓ‚Ì‚Ü‚Î‚ç‚È”­Ë’x‰„i—áFƒ‰ƒ“ƒ_ƒ€ or ŒÅ’èj
-                            int delayOffsets[3] = { 0, 10, 20 };  // ‚Ü‚Î‚ç‚É‚µ‚½‚¢ê‡‚Í‚±‚±‚ğH•vI
+                            // ä»»æ„ã®ã¾ã°ã‚‰ãªç™ºå°„é…å»¶ï¼ˆä¾‹ï¼šãƒ©ãƒ³ãƒ€ãƒ  or å›ºå®šï¼‰
+                            int delayOffsets[3] = { 0, 10, 20 };  // ã¾ã°ã‚‰ã«ã—ãŸã„å ´åˆã¯ã“ã“ã‚’å·¥å¤«ï¼
 
                             for (int i = 0; i < tailCount; ++i) {
                                 float speedRatio = 1.0f - 0.1f * (i + 1); // 0.9, 0.8, 0.7...
@@ -193,7 +191,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                                 tail.homing = false;
 
                                 DelayedBullet db;
-                                db.delay = delayOffsets[i];  // © ‚±‚±‚ªu‚Ü‚Î‚çv”­Ë‚ÌŒˆ‚ßè
+                                db.delay = delayOffsets[i];  // â† ã“ã“ãŒã€Œã¾ã°ã‚‰ã€ç™ºå°„ã®æ±ºã‚æ‰‹
                                 db.instance = tail;
 
                                 delayedBullets.push_back(db);
@@ -210,17 +208,17 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 }
             }
 
-            //’e‚ÌˆÚ“®
+            //å¼¾ã®ç§»å‹•
             for (auto& b : bullets) {
                 if (!b.active) continue;
 
-                // ’ÊíˆÚ“®
-                b.vy += b.ay; // ‰Á‘¬“xid—Íj
+                // é€šå¸¸ç§»å‹•
+                b.vy += b.ay; // åŠ é€Ÿåº¦ï¼ˆé‡åŠ›ï¼‰
                 b.x += b.vx;
                 b.y += b.vy;
 
                 if (b.reflect == true) {
-                    // Å‘å1‰ñ‚Ü‚Å”½Ë‚³‚¹‚é
+                    // æœ€å¤§1å›ã¾ã§åå°„ã•ã›ã‚‹
                     if (b.reflectCount == 0) {
                         //bool reflected = false;
 
@@ -238,7 +236,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         }
                     }else {
 
-                        // ‰æ–ÊŠO‚Éo‚½‚çíœ
+                        // ç”»é¢å¤–ã«å‡ºãŸã‚‰å‰Šé™¤
                         if (b.x < PLAY_AREA_LEFT || b.x > PLAY_AREA_RIGHT
                             || b.y < PLAY_AREA_TOP || b.y > PLAY_AREA_BOTTOM) {
                             b.isAlive = false;
@@ -246,7 +244,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                     }
                 }
 
-                //// ƒz[ƒ~ƒ“ƒO’e‚Ì’²®i”CˆÓj
+                //// ãƒ›ãƒ¼ãƒŸãƒ³ã‚°å¼¾ã®èª¿æ•´ï¼ˆä»»æ„ï¼‰
                 //if (b.homing == true) {
                 //    float dx = px - ex;
                 //    float dy = py - ey;
@@ -257,13 +255,13 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 //    b.vy += (targetVy - b.vy) * b.homingStrength;
                 //}
 
-                //// ‰æ–ÊŠO‚Å–³Œø‰»i”CˆÓj
+                //// ç”»é¢å¤–ã§ç„¡åŠ¹åŒ–ï¼ˆä»»æ„ï¼‰
                 //if (b.x < PLAY_AREA_LEFT || b.x > PLAY_AREA_RIGHT ||
                 //    b.y < PLAY_AREA_TOP || b.y > PLAY_AREA_BOTTOM) {
                 //    b.active = false;
                 //}
 
-                // ”g–ä’e‚Ìõ–½ˆ—
+                // æ³¢ç´‹å¼¾ã®å¯¿å‘½å‡¦ç†
                 if (b.rippleEffect) {
                     b.rippleFrame++;
                     b.vx = b.rippleVx;
@@ -295,15 +293,15 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
             if (nowtime - lastPatternLoopTime >= patternLoopInterval) {
                 for (auto& p : basePatterns) {
                     B_State newP = p;
-                    newP.time = nowtime + (p.time % patternLoopInterval);  // ‘Š‘ÎŠÔ‚ÅÄ—˜—p
+                    newP.time = nowtime + (p.time % patternLoopInterval);  // ç›¸å¯¾æ™‚é–“ã§å†åˆ©ç”¨
                     newP.used = false;
-                    //if (p.homing && nowtime > 0) continue; // ƒz[ƒ~ƒ“ƒO’e‚Í1‰ñ‚¾‚¯‚É‚µ‚½‚¢ê‡
+                    //if (p.homing && nowtime > 0) continue; // ãƒ›ãƒ¼ãƒŸãƒ³ã‚°å¼¾ã¯1å›ã ã‘ã«ã—ãŸã„å ´åˆ
                     patterns.push_back(newP);
                 }
                 lastPatternLoopTime = nowtime;
             }
 
-            // ’x‰„’eˆ—
+            // é…å»¶å¼¾å‡¦ç†
             for (auto it = delayedBullets.begin(); it != delayedBullets.end(); ) {
                 it->delay--;
                 if (it->delay <= 0) {
@@ -314,14 +312,14 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                     ++it;
                 }
             }
-            //‰q¯’eˆ—
-            for (auto& b : satelliteBullets) {
-                if (!b.active) continue;
+            ////è¡›æ˜Ÿå¼¾å‡¦ç†
+            //for (auto& b : satelliteBullets) {
+            //    if (!b.active) continue;
 
-                b.orbitAngle += b.orbitSpeed;
-                b.x = ex + cosf(b.orbitAngle) * b.orbitRadius;
-                b.y = ey + sinf(b.orbitAngle) * b.orbitRadius;
-            }
+            //    b.orbitAngle += b.orbitSpeed;
+            //    b.x = ex + cosf(b.orbitAngle) * b.orbitRadius;
+            //    b.y = ey + sinf(b.orbitAngle) * b.orbitRadius;
+            //}
 
 }
 
@@ -329,14 +327,14 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
 {
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        printf("ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½: %s\n", filePath);
+        printf("ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸ: %s\n", filePath);
         return;
     }
 
     std::vector<B_State> basePatterns;
     std::string line;
     while (std::getline(file, line)) {
-        if (line.empty()) continue;  // ‹ós‚ÍƒXƒLƒbƒv
+        if (line.empty()) continue;  // ç©ºè¡Œã¯ã‚¹ã‚­ãƒƒãƒ—
 
         std::stringstream ss(line);
         std::string value;
@@ -350,7 +348,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             std::getline(ss, value, ','); b.E_angle = std::stof(value);
             std::getline(ss, value, ','); b.cnt = std::stoi(value);
             std::getline(ss, value, ','); b.spd = std::stof(value);
-            // ‰Šú’l
+            // åˆæœŸå€¤
  /*           b.used = false;*/
   /*          b.fall = false;
             b.homing = false;
@@ -362,7 +360,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
                 b.fall = (value == "true" || value == "1");
             }
             else {
-                b.fall = false; // ŒÃ‚¢CSV—p‚ÉƒfƒtƒHƒ‹ƒg
+                b.fall = false; // å¤ã„CSVç”¨ã«ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
             }
             //homing
             if (std::getline(ss, value, ',')) {
@@ -370,7 +368,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
                 b.homing = (value == "true" || value == "1");
             }
             else {
-                b.homing = false; // ŒÃ‚¢CSV—p‚ÉƒfƒtƒHƒ‹ƒg
+                b.homing = false; // å¤ã„CSVç”¨ã«ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
             }
   
             // reflect
@@ -395,12 +393,12 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             basePatterns.push_back(b);
         }
         catch (...) {
-            printf("CSV“Ç‚İ‚İƒGƒ‰[: %s\n", line.c_str());
+            printf("CSVèª­ã¿è¾¼ã¿ã‚¨ãƒ©ãƒ¼: %s\n", line.c_str());
         }
     }
 
-    // ŒJ‚è•Ô‚µ’Ç‰Ái5‰ñj
-    //const int interval = 120; // ŒJ‚è•Ô‚µŠÔŠuiƒtƒŒ[ƒ€’PˆÊA—á: 2•bj
+    // ç¹°ã‚Šè¿”ã—è¿½åŠ ï¼ˆ5å›ï¼‰
+    //const int interval = 120; // ç¹°ã‚Šè¿”ã—é–“éš”ï¼ˆãƒ•ãƒ¬ãƒ¼ãƒ å˜ä½ã€ä¾‹: 2ç§’ï¼‰
     //for (int i = 0; i < 5; i++) {
     //    for (auto& p : basePatterns) {
     //        B_State newP = p;
@@ -411,7 +409,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
     //}
 
 
-    //// ƒpƒ^[ƒ““o˜^
+    //// ãƒ‘ã‚¿ãƒ¼ãƒ³ç™»éŒ²
     //for (int i = 0; i < 5; i++) {
     //    for (auto& p : basePatterns) {
     //        if (p.homing && i > 0) continue;
@@ -424,7 +422,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
 
 
     this->basePatterns = basePatterns;
-    // Å‰‚Ìƒ‹[ƒv•ª‚¾‚¯ƒ[ƒh
+    // æœ€åˆã®ãƒ«ãƒ¼ãƒ—åˆ†ã ã‘ãƒ­ãƒ¼ãƒ‰
     for (auto& p : basePatterns) {
         B_State newP = p;
         newP.time += 0;
@@ -432,7 +430,7 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
         patterns.push_back(newP);
     }
 
-    ////Šm”F—p
+    ////ç¢ºèªç”¨
     //int homingCount = 0;
     //int totalCount = 0;
     //bool lastHoming = false;
@@ -500,13 +498,13 @@ void Bullet::TriggerRippleEffect(float cx, float cy, float radius)
         float dy = b.y - cy;
         if ((dx * dx + dy * dy) <= radiusSq) {
             float angle = atan2f(dy, dx);
-            float speed = 4.0f; // ”g–ä‚Ì”òU‘¬“x
+            float speed = 4.0f; // æ³¢ç´‹ã®é£›æ•£é€Ÿåº¦
 
             b.rippleEffect = true;
             b.rippleFrame = 0;
             b.rippleVx = cosf(angle) * speed;
             b.rippleVy = sinf(angle) * speed;
-            b.rippleLife = 30; // ”g–ä’e‚Ìõ–½iƒtƒŒ[ƒ€j
+            b.rippleLife = 30; // æ³¢ç´‹å¼¾ã®å¯¿å‘½ï¼ˆãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰
         }
     }
 }
@@ -520,9 +518,18 @@ void Bullet::CreateSatelliteBullets(int count, float radius, float speed) {
         b.orbitRadius = radius;
         b.orbitSpeed = speed;
         b.active = true;
-        b.isSatellite = true; // © Vƒtƒ‰ƒO
+        b.isSatellite = true; // â† æ–°ãƒ•ãƒ©ã‚°
         satelliteBullets.push_back(b);
     }
+}
+
+void Bullet::EnableSpiral(float angle, float speed, int interval)
+{
+    spiralAngle = angle;
+    spiralSpeed = speed;
+    spiralInterval = interval;
+    spiralLastTime = 0;
+    isSpiralActive = true;
 }
 
 
@@ -531,34 +538,46 @@ void Bullet::Draw()
     int bulletW, bulletH;
     GetGraphSize(Bullet_img[7], &bulletW, &bulletH);
 
-     for (auto& b : bullets) {
+    for (auto& b : bullets) {
         if (!b.active) continue;
 
-        int index = 0; // ‰æ‘œƒCƒ“ƒfƒbƒNƒX
-        if (b.fall == true) {
-            index = 6;
-        }
-        else if (b.reflect == true) {
-            index = 0;
-        }
-        else if (b.homing == true) {
-            index = 2;
+        int index = 0; // ç”»åƒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+        if (b.homing == true) {
+            index = 5;  // é’ï¼ˆä¾‹ï¼‰â†’ ä»»æ„ã§0ã€œ7ã«å¤‰ãˆã¦OK
+            GetGraphSize(HomingBulletImg[index], &bulletW, &bulletH);
+            // æ‹¡å¤§ç‡ï¼ˆä¾‹ï¼š2å€ï¼‰
+            float scale = 2.0f;
+
+            int drawX1 = (int)(b.x - (bulletW * scale) / 2);
+            int drawY1 = (int)(b.y - (bulletH * scale) / 2);
+            int drawX2 = drawX1 + (int)(bulletW * scale);
+            int drawY2 = drawY1 + (int)(bulletH * scale);
+            DrawExtendGraph(drawX1, drawY1, drawX2, drawY2, HomingBulletImg[index], TRUE);
+            //DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), HomingBulletImg[index], TRUE);
         }
         else {
-            index = 0; // ‚»‚êˆÈŠO‚Ì’Êí’e‚È‚Ç
+            if (b.fall == true) {
+                index = 6;
+            }
+            else if (b.reflect == true) {
+                index = 0;
+            }
+            else {
+                index = 0;
+            }
+            GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
+            // å¼¾ã®åº§æ¨™ã¯ä¸­å¿ƒåº§æ¨™ã¨ã—ã¦æç”»
+            DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
         }
 
-        int bulletW, bulletH;
-        GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
 
-        // ’e‚ÌÀ•W‚Í’†SÀ•W‚Æ‚µ‚Ä•`‰æ
-        DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
+
     }
 
-     for (auto& b : satelliteBullets) {
-         if (!b.active) continue;
-         DrawGraph((int)(b.x - 16), (int)(b.y - 16), Bullet_img[4], TRUE); // “K“–‚È‰æ‘œ
-     }
+     //for (auto& b : satelliteBullets) {
+     //    if (!b.active) continue;
+     //    DrawGraph((int)(b.x - 16), (int)(b.y - 16), Bullet_img[4], TRUE); // é©å½“ãªç”»åƒ
+     //}
 
 }
 
