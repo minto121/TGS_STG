@@ -148,6 +148,7 @@ AbstractScene* GameMain::Update()
 					else if (EnemyPhase == 2) {
 						BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
 						BULLET_DATE->SetReflectEnable(false);
+						BULLET_DATE->CreateSatelliteBullets(4, 60.0f, 0.05f);  // —áF4ŒÂA60px”¼ŒaA‚ä‚Á‚­‚è‰ñ“]
 						currentPattern = 2;
 					}
 					return this;

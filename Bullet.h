@@ -29,6 +29,7 @@ public:
 		float S_angle= 0.0f;    // 開始角度（deg）
 		float E_angle = 0.0f;    // 終了角度（deg）
 		int cnt;
+		bool spiral;  
 		float spd = 0.0f;    // 弾速
 
 		std::string type;
@@ -41,10 +42,19 @@ public:
 		bool ripple = false;
 		//float vx, vy;
 		int firedCount = 0;
+
+
 	};
 
 	BulletInstance bi;
 
+	struct DelayedBullet {
+		int delay;
+		BulletInstance instance;
+	};
+
+	std::vector<DelayedBullet> delayedBullets;//尾弾
+	std::vector<BulletInstance> satelliteBullets;//衛星弾
 
 	std::vector<B_State> basePatterns; // ←ヘッダーにも追加
 	int patternLoopInterval = 120; // ループ間隔（フレーム）
@@ -57,6 +67,8 @@ public:
 	bool homingFiredOnce = false;
 	bool enemyAlive = true;
 	std::vector<BulletInstance>& GetBullets();
+
+
 
 
 	Bullet();
@@ -73,6 +85,7 @@ public:
 	void ClearAllBullets();
 	void SetEnemyRef(Enemy* e);
 	void SetEnemyAlive(bool isAlive);
+	void CreateSatelliteBullets(int count, float radius, float speed);
 
 
 	std::vector<B_State>patterns;

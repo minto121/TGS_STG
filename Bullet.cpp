@@ -72,6 +72,8 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
         py = D_PLAYER->GetY();
     }
 
+    
+
     //if (D_PLAYER && D_PLAYER->IsAlive()) {
     //    if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
             //弾幕の生成
@@ -92,7 +94,14 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         bi.vx = cosf(angleRad) * pattern.spd;
                         bi.vy = sinf(angleRad) * pattern.spd;
 
-                        if (!pattern.homing && pattern.vx != 0.0f && pattern.vy != 0.0f) {
+                        // fall処理
+                        if (pattern.fall == true) {
+                            bi.ay = 0.02f; // 重力で落下
+                            //printf("fall bullet generated at time: %d\n", nowtime);
+
+                        }
+
+                   /*     if (!pattern.homing && pattern.vx != 0.0f && pattern.vy != 0.0f) {
                             BulletInstance tail;
                             tail.x = ex;
                             tail.y = ey;
@@ -100,17 +109,50 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                             tail.vy = pattern.vy;
                             tail.speed = pattern.spd;
                             tail.active = true;
+                            tail.homing = true;
 
                             bullets.push_back(tail);
                             pattern.used = true;
-                        }
+                        }*/
+                        float spiralAngle = 0.0f;  // 初期角度
+                        float spiralSpeed = 5.0f;  // 毎フレーム回転する角度（度数）
+                        int spiralInterval = 5;    // 発射間隔（フレーム）
+                        int spiralLastTime = 0;
 
-                        // fall処理
-                        if (pattern.fall == true) {
-                            bi.ay = 0.05f; // 重力で落下
-                            //printf("fall bullet generated at time: %d\n", nowtime);
+                        //// スパイラル弾の発射タイミング
+                        //if (nowtime - spiralLastTime >= spiralInterval) {
+                        //    spiralLastTime = nowtime;
 
+                        //    BulletInstance b;
+                        //    float angleRad = spiralAngle * (PI / 180.0f);
+                        //    b.x = ex;
+                        //    b.y = ey;
+                        //    b.speed = 4.0f;
+                        //    b.vx = cosf(angleRad) * b.speed;
+                        //    b.vy = sinf(angleRad) * b.speed;
+                        //    b.active = true;
+                        //    b.homing = false;
+                        //    b.reflect = false;
+                        //    b.fall = false;
+
+                        //    bullets.push_back(b);
+
+                        //    spiralAngle += spiralSpeed;
+                        //    if (spiralAngle >= 360.0f) spiralAngle -= 360.0f;
+                        //}
+
+                        if (pattern.spiral && !pattern.used) {
+                            pattern.used = true; // 発射トリガーは一度だけ
+
+                            spiralAngle = pattern.S_angle;
+                            spiralSpeed = 6.0f; // 任意
+                            spiralInterval = 4;
+                            spiralLastTime = nowtime;
+
+                            isSpiralActive = true;
                         }
+                   
+                    
                         //追尾弾処理
                         if (pattern.homing && !pattern.used) {
                             float dx = px - ex;
@@ -119,30 +161,42 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                             float cosA = cosf(angle);
                             float sinA = sinf(angle);
 
-
                             bi.vx = cosA * pattern.spd;
                             bi.vy = sinA * pattern.spd;
                             bi.homing = true;
                             bi.homingStrength = 0.5f;
+                            bi.fall = pattern.fall;
+                            bi.reflect = pattern.reflect;
+                            bi.active = true;
+                            bullets.push_back(bi);
 
-                            // 後ろに尾弾を複数発射（例えば3つ）
-                            const int tailCount = 3;
-                            const float tailSpacing = 20.0f; // 距離（フレーム単位）
-                            const int tailDelay = 16; // 2フレームごと
+                            // 尾弾：まばらな delay と速度調整
+                            const int tailCount = 5;
+                            const float tailSpacing = 50.0f;
 
+                            // 任意のまばらな発射遅延（例：ランダム or 固定）
+                            int delayOffsets[3] = { 0, 10, 20 };  // まばらにしたい場合はここを工夫！
 
-                            if (!pattern.homing) {
+                            for (int i = 0; i < tailCount; ++i) {
+                                float speedRatio = 1.0f - 0.1f * (i + 1); // 0.9, 0.8, 0.7...
+                                float tailSpeed = pattern.spd * speedRatio;
+
                                 BulletInstance tail;
-                                tail.x = ex;
-                                tail.y = ey;
-                                tail.speed = pattern.spd;
-                                tail.vx = cosf(angleRad) * pattern.spd;
-                                tail.vy = sinf(angleRad) * pattern.spd;
+                                tail.x = ex - cosA * tailSpacing * (i + 1);
+                                tail.y = ey - sinA * tailSpacing * (i + 1);
+                                tail.vx = cosA * tailSpeed;
+                                tail.vy = sinA * tailSpeed;
+                                tail.speed = tailSpeed;
                                 tail.active = true;
                                 tail.reflect = pattern.reflect;
                                 tail.fall = pattern.fall;
+                                tail.homing = false;
 
-                                bullets.push_back(tail);
+                                DelayedBullet db;
+                                db.delay = delayOffsets[i];  // ← ここが「まばら」発射の決め手
+                                db.instance = tail;
+
+                                delayedBullets.push_back(db);
                             }
                         }
                         bi.fall = pattern.fall;
@@ -220,6 +274,24 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 }
             }
 
+            if (isSpiralActive && nowtime - spiralLastTime >= spiralInterval) {
+                spiralLastTime = nowtime;
+
+                BulletInstance b;
+                float angleRad = spiralAngle * (PI / 180.0f);
+                b.x = ex;
+                b.y = ey;
+                b.speed = 4.0f;
+                b.vx = cosf(angleRad) * b.speed;
+                b.vy = sinf(angleRad) * b.speed;
+                b.active = true;
+                bullets.push_back(b);
+
+                spiralAngle += spiralSpeed;
+                if (spiralAngle >= 360.0f) spiralAngle -= 360.0f;
+            }
+
+
             if (nowtime - lastPatternLoopTime >= patternLoopInterval) {
                 for (auto& p : basePatterns) {
                     B_State newP = p;
@@ -230,6 +302,27 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 }
                 lastPatternLoopTime = nowtime;
             }
+
+            // 遅延弾処理
+            for (auto it = delayedBullets.begin(); it != delayedBullets.end(); ) {
+                it->delay--;
+                if (it->delay <= 0) {
+                    bullets.push_back(it->instance);
+                    it = delayedBullets.erase(it);
+                }
+                else {
+                    ++it;
+                }
+            }
+            //衛星弾処理
+            for (auto& b : satelliteBullets) {
+                if (!b.active) continue;
+
+                b.orbitAngle += b.orbitSpeed;
+                b.x = ex + cosf(b.orbitAngle) * b.orbitRadius;
+                b.y = ey + sinf(b.orbitAngle) * b.orbitRadius;
+            }
+
 }
 
 void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
@@ -290,6 +383,14 @@ void Bullet::LoadCSV(const char* filePath, int repeatCnt, int Interval)
             if (std::getline(ss, value, ',')) {
                 value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
                 b.ripple = (value == "true" || value == "1");
+            }
+            // spiral
+            if (std::getline(ss, value, ',')) {
+                value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+                b.spiral = (value == "true" || value == "1");
+            }
+            else {
+                b.spiral = false;
             }
             basePatterns.push_back(b);
         }
@@ -410,6 +511,20 @@ void Bullet::TriggerRippleEffect(float cx, float cy, float radius)
     }
 }
 
+void Bullet::CreateSatelliteBullets(int count, float radius, float speed) {
+    satelliteBullets.clear();
+
+    for (int i = 0; i < count; ++i) {
+        BulletInstance b;
+        b.orbitAngle = (2 * PI / count) * i;
+        b.orbitRadius = radius;
+        b.orbitSpeed = speed;
+        b.active = true;
+        b.isSatellite = true; // ← 新フラグ
+        satelliteBullets.push_back(b);
+    }
+}
+
 
 void Bullet::Draw()
 {
@@ -439,6 +554,11 @@ void Bullet::Draw()
         // 弾の座標は中心座標として描画
         DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
     }
+
+     for (auto& b : satelliteBullets) {
+         if (!b.active) continue;
+         DrawGraph((int)(b.x - 16), (int)(b.y - 16), Bullet_img[4], TRUE); // 適当な画像
+     }
 
 }
 

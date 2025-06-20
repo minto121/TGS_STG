@@ -24,4 +24,12 @@ struct BulletInstance {
 	float rippleVx = 0;
 	float rippleVy = 0;
 	int rippleLife = 30; // ƒtƒŒ[ƒ€”‚Åõ–½
+
+	//--------‰q¯’e---------------
+	bool isOrbiting = false;
+	bool isSatellite = false;
+	float baseAngle = 0.0f;       // is•ûŒüiƒvƒŒƒCƒ„[Œü‚«j
+	float orbitAngle = 0.0f;      // Œ»İ‚Ì‰~‰^“®Šp“x
+	float orbitRadius = 10.0f;    // ‰ñ“]”¼Œa
+	float orbitSpeed = 0.2f;      // ‰ñ“]Šp‘¬“x
 };
