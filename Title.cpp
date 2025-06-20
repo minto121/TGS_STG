@@ -65,9 +65,27 @@ AbstractScene* Title::Update()
 		if (PAD_INPUT::OnButton(XINPUT_BUTTON_A) == PRESS) {
 			PlaySoundMem(CursorMove_SE, DX_PLAYTYPE_BACK, TRUE);
 			////äeÉVÅ[Éì
-			if (TITLE_MENU::START == Menu_Number1) return new GameMain();
-			if (TITLE_MENU::HELP == Menu_Number1) return new Help();
-			if (TITLE_MENU::END == Menu_Number1) return new End();
+			if (TITLE_MENU::START == Menu_Number1)
+			{
+				//BGMçÌèú
+				DeleteSoundMem(Title_BGM);
+				StopSoundMem(Title_BGM);
+				return new GameMain();
+			};
+			if (TITLE_MENU::HELP == Menu_Number1)
+			{
+				//BGMçÌèú
+				DeleteSoundMem(Title_BGM);
+				StopSoundMem(Title_BGM);
+				return new Help();
+			};
+			if (TITLE_MENU::END == Menu_Number1)
+			{
+				//BGMçÌèú
+				DeleteSoundMem(Title_BGM);
+				StopSoundMem(Title_BGM);
+				return new End();
+			};
 
 			interval = 0;
 		}

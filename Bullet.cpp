@@ -59,6 +59,12 @@ void Bullet::SetPlayer(demo_Player* player)
 void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 {
 
+    if (!enemyAlive) return;
+
+    //if (enemyRef != nullptr && enemyRef->IsDead()) {
+    //    return;  // Ž€–S’†‚È‚ç’e–‹XV‚µ‚È‚¢
+    //}
+
     //bool isPlayerAlive = D_PLAYER && D_PLAYER->IsAlive();
 
     if (D_PLAYER) {
@@ -76,7 +82,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 
                     for (int i = 0; i < pattern.cnt; ++i) {
                         float angleDeg = pattern.S_angle + angleStep * i;
-                        float angleRad = angleDeg * (M_PI / 180.0f);
+                        float angleRad = angleDeg * (BulletConstants::PI / 180.0f);
 
                         BulletInstance bi;
                         bi.x = ex;
@@ -374,6 +380,14 @@ void Bullet::SetReflectEnable(bool enable)
 //        }
 //    }
 //}
+
+void Bullet::SetEnemyAlive(bool isAlive) {
+    enemyAlive = isAlive;
+}
+
+void Bullet::SetEnemyRef(Enemy* e) {
+    enemyRef = e;
+}
 void Bullet::TriggerRippleEffect(float cx, float cy, float radius)
 {
     float radiusSq = radius * radius;

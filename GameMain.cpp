@@ -6,6 +6,7 @@
 #include "Enemy.h"
 #include "Title.h"
 
+
 //#define PI 3.1415926f
 
 
@@ -22,6 +23,7 @@ GameMain::GameMain()
 
 	//BGM�ESE�Ǎ�
 	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+	Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
 
 	//�摜�ǂݍ���
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
@@ -54,6 +56,7 @@ GameMain::~GameMain()
 	DeleteSoundMem(GameMain_BGM);
 	StopSoundMem(GameMain_BGM);
 
+	//削除
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
@@ -62,6 +65,9 @@ GameMain::~GameMain()
 
 AbstractScene* GameMain::Update()
 {
+	// 音量の設定
+	ChangeVolumeSoundMem(255 * 70 / 100, Hit_SE);
+
 	//BGM
 	if (CheckSoundMem(GameMain_BGM) == 0)
 	{
@@ -80,7 +86,11 @@ AbstractScene* GameMain::Update()
 
 		// 100�t���[���i��1.6�b�j�҂�����^�C�g���ɖ߂��A�܂��͉��o���s
 		if (clearTimer >= 200) {
-			 return new Title(); // �^�C�g���֖߂�
+			//BGM削除
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
+			return new Title(); // タイトルへ戻る
+			return new Result();
 		}
 		return this;
 	}
@@ -93,8 +103,8 @@ AbstractScene* GameMain::Update()
 
 			if (currentPattern == 0) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // �ʏ�e�͔��˂��Ȃ�
-				BULLET_DATE->bi.fall == true;
+				BULLET_DATE->SetReflectEnable(false); // 通常弾は反射しない
+				BULLET_DATE->bi.fall = true;
 			}
 			else if (currentPattern == 1) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
@@ -113,75 +123,107 @@ AbstractScene* GameMain::Update()
 	D_PLAYER->move();
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
 	bool canFire = !(D_PLAYER->GameOver() && D_PLAYER->Zanki == 0);
-	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y,canFire);
+	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y, canFire);
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // �v���C���[���e�𔭎�
 
-	if (enemy != nullptr) {
-		enemy->Update();
-		// �G��HP��������؂�����e�p�^�[����ς���
-		if (enemy->GetHP() <= 5 && currentPattern != 99) {
-			BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120); // �D���Ȓe�p�^�[���ɕύX
-			BULLET_DATE->SetReflectEnable(false); // �K�v�ɉ����Ĕ��˂�ݒ�
-			currentPattern = 99; // �t���O����F1�񂵂��؂�ւ��Ȃ��悤��
-		}
-		
-		// �G�̌��݈ʒu��Bullet�ɋ�����
+	//if (enemy != nullptr) {
+	//	if (!enemy->IsDead()) {
+	//		enemy->Update();  // 死んでなければ更新
+	//		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
+	//	}
+	//}
 
-		BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
-	}
-
-	// �e�ƓG�̓����蔻��
-	for (auto& b : P_SHOT->bullets) {  // P_SHOT�̒e��`�F�b�N
-		if (b.active && enemy != nullptr) {
-			if (enemy->CheckCollision(b.x, b.y, true)) {
-				enemy->OnHit(); // HP����炷
-				b.active = false;  // �e�����
-				if (enemy->IsDead()) { // �� HP��0�ȉ��Ȃ�|��
-					EnemyPhase++;
-
-					if (EnemyPhase < 3) {
-						delete enemy;
-						enemy = new Enemy(320.0f, 100.0f); // �G����
-
-						if (EnemyPhase == 1) {
-							BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
-							BULLET_DATE->SetReflectEnable(true);
-							currentPattern = 1;
-						}
-						else if (EnemyPhase == 2) {
-							BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
-							BULLET_DATE->SetReflectEnable(false);
-							currentPattern = 2;
-						}
-					}
-					else {
-						delete enemy;
-						enemy = nullptr;
-						isGameClear = true;
-						BULLET_DATE->ClearAllBullets();
-						printfDx("WIN!! �ŏI�`�Ԍ��j\n");
-					}
-				}
-				if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
-					delete enemy;
-					enemy = nullptr;
-					printfDx("WIN");
-
-					isGameClear = true;
-					clearTimer = 0;
-					BULLET_DATE->StopAllBullets();
-					//P_SHOT->StopAllBullets();
-					return this;  // �� return ���Ȃ��Ŏ��t���[���Ń^�C�}�[��i�߂�
-				}
+	// 弾と敵の当たり判定処理（シンプルに）
+	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
+		for (auto& b : P_SHOT->bullets) {
+			if (b.active && enemy->CheckCollision(b.x, b.y, true)) {
+				PlaySoundMem(Hit_SE, DX_PLAYTYPE_BACK, TRUE);
+				enemy->OnHit(); // HPを減らす
+				b.active = false; // 弾を消す
 			}
 		}
 	}
+
+	// 敵の状態別処理（毎フレーム）
+	if (enemy != nullptr) {
+		switch (enemy->GetState()) {
+		case EnemyLifeState::ALIVE:
+			enemy->Update();
+			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
+			if (enemy->GetHP() <= 0) {
+				if (EnemyPhase < MaxEnemyPhase) {
+					// 次のフェーズへ移行
+					EnemyPhase++;
+					delete enemy;
+					enemy = new Enemy(320.0f, 100.0f);
+
+					// 弾幕切り替え
+					if (EnemyPhase == 1) {
+						BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
+						BULLET_DATE->SetReflectEnable(true);
+						currentPattern = 1;
+					}
+					else if (EnemyPhase == 2) {
+						BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
+						BULLET_DATE->SetReflectEnable(false);
+						currentPattern = 2;
+					}
+					return this;
+				}
+				else {
+					// 最終フェーズ終了 → DYINGへ移行
+					enemy->RequestDying();
+				}
+			}
+			// DYING予約が入っていたら次のフレームから移行
+			if (enemy->IsRequestingDying()) {
+				enemy->StartDying();
+			}
+			break;
+
+		case EnemyLifeState::DYING:
+			enemy->UpdateDying();
+			BULLET_DATE->ClearAllBullets();
+			BULLET_DATE->StopAllBullets();
+			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
+			if (enemy->IsDyingFinished()) {
+				enemy->SetState(EnemyLifeState::DEAD);
+			}
+			break;
+
+		case EnemyLifeState::DEAD:
+			delete enemy;
+			enemy = nullptr;
+			isGameClear = true;
+			clearTimer = 0;
+			BULLET_DATE->ClearAllBullets();
+			BULLET_DATE->StopAllBullets();
+			//return new Title;
+			isGameClear = true;
+			break;
+		}
+	}
+	//if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
+	//	delete enemy;
+	//	enemy = nullptr;
+	//	printfDx("WIN");
+
+	//	isGameClear = true;
+	//	clearTimer = 0;
+
+	//	//P_SHOT->StopAllBullets();
+	//	return this;  // ← return しないで次フレームでタイマーを進める
+	//}
 
 	Score_math();
 
 	if (D_PLAYER->GameOver()) {
 		if (!isGameOver && D_PLAYER->Zanki == 0) {
+			////BGM削除
+			//DeleteSoundMem(GameMain_BGM);
+			//StopSoundMem(GameMain_BGM);
+
 			isGameOver = true;
 			gameOverTimer = 0;
 		}
@@ -191,12 +233,11 @@ AbstractScene* GameMain::Update()
 			//BGM�폜
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
-			return new Title();
+			return new Result();
 		}
 	}
-	return this;
+	
 }
-
 void GameMain::Draw() const
 {
 	DrawGraph(0, -600, BackGroundImg, FALSE);
@@ -215,8 +256,11 @@ void GameMain::Draw() const
 		enemy->Draw();
 	}
 
+	//if (result != nullptr) {
+	//	result->Draw();
+	//}
 
-	if (isGameClear && clearTimer >= 30) {  // �����o���Ă���\��
+	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
 		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 	}
 

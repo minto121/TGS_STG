@@ -15,6 +15,7 @@ public:
 	int RespawnTimer;	//ƒŠƒXƒ|[ƒ“’†‚Ì–³“GŠÔ
 	int Zanki;
 	int player_img[12];
+	int Hit_SE;
 
 	float GetX()const { return x; }
 	float GetY()const { return y; }

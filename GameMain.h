@@ -4,8 +4,8 @@
 #include"demo_Player.h"
 #include"Bullet.h"
 #include "Enemy.h"
-
-#include "Mob_Enemy.h"
+#include "Result.h"
+#include"Mob_Enemy.h"
 
 class GameMain	:public AbstractScene
 {
@@ -18,23 +18,26 @@ public:
     int UI_Img[6];
     int LifeImg;
     int BackGroundImg;
-    int GameMain_BGM;
-
     int EnemyPhase;
+    int GameMain_BGM;
+    const int MaxEnemyPhase = 2;  // 0,1,2 の 3フェーズ
+    int Hit_SE;
 
-    bool isGameClear = false;      // ゲームクリア状態
     int clearTimer = 0;            // クリア演出のタイマー
     bool clearBulletStopped = false; // 弾を止めたかどうか
 
     bool isGameOver = false;      // ゲームオーバー中かどうか
     int gameOverTimer = 0;        // ゲームオーバー経過時間（フレーム）
 
+
+    Result* result = nullptr;
     int TextImg[13];    //数字の画像
 
     int score; //スコア
 
 private:
 
+    bool isGameClear = false;      // ゲームクリア状態
 public:
     //�R���X�g���N�^
     GameMain();
