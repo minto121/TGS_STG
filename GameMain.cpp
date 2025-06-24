@@ -5,6 +5,7 @@
 #include"Bullet.h"
 #include "Enemy.h"
 #include "Title.h"
+#include "Result.h"
 
 
 //#define PI 3.1415926f
@@ -256,9 +257,9 @@ void GameMain::Draw() const
 		enemy->Draw();
 	}
 
-	//if (result != nullptr) {
-	//	result->Draw();
-	//}
+	/*if (result != nullptr) {
+		result->Draw();
+	}*/
 
 	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
 		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
