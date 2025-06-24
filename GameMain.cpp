@@ -47,7 +47,7 @@ GameMain::GameMain()
 	currentPattern = 0;
 	bool isCKeyPressed = false;//�m�F�p
 
-	score = 0;
+	score = 200;
 
 }
 
@@ -181,6 +181,9 @@ AbstractScene* GameMain::Update()
 			if (enemy->IsRequestingDying()) {
 				enemy->StartDying();
 			}
+
+			score = score + enemy->GetAddScore();
+
 			break;
 
 		case EnemyLifeState::DYING:
@@ -190,6 +193,7 @@ AbstractScene* GameMain::Update()
 			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 			if (enemy->IsDyingFinished()) {
 				enemy->SetState(EnemyLifeState::DEAD);
+				score = score + 77777;
 			}
 			break;
 
@@ -281,15 +285,13 @@ void GameMain::Draw() const
 
 	DrawNumber(1100, 107, score);
 
-	/*for (int i = 0; i < 13; i++) {
-		DrawGraph(850+i*15, 30, TextImg[i], TRUE);
-	}*/
 }
 
 void GameMain::Score_math()
 {
-	score = 7819932;
+	
 
+	/*score = score + enemy->GetAddScore();*/
 
 }
 

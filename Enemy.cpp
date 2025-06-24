@@ -189,6 +189,10 @@ void Enemy::OnHit()
     if (L_STATE != EnemyLifeState::ALIVE) return;
 
     hp--;
+
+    add_score = 0;
+    add_score = add_score + 100;
+
     //if (hp <= 0) StartDying();
 }
 
@@ -250,4 +254,11 @@ void Enemy::Draw() const
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)dyingAlpha); // 透明度指定
     DrawGraph(static_cast<int>(enemy_X) - 125, static_cast<int>(enemy_Y) - 65, enemy_img, TRUE);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // リセット
+}
+
+int Enemy::GetAddScore() {
+    int return_score = 0;
+    return_score = add_score;
+    add_score = 0;
+    return return_score;
 }
