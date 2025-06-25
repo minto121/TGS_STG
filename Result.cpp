@@ -29,14 +29,14 @@ AbstractScene* Result::Update()
 void Result::Draw() const
 {
     //DrawFormatString(350, 100, 0xffffff, "ƒ^ƒCƒgƒ‹");
-
-    DrawString(240, 150, "RESULT", GetColor(255, 255, 255));
+    SetFontSize(49);
+    DrawString(540,150, "RESULT", GetColor(255, 255, 255));
 
     int retryColor = selectedOption == ResultOption::Retry ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
     int titleColor = selectedOption == ResultOption::Title ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
 
-    DrawString(180, 220, "RETRY", retryColor);
-    DrawString(340, 220, "TITLE", titleColor);
+    DrawString(380, 420, "RETRY", retryColor);
+    DrawString(740, 420, "TITLE", titleColor);
 
 }
 
@@ -66,16 +66,7 @@ void Result::UpdateInput()
     }
 }
 
-void Result::Draw()
-{
-    DrawString(240, 150, "RESULT", GetColor(255, 255, 255));
 
-    int retryColor = selectedOption == ResultOption::Retry ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
-    int titleColor = selectedOption == ResultOption::Title ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
-
-    DrawString(180, 220, "RETRY", retryColor);
-    DrawString(340, 220, "TITLE", titleColor);
-}
 
 int Result::GetSelected()
 {
