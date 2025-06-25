@@ -9,6 +9,9 @@ Player_Shot::Player_Shot() {
     //ShotTime = 0;
     lastShotTime = GetNowCount();
     LoadDivGraph("Resource/image/’Êí’e–‹.png", 8, 8, 1, 64, 32, P_Shot_img);
+
+    //BGMESE“Çž
+    Shot_SE = LoadSoundMem("Resource/bgm/hassya_SE.wav");
 }
 
 void Player_Shot::FireBullet(float playerX, float playerY)
@@ -27,12 +30,17 @@ void Player_Shot::FireBullet(float playerX, float playerY)
 }
 
 void Player_Shot::Update(float playerX, float playerY,bool canFire)
-{
+{ 
+    // ‰¹—Ê‚ÌÝ’è
+    ChangeVolumeSoundMem(255 * 60 / 100, Shot_SE);
+
     const int shotInterval = 150; // ƒ~ƒŠ•b
 
     int now = GetNowCount();
+   
 
     if (canFire && now - lastShotTime >= shotInterval) {
+        PlaySoundMem(Shot_SE, DX_PLAYTYPE_BACK, TRUE);
         FireBullet(playerX, playerY);
         lastShotTime = now;
     }

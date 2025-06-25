@@ -5,6 +5,8 @@
 #include"Bullet.h"
 #include "Enemy.h"
 #include "Title.h"
+#include "Result.h"
+
 
 //#define PI 3.1415926f
 
@@ -21,6 +23,7 @@ GameMain::GameMain()
 
 	//BGM・SE読込
 	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
+	Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
 
 	//画像読み込み
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
@@ -33,7 +36,7 @@ GameMain::GameMain()
 	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
 	enemy = new Enemy(320.0f, 100.0f);
-	EnemyPhase = 0;
+	int EnemyPhase = 0;
 	nowtime = 0;
 	currentPattern = 0;
 	bool isCKeyPressed = false;//確認用
@@ -42,18 +45,22 @@ GameMain::GameMain()
 
 GameMain::~GameMain()
 {
+	//BGM削除
+	DeleteSoundMem(GameMain_BGM);
+	StopSoundMem(GameMain_BGM);
+
+	//削除
 	delete P_SHOT;
 	delete D_PLAYER;
 	delete BULLET_DATE;
 	delete enemy;
-
-	//BGM削除
-	DeleteSoundMem(GameMain_BGM);
-	StopSoundMem(GameMain_BGM);
 }
 
 AbstractScene* GameMain::Update()
 {
+	// 音量の設定
+	ChangeVolumeSoundMem(255 * 70 / 100, Hit_SE);
+
 	//BGM
 	if (CheckSoundMem(GameMain_BGM) == 0)
 	{
@@ -77,7 +84,11 @@ AbstractScene* GameMain::Update()
 
 		// 100フレーム（約1.6秒）待ったらタイトルに戻す、または演出続行
 		if (clearTimer >= 200) {
-			 return new Title(); // タイトルへ戻る
+			//BGM削除
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
+			return new Title(); // タイトルへ戻る
+			return new Result();
 		}
 		return this;
 	}
@@ -110,7 +121,7 @@ AbstractScene* GameMain::Update()
 	D_PLAYER->move();
 	D_PLAYER->Update(BULLET_DATE->GetBullets());
 	bool canFire = !(D_PLAYER->GameOver() && D_PLAYER->Zanki == 0);
-	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y,canFire);
+	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y, canFire);
 	BULLET_DATE->Update(nowtime);
 	//D_PLAYER->fire(P_SHOT);  // プレイヤーが弾を発射
 
@@ -125,6 +136,7 @@ AbstractScene* GameMain::Update()
 	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
 		for (auto& b : P_SHOT->bullets) {
 			if (b.active && enemy->CheckCollision(b.x, b.y, true)) {
+				PlaySoundMem(Hit_SE, DX_PLAYTYPE_BACK, TRUE);
 				enemy->OnHit(); // HPを減らす
 				b.active = false; // 弾を消す
 			}
@@ -160,7 +172,8 @@ AbstractScene* GameMain::Update()
 						currentPattern = 2;
 					}
 					return this;
-				}else {
+				}
+				else {
 					// 最終フェーズ終了 → DYINGへ移行
 					enemy->RequestDying();
 				}
@@ -193,32 +206,38 @@ AbstractScene* GameMain::Update()
 			break;
 		}
 	}
-					//if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
-					//	delete enemy;
-					//	enemy = nullptr;
-					//	printfDx("WIN");
+	//if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
+	//	delete enemy;
+	//	enemy = nullptr;
+	//	printfDx("WIN");
 
-					//	isGameClear = true;
-					//	clearTimer = 0;
+	//	isGameClear = true;
+	//	clearTimer = 0;
 
-					//	//P_SHOT->StopAllBullets();
-					//	return this;  // ← return しないで次フレームでタイマーを進める
-					//}
-		
+	//	//P_SHOT->StopAllBullets();
+	//	return this;  // ← return しないで次フレームでタイマーを進める
+	//}
+
 	if (D_PLAYER->GameOver()) {
 		if (!isGameOver && D_PLAYER->Zanki == 0) {
+			////BGM削除
+			//DeleteSoundMem(GameMain_BGM);
+			//StopSoundMem(GameMain_BGM);
+
 			isGameOver = true;
 			gameOverTimer = 0;
 		}
 		gameOverTimer++;
 
 		if (gameOverTimer >= 120) { // 約2秒（60FPS想定）
-			return new Title();
+			//BGM削除
+			DeleteSoundMem(GameMain_BGM);
+			StopSoundMem(GameMain_BGM);
+			return new Result();
 		}
 	}
-	return this;
+	
 }
-
 void GameMain::Draw() const
 {
 	DrawGraph(0, -600, BackGroundImg, FALSE);
@@ -230,16 +249,17 @@ void GameMain::Draw() const
 	BULLET_DATE->Draw();
 	//FpsControl_Draw();
 
-	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %d", nowtime);
-	//DrawFormatString(0, 80, GetColor(255, 255, 255), "State: %d", static_cast<int>(enemy->GetState()));
-	/*DrawFormatString(0, 100, GetColor(255, 255, 255), "gameclear: %d", isGameClear);
-	DrawFormatString(0, 120, GetColor(255, 255, 255), "gameclear: %f", enemy->dyingTimer);*/
+	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
 	// ↓ null チェックを追加
 	if (enemy != nullptr) {
 		enemy->Draw();
 	}
-	//printfDx("EnemyPhase: %d, Enemy HP: %d\n", EnemyPhase, enemy->GetHP());
+
+	/*if (result != nullptr) {
+		result->Draw();
+	}*/
+
 	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
 		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 	}
