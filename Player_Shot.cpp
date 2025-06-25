@@ -48,7 +48,7 @@ void Player_Shot::Update(float playerX, float playerY,bool canFire)
             bullets[i].cnt++;
 
             // 画面外に出たら非アクティブ化（仮に800x600の画面として）
-            if (bullets[i].x < 0 || bullets[i].x > 850 || bullets[i].y < 0 || bullets[i].y > 720) {
+            if (bullets[i].x < -15 || bullets[i].x > 850 || bullets[i].y < 0 || bullets[i].y > 720) {
                 bullets[i].active = false;
             }
         }

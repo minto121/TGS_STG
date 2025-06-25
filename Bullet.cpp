@@ -31,8 +31,10 @@ const float PI = 3.14159265f;
 Bullet::Bullet()
 {
     //Bullet_img = LoadGraph("Resource/image/defalte_Bullet.png");
+    LoadDivGraph("Resource/image/大弾弾幕.png", 8, 8, 1, 128, 64, HomingBulletImg);
     LoadDivGraph("Resource/image/通常弾幕.png", 8, 8, 1, 64, 32, Bullet_img);
-    LoadDivGraph("Resource/image/大弾弾幕.png", 8, 8, 1, 64, 64, HomingBulletImg);
+    LoadDivGraph("Resource/image/楔弾.png", 8, 8, 1, 32, 16, Kusabi_img);
+
 
     D_PLAYER = new demo_Player;
     px = 0.0f;
@@ -97,7 +99,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
 
                         // fall処理
                         if (pattern.fall == true) {
-                            bi.ay = 0.02f; // 重力で落下
+                            bi.ay = 0.03f; // 重力で落下
                             //printf("fall bullet generated at time: %d\n", nowtime);
 
                         }
@@ -189,6 +191,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                                 tail.reflect = pattern.reflect;
                                 tail.fall = pattern.fall;
                                 tail.homing = false;
+                                tail.isTail = true;
 
                                 DelayedBullet db;
                                 db.delay = delayOffsets[i];  // ← ここが「まばら」発射の決め手
@@ -261,15 +264,15 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 //    b.active = false;
                 //}
 
-                // 波紋弾の寿命処理
-                if (b.rippleEffect) {
-                    b.rippleFrame++;
-                    b.vx = b.rippleVx;
-                    b.vy = b.rippleVy;
-                    if (b.rippleFrame > b.rippleLife) {
-                        b.active = false;
-                    }
-                }
+                //// 波紋弾の寿命処理
+                //if (b.rippleEffect) {
+                //    b.rippleFrame++;
+                //    b.vx = b.rippleVx;
+                //    b.vy = b.rippleVy;
+                //    if (b.rippleFrame > b.rippleLife) {
+                //        b.active = false;
+                //    }
+                //}
             }
 
             if (isSpiralActive && nowtime - spiralLastTime >= spiralInterval) {
@@ -283,6 +286,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 b.vx = cosf(angleRad) * b.speed;
                 b.vy = sinf(angleRad) * b.speed;
                 b.active = true;
+                b.angleDeg = spiralAngle;
                 bullets.push_back(b);
 
                 spiralAngle += spiralSpeed;
@@ -532,6 +536,11 @@ void Bullet::EnableSpiral(float angle, float speed, int interval)
     isSpiralActive = true;
 }
 
+void Bullet::ReverseSpiralDirection()
+{
+    spiralSpeed *= -1.0f;
+}
+
 
 void Bullet::Draw()
 {
@@ -542,36 +551,70 @@ void Bullet::Draw()
         if (!b.active) continue;
 
         int index = 0; // 画像インデックス
-        if (b.homing == true) {
-            index = 5;  // 青（例）→ 任意で0〜7に変えてOK
-            GetGraphSize(HomingBulletImg[index], &bulletW, &bulletH);
-            // 拡大率（例：2倍）
-            float scale = 2.0f;
 
+        // 優先度：homing > tail > kusabi > normal
+        if (b.homing == true) {
+            index = 0;
+            GetGraphSize(HomingBulletImg[index], &bulletW, &bulletH);
+            float scale = 2.0f;
             int drawX1 = (int)(b.x - (bulletW * scale) / 2);
             int drawY1 = (int)(b.y - (bulletH * scale) / 2);
             int drawX2 = drawX1 + (int)(bulletW * scale);
             int drawY2 = drawY1 + (int)(bulletH * scale);
             DrawExtendGraph(drawX1, drawY1, drawX2, drawY2, HomingBulletImg[index], TRUE);
-            //DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), HomingBulletImg[index], TRUE);
+        }
+        else if (b.isTail) {
+            index = GetRand(7);  // ランダムな尾弾色
+            GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
+            float scale = 2.0f;
+            int drawX1 = (int)(b.x - (bulletW * scale) / 2);
+            int drawY1 = (int)(b.y - (bulletH * scale) / 2);
+            int drawX2 = drawX1 + (int)(bulletW * scale);
+            int drawY2 = drawY1 + (int)(bulletH * scale);
+
+            SetDrawBlendMode(DX_BLENDMODE_ADD, 160);
+            DrawExtendGraph(drawX1, drawY1, drawX2, drawY2, Bullet_img[index], TRUE);
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+        }
+        else if (currentPhase == 2) {
+            printf("vx: %.2f, vy: %.2f\n", b.vx, b.vy);
+            int index = 6;
+            GetGraphSize(Kusabi_img[index], &bulletW, &bulletH);
+
+            float scale = 2.5f;
+
+            // vx, vy による向き + 上向き画像の補正（+90度）
+            float angleRad = (b.vx != 0.0f || b.vy != 0.0f)
+                ? atan2f(b.vy, b.vx) + DX_PI_F / 2
+                : 0.0f;
+
+            // 回転描画
+            DrawRotaGraph2(
+                (int)b.x,
+                (int)b.y,
+                bulletW / 2,
+                bulletH / 2,
+                scale,
+                angleRad,               // 回転角ラジアン（vx, vy方向）
+                Kusabi_img[index],
+                TRUE
+            );
         }
         else {
-            if (b.fall == true) {
-                index = 6;
+            // 通常弾（フェーズ2以外）
+            if (b.reflected) {
+                index = 5;
             }
-            else if (b.reflect == true) {
-                index = 0;
+            else if (b.fall) {
+                index = 6;
             }
             else {
                 index = 0;
             }
             GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
-            // 弾の座標は中心座標として描画
             DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
         }
-
-
-
     }
 
      //for (auto& b : satelliteBullets) {

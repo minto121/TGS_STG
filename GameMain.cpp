@@ -61,6 +61,11 @@ AbstractScene* GameMain::Update()
 	}
 
 	nowtime++;
+
+	//spiral‚Ì‰ñ“]‚ğ‹t‚É‚·‚é
+	if (nowtime % 300 == 0) {
+		BULLET_DATE->ReverseSpiralDirection(); 
+	}
 	//ƒQ[ƒ€ƒNƒŠƒAˆ—
 	if (isGameClear) {
 		clearTimer++;
@@ -149,7 +154,8 @@ AbstractScene* GameMain::Update()
 						BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
 						BULLET_DATE->SetReflectEnable(false);
 
-						BULLET_DATE->EnableSpiral(5.0f, 10.0f, 1);  // ”CˆÓ‚ÌŠp“xE‘¬“xEŠÔŠu
+						BULLET_DATE->EnableSpiral(0.0f, 50.0f, 1);  // ”CˆÓ‚ÌŠp“xE‘¬“xEŠÔŠu
+						BULLET_DATE->SetPhase(2);
 						//BULLET_DATE->CreateSatelliteBullets(4, 60.0f, 0.05f);  // —áF4ŒÂA60px”¼ŒaA‚ä‚Á‚­‚è‰ñ“]
 						currentPattern = 2;
 					}

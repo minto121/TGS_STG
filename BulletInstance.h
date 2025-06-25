@@ -13,10 +13,13 @@ struct BulletInstance {
 	bool CheckReflect;
 	int time;
 	int reflectCount = 0;
+	float S_angle = 0.0f;
 
 	float homingStrength = 0.05f;
 	float angle = 0.0f;   // 現在の向き（ラジアン）
 	float speed = 0.0f;   // 弾速（ホーミング時に必要）
+	bool isTail = false;
+	float angleDeg = 0.0f;  
 
 	 // 弾幕削除用
 	bool rippleEffect = false;
