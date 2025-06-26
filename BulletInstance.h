@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 struct BulletInstance {
 	float x, y = 0.0f;
 	float vx, vy = 0.0f;
@@ -9,30 +9,36 @@ struct BulletInstance {
 	bool reflect = false;
 	bool reflected = false;
 	bool fall = false;
-	bool homing = false;  // ƒz[ƒ~ƒ“ƒO’e‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+	bool homing = false;  // ãƒ›ãƒ¼ãƒŸãƒ³ã‚°å¼¾ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
 	bool CheckReflect;
 	int time;
 	int reflectCount = 0;
 	float S_angle = 0.0f;
 
 	float homingStrength = 0.05f;
-	float angle = 0.0f;   // Œ»İ‚ÌŒü‚«iƒ‰ƒWƒAƒ“j
-	float speed = 0.0f;   // ’e‘¬iƒz[ƒ~ƒ“ƒO‚É•K—vj
+	float angle = 0.0f;   // ç¾åœ¨ã®å‘ãï¼ˆãƒ©ã‚¸ã‚¢ãƒ³ï¼‰
+	float speed = 0.0f;   // å¼¾é€Ÿï¼ˆãƒ›ãƒ¼ãƒŸãƒ³ã‚°æ™‚ã«å¿…è¦ï¼‰
 	bool isTail = false;
 	float angleDeg = 0.0f;  
 
-	 // ’e–‹íœ—p
+	 // å¼¾å¹•å‰Šé™¤ç”¨
 	bool rippleEffect = false;
 	int rippleFrame = 0;
 	float rippleVx = 0;
 	float rippleVy = 0;
-	int rippleLife = 30; // ƒtƒŒ[ƒ€”‚Åõ–½
+	int rippleLife = 30; // ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã§å¯¿å‘½
 
-	//--------‰q¯’e---------------
-	bool isOrbiting = false;
-	bool isSatellite = false;
-	float baseAngle = 0.0f;       // is•ûŒüiƒvƒŒƒCƒ„[Œü‚«j
-	float orbitAngle = 0.0f;      // Œ»İ‚Ì‰~‰^“®Šp“x
-	float orbitRadius = 10.0f;    // ‰ñ“]”¼Œa
-	float orbitSpeed = 0.2f;      // ‰ñ“]Šp‘¬“x
+	////è¡›æ˜Ÿå¼¾
+	//bool isOrbiting = false;
+	//bool isSatellite = false;
+	//float baseAngle = 0.0f;       // é€²è¡Œæ–¹å‘ï¼ˆãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å‘ãï¼‰
+	//float orbitAngle = 0.0f;      // ç¾åœ¨ã®å††é‹å‹•è§’åº¦
+	//float orbitRadius = 10.0f;    // å›è»¢åŠå¾„
+	//float orbitSpeed = 0.2f;      // å›è»¢è§’é€Ÿåº¦
+
+	//ç‚å¼¾
+	int fireFrame = 0;         // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ ï¼ˆ0ã€œ3ï¼‰
+	int fireColorIndex = 0;    // è‰²ï¼š0ã€œ3ï¼ˆèµ¤ã€œç´«ï¼‰
+	int fireAnimCounter = 0;   // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³é€Ÿåº¦åˆ¶å¾¡
+	bool fireEffect = false;   // ç‚ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ä½¿ã†ã‹
 };

@@ -34,6 +34,7 @@ Bullet::Bullet()
     LoadDivGraph("Resource/image/大弾弾幕.png", 8, 8, 1, 128, 64, HomingBulletImg);
     LoadDivGraph("Resource/image/通常弾幕.png", 8, 8, 1, 64, 32, Bullet_img);
     LoadDivGraph("Resource/image/楔弾.png", 8, 8, 1, 32, 16, Kusabi_img);
+    LoadDivGraph("Resource/image/炎弾.png", 16, 4, 4, 40, 40, (int*)Fire_img);
 
 
     D_PLAYER = new demo_Player;
@@ -78,7 +79,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
     
 
     //if (D_PLAYER && D_PLAYER->IsAlive()) {
-    //    if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER->IsRespawn()) {
+    //    if (D_PLAYER && D_PLAYER->IsAlive() && !D_PLAYER-continue>IsRespawn()) {
             //弾幕の生成
             printf("nowtime: %d\n", nowtime);
             for (auto& pattern : patterns) {
@@ -96,13 +97,20 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                         bi.ay = 0.0f;
                         bi.vx = cosf(angleRad) * pattern.spd;
                         bi.vy = sinf(angleRad) * pattern.spd;
+                        bi.fall = pattern.fall;
+                        bi.homing = pattern.homing;
+                        bi.reflect = pattern.reflect;
+                        bi.active = true;
 
-                        // fall処理
-                        if (pattern.fall == true) {
+                        // fall時に炎エフェクトを適用
+                        if (pattern.fall) {
                             bi.ay = 0.03f; // 重力で落下
-                            //printf("fall bullet generated at time: %d\n", nowtime);
+                            bi.fireEffect = true;
+                            bi.fireColorIndex = 0; // 赤
 
+                            //bi.active = true;
                         }
+                    
 
                    /*     if (!pattern.homing && pattern.vx != 0.0f && pattern.vy != 0.0f) {
                             BulletInstance tail;
@@ -168,7 +176,10 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                             bi.fall = pattern.fall;
                             bi.reflect = pattern.reflect;
                             bi.active = true;
+
+                       
                             bullets.push_back(bi);
+
 
                             // 尾弾：まばらな delay と速度調整
                             const int tailCount = 5;
@@ -200,10 +211,7 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                                 delayedBullets.push_back(db);
                             }
                         }
-                        bi.fall = pattern.fall;
-                        bi.homing = pattern.homing;
-                        bi.reflect = pattern.reflect;
-                        bi.active = true;
+    
                         bullets.push_back(bi);
 
                     }
@@ -219,6 +227,15 @@ void Bullet::Update(int nowtime/*,float playerX,float playerY*/)
                 b.vy += b.ay; // 加速度（重力）
                 b.x += b.vx;
                 b.y += b.vy;
+
+                // 炎アニメーションの進行
+                if (b.fireEffect) {
+                    b.fireAnimCounter++;
+                    if (b.fireAnimCounter >= 6) {  // 6フレームごとに更新（任意）
+                        b.fireAnimCounter = 0;
+                        b.fireFrame = (b.fireFrame + 1) % 4;
+                    }
+                }
 
                 if (b.reflect == true) {
                     // 最大1回まで反射させる
@@ -513,19 +530,19 @@ void Bullet::TriggerRippleEffect(float cx, float cy, float radius)
     }
 }
 
-void Bullet::CreateSatelliteBullets(int count, float radius, float speed) {
-    satelliteBullets.clear();
-
-    for (int i = 0; i < count; ++i) {
-        BulletInstance b;
-        b.orbitAngle = (2 * PI / count) * i;
-        b.orbitRadius = radius;
-        b.orbitSpeed = speed;
-        b.active = true;
-        b.isSatellite = true; // ← 新フラグ
-        satelliteBullets.push_back(b);
-    }
-}
+//void Bullet::CreateSatelliteBullets(int count, float radius, float speed) {
+//    satelliteBullets.clear();
+//
+//    for (int i = 0; i < count; ++i) {
+//        BulletInstance b;
+//        b.orbitAngle = (2 * PI / count) * i;
+//        b.orbitRadius = radius;
+//        b.orbitSpeed = speed;
+//        b.active = true;
+//        b.isSatellite = true; // ← 新フラグ
+//        satelliteBullets.push_back(b);
+//    }
+//}
 
 void Bullet::EnableSpiral(float angle, float speed, int interval)
 {
@@ -552,6 +569,36 @@ void Bullet::Draw()
 
         int index = 0; // 画像インデックス
 
+           // 通常弾（フェーズ2以外）
+        if (b.fireEffect) {
+            int fw, fh;
+            GetGraphSize(Fire_img[0][0], &fw, &fh);
+
+            int color = Clamp(b.fireColorIndex, 3, 3);  // 0〜3 行目（赤・橙・青など）
+            int frame = Clamp(b.fireFrame, 0, 2);       // 0〜2 フレーム（アニメーション）
+
+            float scale = 2.0f;
+
+            // vx, vy による向き + 上向き画像の補正（+90度）
+            float angleRad = (b.vx != 0.0f || b.vy != 0.0f)
+                ? atan2f(b.vy, b.vx) + DX_PI_F / 2  // ←ここが向きの補正部分
+                : 0.0f;
+
+            SetDrawBlendMode(DX_BLENDMODE_ADD,240);
+            DrawRotaGraph2(
+                (int)b.x,
+                (int)b.y,
+                fw / 2,
+                fh / 2,
+                scale,
+                angleRad,                     // 回転角度（ラジアン）
+                Fire_img[color][frame],
+                TRUE
+            );
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            continue;
+        }
+
         // 優先度：homing > tail > kusabi > normal
         if (b.homing == true) {
             index = 0;
@@ -562,6 +609,7 @@ void Bullet::Draw()
             int drawX2 = drawX1 + (int)(bulletW * scale);
             int drawY2 = drawY1 + (int)(bulletH * scale);
             DrawExtendGraph(drawX1, drawY1, drawX2, drawY2, HomingBulletImg[index], TRUE);
+            continue;
         }
         else if (b.isTail) {
             index = GetRand(7);  // ランダムな尾弾色
@@ -602,16 +650,15 @@ void Bullet::Draw()
             );
         }
         else {
-            // 通常弾（フェーズ2以外）
+         
+
             if (b.reflected) {
                 index = 5;
-            }
-            else if (b.fall) {
-                index = 6;
             }
             else {
                 index = 0;
             }
+
             GetGraphSize(Bullet_img[index], &bulletW, &bulletH);
             DrawGraph((int)(b.x - bulletW / 2), (int)(b.y - bulletH / 2), Bullet_img[index], TRUE);
         }
@@ -628,8 +675,21 @@ std::vector<BulletInstance>& Bullet::GetBullets()  {
     return bullets;
  }
 void Bullet::SetEnemyPosition(float x, float y) {
-    ex = x;
+    ex = x + 40;
     ey = y;
+}
+
+void Bullet::ClearAllBulletsInRange(float cx, float cy, float radius) {
+    float r2 = radius * radius; // 距離の2乗で比較（sqrtを避けて高速化）
+    for (auto& b : bullets) {
+        if (!b.active) continue;
+
+        float dx = b.x - cx;
+        float dy = b.y - cy;
+        if (dx * dx + dy * dy <= r2) {
+            b.active = false;
+        }
+    }
 }
 
 void Bullet::ClearAllBullets() {
