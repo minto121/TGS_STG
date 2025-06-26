@@ -13,7 +13,7 @@ Title::Title()
 	button_wait = 50;
 
 	//‰æ‘œ“Ç
-	Title_Img = LoadGraph("Resource/image/Title_img.jpg");
+	Title_Img = LoadGraph("Resource/image/Title3_img.jpg");
 	cursor_img = LoadGraph("Resource/image/cursor_img.png");
 
 	moji_img[0] = LoadGraph("Resource/image/start.png");
