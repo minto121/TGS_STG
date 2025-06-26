@@ -35,6 +35,7 @@ public:
 
     int score; //スコア
 
+    int timelimit;  //制限時間
 private:
 
     bool isGameClear = false;      // ゲームクリア状態

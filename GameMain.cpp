@@ -49,6 +49,8 @@ GameMain::GameMain()
 
 	score = 200;
 
+	timelimit = 180*60;	//180*60３分
+
 }
 
 GameMain::~GameMain()
@@ -180,6 +182,8 @@ AbstractScene* GameMain::Update()
 			// DYING予約が入っていたら次のフレームから移行
 			if (enemy->IsRequestingDying()) {
 				enemy->StartDying();
+
+				score += 5000;
 			}
 
 			score = score + enemy->GetAddScore();
@@ -193,7 +197,6 @@ AbstractScene* GameMain::Update()
 			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 			if (enemy->IsDyingFinished()) {
 				enemy->SetState(EnemyLifeState::DEAD);
-				score = score + 77777;
 			}
 			break;
 
@@ -220,6 +223,19 @@ AbstractScene* GameMain::Update()
 	//	//P_SHOT->StopAllBullets();
 	//	return this;  // ← return しないで次フレームでタイマーを進める
 	//}
+
+	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
+		if (!D_PLAYER->GameOver()) {
+			timelimit--;
+		}
+		
+	}
+	else {
+		if (timelimit > 60) {
+			timelimit -= 60;
+			score += 20;
+		}
+	}
 
 	Score_math();
 
@@ -284,6 +300,13 @@ void GameMain::Draw() const
 
 
 	DrawNumber(1100, 107, score);
+
+	DrawNumber(1100, 407, timelimit/60/60);
+	DrawGraph(1120, 405, TextImg[12], TRUE);
+	DrawGraph(1120, 385, TextImg[12], TRUE);
+	DrawNumber(1140, 407, timelimit/60%60);
+
+	DrawFormatString(0, 40, 0xffffff, "timelimit:%d", timelimit/60);
 
 }
 
