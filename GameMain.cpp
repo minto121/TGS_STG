@@ -285,13 +285,15 @@ void GameMain::Draw() const
 		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 	}
 
-	DrawBox(850, 0, 1280, 720, 0xffffff, TRUE);		//UI�\�����W
 
-	DrawGraph(850, 30, UI_Img[0], TRUE);	//�X�R�A
-	DrawGraph(850, 130, UI_Img[1], TRUE);	//�n�C�X�R�A
-	DrawGraph(840, 230, UI_Img[2], TRUE);	//�v���C���[�c�@
-	DrawGraph(850, 330, UI_Img[3], TRUE);	//�^�C��
-	DrawGraph(850, 430, UI_Img[4], TRUE);	//�{����
+	DrawBox(850, 0, 1280, 720, GetColor(125, 125, 125)/*0xffff00*/, TRUE);		//UI�\�����W
+
+	DrawGraph(770, 30, UI_Img[0], TRUE);	//�X�R�A
+	DrawGraph(800, 130, UI_Img[1], TRUE);	//�n�C�X�R�A
+	DrawGraph(830, 230, UI_Img[2], TRUE);	//�v���C���[�c�@
+	DrawGraph(770, 330, UI_Img[3], TRUE);	//�^�C��
+	//DrawGraph(780, 430, UI_Img[4], TRUE);	//�{����
+
 
 	//�v���C���[�c�@�摜
 	DrawGraph(1050, 260, LifeImg, TRUE);
