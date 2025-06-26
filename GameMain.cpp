@@ -257,11 +257,11 @@ void GameMain::Draw() const
 
 	DrawBox(850, 0, 1280, 720, GetColor(125, 125, 125)/*0xffff00*/, TRUE);		//UI表示座標
 
-	DrawGraph(770, 30, UI_Img[0], TRUE);	//スコア
-	DrawGraph(800, 130, UI_Img[1], TRUE);	//ハイスコア
+	DrawGraph(760, 30, UI_Img[0], TRUE);	//スコア
+	DrawGraph(795, 130, UI_Img[1], TRUE);	//ハイスコア
 	DrawGraph(830, 230, UI_Img[2], TRUE);	//プレイヤー残機
-	DrawGraph(770, 330, UI_Img[3], TRUE);	//タイム
-	//DrawGraph(780, 430, UI_Img[4], TRUE);	//ボム数
+	DrawGraph(760, 330, UI_Img[3], TRUE);	//タイム
+	DrawGraph(760, 430, UI_Img[4], TRUE);	//ボム数
 
 	//プレイヤー残機画像
 	DrawGraph(1050, 260, LifeImg, TRUE);
