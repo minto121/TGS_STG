@@ -339,8 +339,14 @@ void GameMain::Draw() const
 	DrawNumber(1140, 407, timelimit/60%60);
 
 	DrawFormatString(0, 40, 0xffffff, "timelimit:%d", timelimit/60);
-
+	//プレイヤー残機画像
+	for (int i = 0; i < P_SHOT->bombStock; i++) {
+		int drawX = 1100 + i * 50;  // 50px 間隔で表示（調整可）
+		DrawGraph(drawX - 75, 500, bom_Img, TRUE);
+	}
 }
+
+
 
 void GameMain::Score_math()
 {
@@ -370,8 +376,8 @@ int GameMain::GetImageIndex(char ch) const
 	if (ch == '.') return 12;
 	return -1;
 	//プレイヤー残機画像
-	for (int i = 0; i < P_SHOT->bombStock; i++) {
-		int drawX = 1100 + i * 50;  // 50px 間隔で表示（調整可）
-		DrawGraph(drawX-75, 500, bom_Img, TRUE);
-	}
+	//for (int i = 0; i < P_SHOT->bombStock; i++) {
+	//	int drawX = 1100 + i * 50;  // 50px 間隔で表示（調整可）
+	//	DrawGraph(drawX-75, 500, bom_Img, TRUE);
+	//}
 }
