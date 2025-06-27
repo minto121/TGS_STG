@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	SetGraphMode(WIDTH, HEIGHT, REFRESHRATE);	//???T?C?Y????
 
-	// ‚’¼“¯Šú‚ðØ‚é
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø‚ï¿½
 	SetWaitVSyncFlag(0);
 
 	if (DxLib_Init() == -1) return -1;	// DX???C?u???????????????
@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	try
 	{
-		sceneMng = new SceneManager((AbstractScene*)new /*GameMain()*/ Title());
+		sceneMng = new SceneManager((AbstractScene*)new GameMain() /*Title()*/);
 
 	}
 	catch (const char* err)
@@ -68,7 +68,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		if (sceneMng->IsSceneChanged()) {
 			sceneMng->ResetSceneChangedFlag();
-			continue; // ƒV[ƒ“Ø‚è‘Ö‚¦’¼Œã‚Í Draw ‚ðƒXƒLƒbƒv
+			continue; // ï¿½Vï¿½[ï¿½ï¿½ï¿½Ø‚ï¿½Ö‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Draw ï¿½ï¿½Xï¿½Lï¿½bï¿½v
 		}
 		sceneMng->Draw();
 

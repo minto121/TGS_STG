@@ -35,6 +35,11 @@ public:
 
 
     Result* result = nullptr;
+    int TextImg[13];    //数字の画像
+
+    int score; //スコア
+
+    int timelimit;  //制限時間
 private:
 
     bool isGameClear = false;      // ゲームクリア状態
@@ -58,5 +63,13 @@ public:
     Enemy* enemy;
 
     Mob_Enemy* MOB_ENEMY;
+
+public:
+    //スコアの計算
+    void Score_math();
+
+    //スコアと数字画像を合わせ,描画する
+    void DrawNumber(int x, int y, int value) const;
+    int GetImageIndex(char ch) const;
 };
 

@@ -19,8 +19,8 @@ enum class EnemyState {
 
 enum class EnemyLifeState {
     ALIVE,
-    DYING,   // €–S‰‰o’†
-    DEAD     // Š®‘S‚É€–Siíœ‘ÎÛj
+    DYING,   // ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½oï¿½ï¿½
+    DEAD     // ï¿½ï¿½ï¿½Sï¿½Éï¿½ï¿½Sï¿½iï¿½íœï¿½ÎÛj
 };
 
 class Enemy
@@ -46,7 +46,7 @@ public:
 private:
     float enemy_X, enemy_Y;
     float baseX, baseY;
-    float e_angle;      // is•ûŒüiƒ‰ƒWƒAƒ“j
+    float e_angle;      // ï¿½iï¿½sï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Wï¿½Aï¿½ï¿½ï¿½j
     float dashSpeed;
     float zigzagOffset;
 
@@ -56,7 +56,7 @@ private:
     EnemyLifeState L_STATE;
 
     int hp;
-    float radius;       //“–‚½‚è”»’è—p”¼Œa
+    float radius;       //ï¿½ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½pï¿½ï¿½ï¿½a
 
     int enemy_img;
 
@@ -85,8 +85,15 @@ public:
     void SetState(EnemyLifeState newState) { L_STATE = newState; }
     bool IsDead() const;
 
-    bool isDying = false;       // €–S‰‰o’†‚©
-    int dyingTimer = 0;         // €–S‰‰oƒ^ƒCƒ}[
-    float dyingAlpha = 255.0f;  // “§–¾“x
+    bool isDying = false;       // ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½
+    int dyingTimer = 0;         // ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½oï¿½^ï¿½Cï¿½}ï¿½[
+    float dyingAlpha = 255.0f;  // ï¿½ï¿½ï¿½ï¿½ï¿½x
+
+
+        //////ã‚¹ã‚³ã‚¢//////
+private:
+    int add_score = 0;
+public:
+    int GetAddScore();
 };
 

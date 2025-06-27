@@ -1,5 +1,9 @@
 #include "Mob_Enemy.h"
+#include"Mob_Enemy.h"
 
+//円周率
+#define PI 3.1415926535898
+#define PI2 (PI*2)
 
 
 Mob_Enemy::Mob_Enemy()
@@ -9,7 +13,8 @@ Mob_Enemy::Mob_Enemy()
     memset(enemy_order, 0, sizeof(enemy_order_t) * ENEMY_ORDER_MAX);
 
     stage_count = 100;
-	
+
+    load_story();
 }
 
 Mob_Enemy::~Mob_Enemy()
@@ -226,7 +231,7 @@ void Mob_Enemy::enemy_act()
             enemy[i].cnt++;
             enemy[i].img = enemy[i].muki * 3 + (enemy[i].cnt % 18) / 6;
             //�G����ʂ���O�ꂽ�����
-            if (enemy[i].x < -20 || 400 + 20 < enemy[i].x || enemy[i].y < -20 || 400 + 20 < enemy[i].y)
+            if (enemy[i].x < -20 || 700 + 20 < enemy[i].x || enemy[i].y < -20 || 700 + 20 < enemy[i].y)
                 enemy[i].flag = 0;
         }
     }
