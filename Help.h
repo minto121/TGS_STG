@@ -4,6 +4,10 @@
 class Help :public AbstractScene
 {
 private:
+	int Help_img;
+
+	int Title_BGM;
+	int Select_SE;
 
 public:
 	//コンストラクタ
