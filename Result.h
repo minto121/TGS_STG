@@ -14,6 +14,7 @@ private:
     ResultOption selectedOption = ResultOption::Retry;
     bool decisionMade = false;
     int inputCooldown = 0;
+    int BackImg;
 
 public:
     Result();
