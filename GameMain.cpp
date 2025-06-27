@@ -18,17 +18,17 @@ GameMain::GameMain()
 	P_SHOT = new Player_Shot;
 	BULLET_DATE = new Bullet;
 	BULLET_DATE->SetPlayer(D_PLAYER);
-	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // ï¿½ï¿½ CSVï¿½Ç‚İï¿½ï¿½ï¿½
+	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // E½E½ CSVE½Ç‚İï¿½E½E½
 	D_PLAYER->SetBulletManager(BULLET_DATE);
 	P_SHOT->SetBulletManager(BULLET_DATE);
 
 
 
-	//BGMï¿½ESEï¿½Çï¿½
+	//BGME½ESEE½Çï¿½
 	GameMain_BGM = LoadSoundMem("Resource/bgm/GameMain_BGM.mp3");
 	Hit_SE = LoadSoundMem("Resource/bgm/hit_SE.wav");
 
-	//ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½
+	//E½æ‘œï¿½Ç‚İï¿½E½E½
 	UI_Img[0] = LoadGraph("Resource/image/score_img.png");
 	UI_Img[1] = LoadGraph("Resource/image/highscore_img.png");
 	UI_Img[2] = LoadGraph("Resource/image/plyerlife.png");
@@ -39,7 +39,7 @@ GameMain::GameMain()
 	bom_Img = LoadGraph("Resource/image/bom.png");
 	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
-	// ç”»åƒåˆ†å‰²èª­ã¿è¾¼ã¿
+	// ç”»åƒåEå‰²èª­ã¿è¾¼ã¿
 	LoadDivGraph("Resource/image/Score_image/suuji16x32_03.png", 13, 13, 1, 208/13, 32, TextImg);
 
 
@@ -48,17 +48,17 @@ GameMain::GameMain()
 	int EnemyPhase = 0;
 	nowtime = 0;
 	currentPattern = 0;
-	bool isCKeyPressed = false;//ï¿½mï¿½Fï¿½p
+	bool isCKeyPressed = false;//E½mE½FE½p
 
 	score = 200;
 
-	timelimit = 180*60;	//180*60ï¼“åˆ†
+	timelimit = 180*60;	//180*60E“åE
 
 }
 
 GameMain::~GameMain()
 {
-	//BGMï¿½íœ
+	//BGME½ú«E
 	DeleteSoundMem(GameMain_BGM);
 	StopSoundMem(GameMain_BGM);
 
@@ -71,7 +71,7 @@ GameMain::~GameMain()
 
 AbstractScene* GameMain::Update()
 {
-	// éŸ³é‡ã®è¨­å®š
+	// éŸ³é‡ãEè¨­å®E
 	ChangeVolumeSoundMem(255 * 70 / 100, Hit_SE);
 
 	//BGM
@@ -79,32 +79,36 @@ AbstractScene* GameMain::Update()
 	{
 		PlaySoundMem(GameMain_BGM, DX_PLAYTYPE_LOOP, TRUE);
 	}
-	//ãƒœãƒ 
+	//ƒ{ƒ€
 	if (CheckHitKey(KEY_INPUT_X)||PAD_INPUT::OnButton(XINPUT_BUTTON_B)) {
 		P_SHOT->UseBomb(D_PLAYER->x, D_PLAYER->y);
 	}
 
 	nowtime++;
 
-	//spiralã®å›è»¢ã‚’é€†ã«ã™ã‚‹
+	//spiral‚Ì‰ñ“]‚ğ‹t‚É‚·‚é
 	if (nowtime % 300 == 0) {
 		BULLET_DATE->ReverseSpiralDirection(); 
 	}
-	//ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢å‡¦ç†
+	//ƒQ[ƒ€ƒNƒŠƒAˆ—
 	if (isGameClear) {
 		clearTimer++;
 
 		if (!clearBulletStopped) {
-			BULLET_DATE->StopAllBullets();  // ï¿½Sï¿½Ä‚Ì’eï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½iï¿½ï¿½ï¿½ì‚·ï¿½ï¿½j
+			BULLET_DATE->StopAllBullets();  // E½SE½Ä‚Ì’eE½E½E½~E½E½E½E½Öï¿½E½iE½E½E½E·E½E½j
 			clearBulletStopped = true;
 		}
 
-		// 100ï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½iï¿½ï¿½1.6ï¿½bï¿½jï¿½Ò‚ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½É–ß‚ï¿½ï¿½Aï¿½Ü‚ï¿½ï¿½Í‰ï¿½ï¿½oï¿½ï¿½ï¿½s
+		// 100E½tE½E½E½[E½E½E½iE½E½1.6E½bE½jE½Ò‚ï¿½E½E½E½E½^E½CE½gE½E½E½É–ß‚ï¿½E½AE½Ü‚ï¿½E½Í‰ï¿½E½oE½E½E½s
 		if (clearTimer >= 200) {
 			//BGMå‰Šé™¤
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
-			//return new Title(); // ã‚¿ã‚¤ãƒˆãƒ«ã¸æˆ»ã‚‹
+
+			//return new Title(); // ƒ^ƒCƒgƒ‹‚Ö–ß‚é
+
+			return new Title(); // ã‚¿ã‚¤ãƒˆãƒ«ã¸æˆ»ã‚E
+
 			return new Result();
 		}
 		return this;
@@ -118,16 +122,16 @@ AbstractScene* GameMain::Update()
 
 			if (currentPattern == 0) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_date.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // é€šå¸¸å¼¾ã¯åå°„ã—ãªã„
+				BULLET_DATE->SetReflectEnable(false); // é€šå¸¸å¼¾ã¯åå°E—ãªãE
 				BULLET_DATE->bi.fall = true;
 			}
 			else if (currentPattern == 1) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(true); // ï¿½Êï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½È‚ï¿½
+				BULLET_DATE->SetReflectEnable(true); // E½Êï¿½eE½Í”ï¿½E½Ë‚ï¿½E½È‚ï¿½
 			}
 			else if (currentPattern == 2) {
 				BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
-				BULLET_DATE->SetReflectEnable(false); // ï¿½Ç”ï¿½ï¿½eï¿½Í”ï¿½ï¿½Ë‚ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½
+				BULLET_DATE->SetReflectEnable(false); // E½Ç”ï¿½E½eE½Í”ï¿½E½Ë‚ï¿½E½E½E½È‚ï¿½E½E½E½E½E½Ç‚ï¿½
 			}
 		}
 		nowtime = 0;
@@ -140,7 +144,7 @@ AbstractScene* GameMain::Update()
 	bool canFire = !(D_PLAYER->GameOver() && D_PLAYER->Zanki == 0);
 	P_SHOT->Update(D_PLAYER->x, D_PLAYER->y, canFire);
 	BULLET_DATE->Update(nowtime);
-	//D_PLAYER->fire(P_SHOT);  // ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½eï¿½ğ”­ï¿½
+	//D_PLAYER->fire(P_SHOT);  // E½vE½E½E½CE½E½E½[E½E½E½eE½ğ”­ï¿½
 
 	//if (enemy != nullptr) {
 	//	if (!enemy->IsDead()) {
@@ -149,18 +153,18 @@ AbstractScene* GameMain::Update()
 	//	}
 	//}
 
-	// å¼¾ã¨æ•µã®å½“ãŸã‚Šåˆ¤å®šå‡¦ç†ï¼ˆã‚·ãƒ³ãƒ—ãƒ«ã«ï¼‰
+	// å¼¾ã¨æ•µã®å½“ãŸã‚Šåˆ¤å®šåEçE¼ˆã‚·ãƒ³ãƒ—ãƒ«ã«EE
 	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
 		for (auto& b : P_SHOT->bullets) {
 			if (b.active && enemy->CheckCollision(b.x, b.y, true)) {
 				PlaySoundMem(Hit_SE, DX_PLAYTYPE_BACK, TRUE);
-				enemy->OnHit(); // HPã‚’æ¸›ã‚‰ã™
+				enemy->OnHit(); // HPã‚’æ¸›ã‚‰ãE
 				b.active = false; // å¼¾ã‚’æ¶ˆã™
 			}
 		}
 	}
 
-	// æ•µã®çŠ¶æ…‹åˆ¥å‡¦ç†ï¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰
+	// æ•µã®çŠ¶æ…‹åˆ¥å‡¦çE¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ EE
 	if (enemy != nullptr) {
 		switch (enemy->GetState()) {
 		case EnemyLifeState::ALIVE:
@@ -168,12 +172,12 @@ AbstractScene* GameMain::Update()
 			BULLET_DATE->SetEnemyPosition(enemy->GetX(), enemy->GetY());
 			if (enemy->GetHP() <= 0) {
 				if (EnemyPhase < MaxEnemyPhase) {
-					// æ¬¡ã®ãƒ•ã‚§ãƒ¼ã‚ºã¸ç§»è¡Œ
+					// æ¬¡ã®ãƒ•ã‚§ãƒ¼ã‚ºã¸ç§»è¡E
 					EnemyPhase++;
 					delete enemy;
 					enemy = new Enemy(320.0f, 100.0f);
 
-					// å¼¾å¹•åˆ‡ã‚Šæ›¿ãˆ
+					// å¼¾å¹•åEã‚Šæ›¿ãE
 					if (EnemyPhase == 1) {
 						BULLET_DATE->ChangePattern("Resource/date/danmaku_hansya.csv", 5, 120);
 						BULLET_DATE->SetReflectEnable(true);
@@ -183,19 +187,19 @@ AbstractScene* GameMain::Update()
 						BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
 						BULLET_DATE->SetReflectEnable(false);
 
-						BULLET_DATE->EnableSpiral(0.0f, 50.0f, 1);  // ä»»æ„ã®è§’åº¦ãƒ»é€Ÿåº¦ãƒ»é–“éš”
+						BULLET_DATE->EnableSpiral(0.0f, 50.0f, 1);  // ”CˆÓ‚ÌŠp“xE‘¬“xEŠÔŠu
 						BULLET_DATE->SetPhase(2);
-						//BULLET_DATE->CreateSatelliteBullets(4, 60.0f, 0.05f);  // ä¾‹ï¼š4å€‹ã€60pxåŠå¾„ã€ã‚†ã£ãã‚Šå›è»¢
+						//BULLET_DATE->CreateSatelliteBullets(4, 60.0f, 0.05f);  // —áF4ŒÂA60px”¼ŒaA‚ä‚Á‚­‚è‰ñ“]
 						currentPattern = 2;
 					}
 					return this;
 				}
 				else {
-					// æœ€çµ‚ãƒ•ã‚§ãƒ¼ã‚ºçµ‚äº† â†’ DYINGã¸ç§»è¡Œ
+					// æœ€çµ‚ãƒ•ã‚§ãƒ¼ã‚ºçµ‚äºEâ†EDYINGã¸ç§»è¡E
 					enemy->RequestDying();
 				}
 			}
-			// DYINGäºˆç´„ãŒå…¥ã£ã¦ã„ãŸã‚‰æ¬¡ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ç§»è¡Œ
+			// DYINGäºˆç´EŒå…¥ã£ã¦ãEŸã‚‰æ¬¡ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‚‰ç§»è¡E
 			if (enemy->IsRequestingDying()) {
 				enemy->StartDying();
 
@@ -230,12 +234,18 @@ AbstractScene* GameMain::Update()
 	}
 	int currentZanki = D_PLAYER->Zanki;
 
-	// â˜… æ®‹æ©ŸãŒæ¸›ã£ãŸç¬é–“ã ã‘æ¤œçŸ¥
+	// š c‹@‚ªŒ¸‚Á‚½uŠÔ‚¾‚¯ŒŸ’m
 	if (previousZanki != -1 && currentZanki < previousZanki) {
-		P_SHOT->SetBombStock(3);  // â† æœ€å¤§ãƒœãƒ æ•°ã«å¿œã˜ã¦èª¿æ•´
+		P_SHOT->SetBombStock(3);  // © Å‘åƒ{ƒ€”‚É‰‚¶‚Ä’²®
 	}
 
+
 	previousZanki = currentZanki;
+
+	//	//P_SHOT->StopAllBullets();
+	//	return this;  // â†Ereturn ã—ãªãE§æ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã‚¿ã‚¤ãƒãEã‚’é€²ã‚ã‚‹
+	//}
+
 
 	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
 		if (!D_PLAYER->GameOver()) {
@@ -263,8 +273,8 @@ AbstractScene* GameMain::Update()
 		}
 		gameOverTimer++;
 
-		if (gameOverTimer >= 120) { // ï¿½ï¿½2ï¿½bï¿½i60FPSï¿½zï¿½ï¿½j
-			//BGMï¿½íœ
+		if (gameOverTimer >= 120) { // E½E½2E½bE½i60FPSE½zE½E½j
+			//BGME½ú«E
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
 			return new Result();
@@ -277,7 +287,7 @@ void GameMain::Draw() const
 {
 	DrawGraph(0, -600, BackGroundImg, FALSE);
 
-	// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½`ï¿½ï¿½iï¿½ï¿½ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½lï¿½pï¿½j
+	// E½vE½E½E½CE½E½E½[E½`E½E½iE½E½E½FE½E½E½E½E½lE½pE½j
 	//DrawBox((int)(player.x - 10), (int)(player.y - 10), (int)(player.x + 10), (int)(player.y + 10), GetColor(255, 255, 255), TRUE);
 	P_SHOT->Draw();
 	D_PLAYER->Draw();
@@ -286,7 +296,7 @@ void GameMain::Draw() const
 
 	DrawFormatString(0, 60, GetColor(255, 255, 255), "Frame: %f", nowtime);
 
-	// ï¿½ï¿½ null ï¿½`ï¿½Fï¿½bï¿½Nï¿½ï¿½Ç‰ï¿½
+	// E½E½ null E½`E½FE½bE½NE½E½Ç‰ï¿½
 	if (enemy != nullptr) {
 		enemy->Draw();
 	}
@@ -295,37 +305,35 @@ void GameMain::Draw() const
 		result->Draw();
 	}*/
 
-	if (isGameClear && clearTimer >= 30) {  // å°‘ã—çµŒã£ã¦ã‹ã‚‰è¡¨ç¤º
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
-		DrawBox(0, 0, 1200, 720, 0x00000, TRUE);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		SetFontSize(49);
-		DrawFormatString(350, 300, GetColor(255, 255, 0), "GAME CLEAR!");
 
-	}
+	DrawGraph(770, 30, UI_Img[0], TRUE);	//ƒXƒRƒA
+	DrawGraph(800, 130, UI_Img[1], TRUE);	//ƒnƒCƒXƒRƒA
+	DrawGraph(830, 230, UI_Img[2], TRUE);	//ƒvƒŒƒCƒ„[c‹@
+	DrawGraph(770, 330, UI_Img[3], TRUE);	//ƒ^ƒCƒ€
+	DrawGraph(780, 430, UI_Img[4], TRUE);	//ƒ{ƒ€”
 
-
-	DrawBox(850, 0, 1280, 720, GetColor(125, 125, 125)/*0xffff00*/, TRUE);		//UIï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½W
-
-	DrawGraph(770, 30, UI_Img[0], TRUE);	//ï¿½Xï¿½Rï¿½A
-	DrawGraph(800, 130, UI_Img[1], TRUE);	//ï¿½nï¿½Cï¿½Xï¿½Rï¿½A
-	DrawGraph(830, 230, UI_Img[2], TRUE);	//ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½cï¿½@
-	DrawGraph(770, 330, UI_Img[3], TRUE);	//ï¿½^ï¿½Cï¿½ï¿½
-	//DrawGraph(780, 430, UI_Img[4], TRUE);	//ï¿½{ï¿½ï¿½ï¿½ï¿½
-
-	DrawGraph(770, 30, UI_Img[0], TRUE);	//ã‚¹ã‚³ã‚¢
-	DrawGraph(800, 130, UI_Img[1], TRUE);	//ãƒã‚¤ã‚¹ã‚³ã‚¢
-	DrawGraph(830, 230, UI_Img[2], TRUE);	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ®‹æ©Ÿ
-	DrawGraph(770, 330, UI_Img[3], TRUE);	//ã‚¿ã‚¤ãƒ 
-	DrawGraph(780, 430, UI_Img[4], TRUE);	//ãƒœãƒ æ•°
-
-	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ®‹æ©Ÿç”»åƒ
+	//ƒvƒŒƒCƒ„[c‹@‰æ‘œ
 	for (int i = 0; i < D_PLAYER->Zanki; i++) {
-		int drawX = 1050 + i * 50;  // 50px é–“éš”ã§è¡¨ç¤ºï¼ˆèª¿æ•´å¯ï¼‰
+		int drawX = 1050 + i * 50;  // 50px ŠÔŠu‚Å•\¦i’²®‰Âj
 		DrawGraph(drawX, 260, LifeImg, TRUE);
 	}
 
-	//ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½cï¿½@ï¿½æ‘œ
+	//ƒvƒŒƒCƒ„[c‹@‰æ‘œ
+	for (int i = 0; i < P_SHOT->bombStock; i++) {
+		int drawX = 1100 + i * 50;  // 50px ŠÔŠu‚Å•\¦i’²®‰Âj
+		DrawGraph(drawX - 75, 500, bom_Img, TRUE);
+	}
+
+	DrawBox(850, 0, 1280, 720, GetColor(125, 125, 125)/*0xffff00*/, TRUE);		//UIE½\E½E½E½E½E½W
+
+	DrawGraph(770, 30, UI_Img[0], TRUE);	//E½XE½RE½A
+	DrawGraph(800, 130, UI_Img[1], TRUE);	//E½nE½CE½XE½RE½A
+	DrawGraph(830, 230, UI_Img[2], TRUE);	//E½vE½E½E½CE½E½E½[E½cE½@
+	DrawGraph(770, 330, UI_Img[3], TRUE);	//E½^E½CE½E½
+	DrawGraph(780, 430, UI_Img[4], TRUE);	//E½{E½E½E½E½
+
+
+	//E½vE½E½E½CE½E½E½[E½cE½@E½æ‘E
 	DrawGraph(1050, 260, LifeImg, TRUE);
 	DrawGraph(1100, 260, LifeImg, TRUE);
 	DrawGraph(1150, 260, LifeImg, TRUE);
@@ -333,13 +341,21 @@ void GameMain::Draw() const
 
 	DrawNumber(1100, 107, score);
 
-	DrawNumber(1100, 407, timelimit/60/60);
+	DrawNumber(1100, 407, timelimit / 60 / 60);
 	DrawGraph(1120, 405, TextImg[12], TRUE);
 	DrawGraph(1120, 385, TextImg[12], TRUE);
-	DrawNumber(1140, 407, timelimit/60%60);
+	DrawNumber(1140, 407, timelimit / 60 % 60);
 
-	DrawFormatString(0, 40, 0xffffff, "timelimit:%d", timelimit/60);
+	DrawFormatString(0, 40, 0xffffff, "timelimit:%d", timelimit / 60);
 
+
+	if (isGameClear && clearTimer >= 30) {  // ­‚µŒo‚Á‚Ä‚©‚ç•\¦
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+		DrawBox(0, 0, 1200, 720, 0x00000, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		SetFontSize(49);
+		DrawFormatString(350, 300, GetColor(255, 255, 0), "GAME CLEAR!");
+	}
 }
 
 void GameMain::Score_math()
@@ -369,9 +385,4 @@ int GameMain::GetImageIndex(char ch) const
 	if (ch == '-') return 11;
 	if (ch == '.') return 12;
 	return -1;
-	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ®‹æ©Ÿç”»åƒ
-	for (int i = 0; i < P_SHOT->bombStock; i++) {
-		int drawX = 1100 + i * 50;  // 50px é–“éš”ã§è¡¨ç¤ºï¼ˆèª¿æ•´å¯ï¼‰
-		DrawGraph(drawX-75, 500, bom_Img, TRUE);
-	}
 }
