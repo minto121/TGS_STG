@@ -17,16 +17,21 @@ public:
 
     int UI_Img[6];
     int LifeImg;
+    int bom_Img;
     int BackGroundImg;
     int EnemyPhase;
     int GameMain_BGM;
     const int MaxEnemyPhase = 2;  // 0,1,2 の 3フェーズ
+    int Hit_SE;
 
     int clearTimer = 0;            // クリア演出のタイマー
     bool clearBulletStopped = false; // 弾を止めたかどうか
 
     bool isGameOver = false;      // ゲームオーバー中かどうか
     int gameOverTimer = 0;        // ゲームオーバー経過時間（フレーム）
+
+
+    int previousZanki = -1;  // ← 初期値は無効な値（最初の比較用）
 
 
     Result* result = nullptr;
