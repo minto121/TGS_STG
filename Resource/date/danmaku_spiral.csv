@@ -1,2 +1,2 @@
 ﻿time,x,y,S_angle,E_angle,cnt,spd,fall,homing,reflect,ripple,spiral
-0,320,100,0,0,1,4,FALSE,FALSE,FALSE,FALSE,TRUE
+0,320,100,0,0,1,4,false,false,false,false,true

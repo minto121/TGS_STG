@@ -4,6 +4,7 @@
 
 Result::Result()
 {
+    BackImg = LoadGraph("Resource/image/mangetsu.png");
 }
 
 Result::~Result()
@@ -28,16 +29,20 @@ AbstractScene* Result::Update()
 
 void Result::Draw() const
 {
-    //DrawFormatString(350, 100, 0xffffff, "タイトル");
+    DrawGraph(0, 0, BackImg, TRUE);
+
     SetFontSize(49);
-    DrawString(540,150, "RESULT", GetColor(255, 255, 255));
+    DrawString(540,80, "リザルト", GetColor(255, 255, 255));
+    DrawString(390, 230, "あなたのスコアは", GetColor(255, 255, 255));
 
     int retryColor = selectedOption == ResultOption::Retry ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
     int titleColor = selectedOption == ResultOption::Title ? GetColor(255, 255, 0) : GetColor(150, 150, 150);
 
-    DrawString(380, 420, "RETRY", retryColor);
-    DrawString(740, 420, "TITLE", titleColor);
+    DrawString(280, 520, "リトライ", retryColor);
+    DrawString(860, 520, "タイトル", titleColor);
 
+
+    
 }
 
 void Result::UpdateInput()

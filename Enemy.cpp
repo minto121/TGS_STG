@@ -137,7 +137,7 @@ void Enemy::TeleportingBehavior()
     if (stateTimer == 1)
     {
         enemy_X = static_cast<float>(rand() % 600 + 20);
-        enemy_Y = static_cast<float>(rand() % 200 + 20);
+        enemy_Y = static_cast<float>(rand() % 160 + 80);
     }
 
     if (enemy_Y > 240.0f) enemy_Y = 240.0f;
@@ -229,10 +229,10 @@ void Enemy::Draw() const
 
     int maxHP = 10;  // �ő�HP�i��ŕϐ��ɂ��Ă�OK�j
     int barX = 50;   // �o�[�̍��[�ʒu
-    int barY = 20;   // �o�[�̏�ʒu
-    int barWidth = 540; // �S�̂̃o�[�̒����i��ʕ�640�̖�85%�j
+    int barY = 10;   // �o�[�̏�ʒu
+    int barWidth = 450; // �S�̂̃o�[�̒����i��ʕ�640�̖�85%�j
 
-    int barHeight = 20;
+    int barHeight = 10;
 
     // 背景（枠のような見た目に）
     DrawBox(barX - 2, barY - 2, barX + barWidth + 2, barY + barHeight + 2, GetColor(255, 255, 255), FALSE); // 白枠
@@ -245,8 +245,9 @@ void Enemy::Draw() const
     // 残HP（赤）
     DrawBox(barX, barY, barX + currentWidth, barY + barHeight, GetColor(255, 0, 0), TRUE);
 
+    SetFontSize(12);
     // 数値表示（任意）
-    DrawFormatString(barX + barWidth / 2 - 20, barY + barHeight + 4, GetColor(255, 255, 255), "HP: %d", hp);
+    DrawFormatString(barX + barWidth / 2 - 20, barY + barHeight + 4, GetColor(255, 255, 255), "", hp);
 
     //敵画像
     //DrawGraph(enemy_X - 125, enemy_Y - 65, enemy_img, TRUE);

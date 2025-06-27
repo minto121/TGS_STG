@@ -2,6 +2,7 @@
 #include "GameMain.h"
 #include"Player_Shot.h"
 #include"FpsControl.h"
+#include"PadInput.h"
 #include"Bullet.h"
 #include "Enemy.h"
 #include "Title.h"
@@ -19,6 +20,7 @@ GameMain::GameMain()
 	BULLET_DATE->SetPlayer(D_PLAYER);
 	BULLET_DATE->LoadCSV("Resource/date/danmaku_date.csv",5,120); // �� CSV�ǂݍ���
 	D_PLAYER->SetBulletManager(BULLET_DATE);
+	P_SHOT->SetBulletManager(BULLET_DATE);
 
 
 
@@ -34,6 +36,7 @@ GameMain::GameMain()
 	UI_Img[4] = LoadGraph("Resource/image/bomb_img.png");
 
 	LifeImg = LoadGraph("Resource/image/life_img.png");
+	bom_Img = LoadGraph("Resource/image/bom.png");
 	BackGroundImg = LoadGraph("Resource/image/kuraimori.jpg");
 
 	// 画像分割読み込み
@@ -76,9 +79,18 @@ AbstractScene* GameMain::Update()
 	{
 		PlaySoundMem(GameMain_BGM, DX_PLAYTYPE_LOOP, TRUE);
 	}
+	//ボム
+	if (CheckHitKey(KEY_INPUT_X)||PAD_INPUT::OnButton(XINPUT_BUTTON_B)) {
+		P_SHOT->UseBomb(D_PLAYER->x, D_PLAYER->y);
+	}
 
 	nowtime++;
-	//�Q�[���N���A����
+
+	//spiralの回転を逆にする
+	if (nowtime % 300 == 0) {
+		BULLET_DATE->ReverseSpiralDirection(); 
+	}
+	//ゲームクリア処理
 	if (isGameClear) {
 		clearTimer++;
 
@@ -92,7 +104,7 @@ AbstractScene* GameMain::Update()
 			//BGM削除
 			DeleteSoundMem(GameMain_BGM);
 			StopSoundMem(GameMain_BGM);
-			return new Title(); // タイトルへ戻る
+			//return new Title(); // タイトルへ戻る
 			return new Result();
 		}
 		return this;
@@ -170,6 +182,10 @@ AbstractScene* GameMain::Update()
 					else if (EnemyPhase == 2) {
 						BULLET_DATE->ChangePattern("Resource/date/danmaku_tuibi.csv", 5, 120);
 						BULLET_DATE->SetReflectEnable(false);
+
+						BULLET_DATE->EnableSpiral(0.0f, 50.0f, 1);  // 任意の角度・速度・間隔
+						BULLET_DATE->SetPhase(2);
+						//BULLET_DATE->CreateSatelliteBullets(4, 60.0f, 0.05f);  // 例：4個、60px半径、ゆっくり回転
 						currentPattern = 2;
 					}
 					return this;
@@ -212,17 +228,14 @@ AbstractScene* GameMain::Update()
 			break;
 		}
 	}
-	//if (enemy != nullptr && enemy->GetHP() <= 0 && enemy->IsDead()) {
-	//	delete enemy;
-	//	enemy = nullptr;
-	//	printfDx("WIN");
+	int currentZanki = D_PLAYER->Zanki;
 
-	//	isGameClear = true;
-	//	clearTimer = 0;
+	// ★ 残機が減った瞬間だけ検知
+	if (previousZanki != -1 && currentZanki < previousZanki) {
+		P_SHOT->SetBombStock(3);  // ← 最大ボム数に応じて調整
+	}
 
-	//	//P_SHOT->StopAllBullets();
-	//	return this;  // ← return しないで次フレームでタイマーを進める
-	//}
+	previousZanki = currentZanki;
 
 	if (enemy != nullptr && enemy->GetState() == EnemyLifeState::ALIVE) {
 		if (!D_PLAYER->GameOver()) {
@@ -257,6 +270,7 @@ AbstractScene* GameMain::Update()
 			return new Result();
 		}
 	}
+	return this;
 	
 }
 void GameMain::Draw() const
@@ -282,7 +296,12 @@ void GameMain::Draw() const
 	}*/
 
 	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
-		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+		DrawBox(0, 0, 1200, 720, 0x00000, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		SetFontSize(49);
+		DrawFormatString(350, 300, GetColor(255, 255, 0), "GAME CLEAR!");
+
 	}
 
 
@@ -294,6 +313,17 @@ void GameMain::Draw() const
 	DrawGraph(770, 330, UI_Img[3], TRUE);	//�^�C��
 	//DrawGraph(780, 430, UI_Img[4], TRUE);	//�{����
 
+	DrawGraph(770, 30, UI_Img[0], TRUE);	//スコア
+	DrawGraph(800, 130, UI_Img[1], TRUE);	//ハイスコア
+	DrawGraph(830, 230, UI_Img[2], TRUE);	//プレイヤー残機
+	DrawGraph(770, 330, UI_Img[3], TRUE);	//タイム
+	DrawGraph(780, 430, UI_Img[4], TRUE);	//ボム数
+
+	//プレイヤー残機画像
+	for (int i = 0; i < D_PLAYER->Zanki; i++) {
+		int drawX = 1050 + i * 50;  // 50px 間隔で表示（調整可）
+		DrawGraph(drawX, 260, LifeImg, TRUE);
+	}
 
 	//�v���C���[�c�@�摜
 	DrawGraph(1050, 260, LifeImg, TRUE);
@@ -339,4 +369,9 @@ int GameMain::GetImageIndex(char ch) const
 	if (ch == '-') return 11;
 	if (ch == '.') return 12;
 	return -1;
+	//プレイヤー残機画像
+	for (int i = 0; i < P_SHOT->bombStock; i++) {
+		int drawX = 1100 + i * 50;  // 50px 間隔で表示（調整可）
+		DrawGraph(drawX-75, 500, bom_Img, TRUE);
+	}
 }
