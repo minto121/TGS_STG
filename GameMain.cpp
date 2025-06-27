@@ -266,7 +266,12 @@ void GameMain::Draw() const
 	}*/
 
 	if (isGameClear && clearTimer >= 30) {  // 少し経ってから表示
-		DrawFormatString(500, 300, GetColor(255, 255, 0), "GAME CLEAR!");
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+		DrawBox(0, 0, 1200, 720, 0x00000, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		SetFontSize(49);
+		DrawFormatString(350, 300, GetColor(255, 255, 0), "GAME CLEAR!");
+
 	}
 
 	DrawBox(850, 0, 1280, 720, GetColor(125, 125, 125)/*0xffff00*/, TRUE);		//UI表示座標
@@ -275,7 +280,7 @@ void GameMain::Draw() const
 	DrawGraph(800, 130, UI_Img[1], TRUE);	//ハイスコア
 	DrawGraph(830, 230, UI_Img[2], TRUE);	//プレイヤー残機
 	DrawGraph(770, 330, UI_Img[3], TRUE);	//タイム
-	//DrawGraph(780, 430, UI_Img[4], TRUE);	//ボム数
+	DrawGraph(780, 430, UI_Img[4], TRUE);	//ボム数
 
 	//プレイヤー残機画像
 	for (int i = 0; i < D_PLAYER->Zanki; i++) {
@@ -286,6 +291,6 @@ void GameMain::Draw() const
 	//プレイヤー残機画像
 	for (int i = 0; i < P_SHOT->bombStock; i++) {
 		int drawX = 1100 + i * 50;  // 50px 間隔で表示（調整可）
-		DrawGraph(drawX, 500, bom_Img, TRUE);
+		DrawGraph(drawX-75, 500, bom_Img, TRUE);
 	}
 }
